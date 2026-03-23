@@ -1030,15 +1030,21 @@ const FAQ = [
 {q:"How does the Hollow’s Edge work?",a:"It is the boundary of the known world. Entering it requires the Null Warden’s tolerance. Things come back from the Edge changed. Three characters across documented Hollow history crossed fully. None returned."},
 {q:"What is the Hall of Fame?",a:"Inducted for: Natural 20 world-changing action, story-defining death, Box Battle OP tier, Legendary title, or Origin Story episode. Hall of Fame characters are announced every live session and referenced permanently in arc finales."}
 ];
+
 const ARSENAL_WEAPONS = {
   Warrior: [
     { name: "Kingdom Issue Broadsword", type: "Slashing", rarity: "Common", damage: "1d8 DMG", effect: "None.", location: "Crumbling Kingdom — guard barracks", lore: "The edge is dull, and the grip is slick with old sweat. It killed mostly deserters at the end.", image: "🗡️", color: "#aaa", bg: "rgba(40,40,50,0.8)" },
-    { name: "Hollow-Iron Greatsword", type: "Heavy Slashing", rarity: "Rare", damage: "2d6 DMG", effect: "Ignores the first point of armor on enemies native to the Hollow.", location: "Underground Cavern Forges", lore: "It is uncomfortably cold to the touch. When swung, it makes absolutely no sound, leaving a quiet vacuum in its wake.", image: "⚔️", color: "#4fc3f7", bg: "rgba(5,30,50,0.8)" },
-    { name: "The Nameless Warden’s Cleaver", type: "Relic Heavy", rarity: "Legendary", damage: "2d8+2 DMG", effect: "Once per arc, if an attack reduces an enemy to 0 HP, immediately take another full turn.", location: "Throne Room Depths (Guarded)", lore: "The Warden forgot his name long before he forgot his duty. The blade remembers the violence, if not the reason for it.", image: "🪓", color: "#ffd54f", bg: "rgba(40,30,5,0.8)" }
+    { name: "Reinforced Garrison Cleaver", type: "Slashing", rarity: "Uncommon", damage: "1d8+1 DMG", effect: "Won't break on a fumble.", location: "Kingdom Armory", lore: "Standard issue for the heavy guard. Reliable, brutal, lacking elegance.", image: "🪓", color: "#66bb6a", bg: "rgba(10,40,15,0.8)" },
+    { name: "Hollow-Iron Greatsword", type: "Heavy Slashing", rarity: "Rare", damage: "2d6 DMG", effect: "Ignores the first point of armor on enemies native to the Hollow.", location: "Underground Cavern Forges", lore: "It is uncomfortably cold to the touch. When swung, it makes absolutely no sound.", image: "⚔️", color: "#4fc3f7", bg: "rgba(5,30,50,0.8)" },
+    { name: "The Nameless Warden’s Cleaver", type: "Relic Heavy", rarity: "Legendary", damage: "2d8+2 DMG", effect: "Once per arc, if an attack reduces an enemy to 0 HP, take another full turn.", location: "Throne Room Depths", lore: "The Warden forgot his name before his duty. The blade remembers the violence.", image: "🪓", color: "#ffd54f", bg: "rgba(40,30,5,0.8)" },
+    { name: "The Void Cleaver", type: "Anomaly", rarity: "Mythic", damage: "3d6 DMG", effect: "UNIQUE. Strikes ignore armor entirely. On a critical, sever a limb.", location: "The Edge", lore: "Forged in the dark. It hums when it tastes blood.", image: "🌑", color: "#ce93d8", bg: "rgba(30,5,50,0.8)" }
   ],
   Rogue: [
     { name: "Gutter-Spike", type: "Piercing", rarity: "Common", damage: "1d4 DMG", effect: "+1 to hit if the target doesn't know you are there.", location: "Black Market, Slums", lore: "It’s practically just a sharpened piece of fence. Tetanus is a feature, not a bug.", image: "🔪", color: "#aaa", bg: "rgba(40,40,50,0.8)" },
-    { name: "Void-Glass Stiletto", type: "Precision", rarity: "Mythic", damage: "1d6 DMG", effect: "Critical hits permanently sever a piece of the target's shadow, reducing their max HP by 2 for the rest of the arc.", location: "Beyond the Hollow's Edge", lore: "You can see right through the blade. Sometimes, if you look closely, you see things looking back.", image: "🌌", color: "#ce93d8", bg: "rgba(30,5,50,0.8)" }
+    { name: "Balanced Stiletto", type: "Piercing", rarity: "Uncommon", damage: "1d4+1 DMG", effect: "+1 to concealment rolls.", location: "Smuggler Caches", lore: "Perfectly weighted for throwing or thrusting.", image: "🗡️", color: "#66bb6a", bg: "rgba(10,40,15,0.8)" },
+    { name: "Shadow-Forged Blade", type: "Finesse", rarity: "Rare", damage: "1d6+1 DMG", effect: "Draws no attention when drawn. Completely silent.", location: "Deep Caverns", lore: "The blade absorbs light, making it nearly invisible in the dark.", image: "🗡️", color: "#4fc3f7", bg: "rgba(5,30,50,0.8)" },
+    { name: "The Ghost Blade", type: "Relic Piercing", rarity: "Legendary", damage: "2d4 DMG", effect: "Leaves no physical wound. Damage is dealt directly to target's vitality.", location: "Unknown", lore: "A blade made of memory.", image: "👻", color: "#ffd54f", bg: "rgba(40,30,5,0.8)" },
+    { name: "Void-Glass Stiletto", type: "Precision", rarity: "Mythic", damage: "1d6 DMG", effect: "Critical hits permanently sever a piece of target's shadow, reducing max HP.", location: "Beyond the Hollow's Edge", lore: "You can see right through the blade. Sometimes, things look back.", image: "🌌", color: "#ce93d8", bg: "rgba(30,5,50,0.8)" }
   ],
   Wizard: [
     { name: "Splintered Teaching Staff", type: "Blunt / Focus", rarity: "Common", damage: "1d4 DMG", effect: "Can be used as a basic light source.", location: "Sunken Library — initiate quarters", lore: "The wood is petrified. It’s better for hitting things than casting magic, but it remembers a few basic sparks.", image: "🦯", color: "#aaa", bg: "rgba(40,40,50,0.8)" },
@@ -1130,79 +1136,81 @@ function save(key, val) { try { localStorage.setItem(STORAGE_PREFIX+key, JSON.st
 function load(key, def) { try { const v = localStorage.getItem(STORAGE_PREFIX+key); return v ? JSON.parse(v) : def; } catch(e){ return def; } }
 
 const STATE = {
-tab: 'players',
-players: load('players', []),
-sessionLog: load('session_log', []),
-sessionActive: load('session_active', false),
-sessionNumber: load('session_number', 1),
-sessionStartTime: load('session_start_time', null),
-mapPins: load('map_pins', []),
-mapEvents: load('map_events', {}),
-mapDanger: load('map_danger', {}),
-raidHistory: load('raid_history', []),
-baseRooms: load('base_rooms', {vault:1,barracks:0,forge:0,infirmary:0,watchtower:0}),
-baseResidents: load('base_residents', []),
-baseDefense: load('base_defense', 3),
-vaults: load('vaults', {}),
-packs: load('packs', {}),
-villainsLive: load('villains_live', []),
-// UI only (not persisted)
-search: '',
-selectedPlayer: null,
-creation: {username:'',charname:'',cls:'',origin:'',payment:'tiktok',notes:'',
-repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null},
-diceRoll: null,
-diceSpinning: false,
-diceHistory: [],
-diceContext: {player:'',purpose:'',target:'',custom:''},
-battleP1:'',battleP2:'',battleCoins1:'',battleCoins2:'',
-battleTime:180,battleRunning:false,battleInterval:null,
-mapLocation: null,
-showAddPin: false,
-addPinForm: {name:'',type:'player',note:''},
-activeRaid: null,
-raidLog: [],
-raidPhase: 0,
-raidParty: [],
-raidLocation: '',
-raidTier: 'skirmish',
-logSearch: '',
-logFilter: 'all',
-manualEntry: {who:'',what:'',type:null},
-selectedInventoryPlayer: null,
-inventoryTab: 'pack',
-addItemForm: {name:'',type:'weapon',rarity:'Common',condition:'Pristine',enchantment:'',provenance:'',obtainedBy:'found',note:''},
-showAddItem: false,
-showAddResident: false,
-residentForm: {name:'',role:'guard',note:''},
-baseAttack: null,
-classTab: 'Warrior',
-classSec: 'overview',
-villainTab: null,
-villainSec: 'lore',
-rulesTab: 'overview',
-faqSearch: '',
-faqOpen: null,
-arsenalTab: 'weapons',
-arsenalTarget: ''
+  tab: 'players',
+  players: load('players', []),
+  sessionLog: load('session_log', []),
+  sessionActive: load('session_active', false),
+  sessionNumber: load('session_number', 1),
+  sessionStartTime: load('session_start_time', null),
+  mapPins: load('map_pins', []),
+  mapEvents: load('map_events', {}),
+  mapDanger: load('map_danger', {}),
+  raidHistory: load('raid_history', []),
+  baseRooms: load('base_rooms', {vault:1,barracks:0,forge:0,infirmary:0,watchtower:0}),
+  baseResidents: load('base_residents', []),
+  baseDefense: load('base_defense', 3),
+  vaults: load('vaults', {}),
+  packs: load('packs', {}),
+  villainsLive: load('villains_live', []),
+  customVillains: load('custom_villains', []), 
+  // UI only (not persisted)
+  search: '',
+  selectedPlayer: null,
+  creation: {username:'',charname:'',cls:'',origin:'',payment:'tiktok',notes:'',repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null},
+  diceRoll: null,
+  diceSpinning: false,
+  diceHistory: [],
+  diceContext: {player:'',purpose:'',target:'',custom:''},
+  battleP1:'',battleP2:'',battleCoins1:'',battleCoins2:'',
+  battleTime:180,battleRunning:false,battleInterval:null,
+  mapLocation: null,
+  showAddPin: false,
+  addPinForm: {name:'',type:'player',note:''},
+  activeRaid: null,
+  raidLog: [],
+  raidPhase: 0,
+  raidParty: [],
+  raidLocation: '',
+  raidTier: 'skirmish',
+  logSearch: '',
+  logFilter: 'all',
+  manualEntry: {who:'',what:'',type:null},
+  selectedInventoryPlayer: null,
+  inventoryTab: 'pack',
+  addItemForm: {name:'',type:'weapon',rarity:'Common',condition:'Pristine',enchantment:'',provenance:'',obtainedBy:'found',note:''},
+  showAddItem: false,
+  showAddResident: false,
+  showAddVillain: false, 
+  residentForm: {name:'',role:'guard',note:''},
+  baseAttack: null,
+  classTab: 'Warrior',
+  classSec: 'overview',
+  villainTab: null,
+  villainSec: 'lore',
+  rulesTab: 'overview',
+  faqSearch: '',
+  faqOpen: null,
+  arsenalTab: 'Warrior',
+  arsenalTarget: ''
 };
 
 function saveAll() {
-save('players', STATE.players);
-save('session_log', STATE.sessionLog);
-save('session_active', STATE.sessionActive);
-save('session_number', STATE.sessionNumber);
-save('session_start_time', STATE.sessionStartTime);
-save('map_pins', STATE.mapPins);
-save('map_events', STATE.mapEvents);
-save('map_danger', STATE.mapDanger);
-save('raid_history', STATE.raidHistory);
-save('base_rooms', STATE.baseRooms);
-save('base_residents', STATE.baseResidents);
-save('base_defense', STATE.baseDefense);
-save('vaults', STATE.vaults);
-save('packs', STATE.packs);
-save('villains_live', STATE.villainsLive);
+  save('players', STATE.players);
+  save('session_log', STATE.sessionLog);
+  save('session_active', STATE.sessionActive);
+  save('session_number', STATE.sessionNumber);
+  save('session_start_time', STATE.sessionStartTime);
+  save('map_pins', STATE.mapPins);
+  save('map_events', STATE.mapEvents);
+  save('map_danger', STATE.mapDanger);
+  save('raid_history', STATE.raidHistory);
+  save('base_rooms', STATE.baseRooms);
+  save('base_residents', STATE.baseResidents);
+  save('base_defense', STATE.baseDefense);
+  save('vaults', STATE.vaults);
+  save('packs', STATE.packs);
+  save('villains_live', STATE.villainsLive);
+  save('custom_villains', STATE.customVillains); 
 }
 
 function addLog(entry) {
@@ -1256,9 +1264,7 @@ function render(){
   const pn=document.getElementById('panel');
   if(!tb||!pn) return;
 
-  // This builds the navigation buttons
   tb.innerHTML = TABS.map(t => `<div class="tab${STATE.tab === t.id ? ' active' : ''}" onclick="STATE.tab='${t.id}';render()">${t.label}</div>`).join('');
-
   pn.className = 'panel fade-in';
 
   switch(STATE.tab){
@@ -1285,7 +1291,6 @@ function render(){
 }
 
 function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-
 function hpColor(pct){return pct>60?'var(--green)':pct>30?'#ff9800':'var(--red)';}
 
 function statBars(p){
@@ -1296,7 +1301,6 @@ return`<div><div class="stat-label"><span style="color:${c};font-weight:bold">${
 }).join('')+'</div>';
 }
 
-// PLAYERS TAB
 function renderPlayers(){
 const live=STATE.players.filter(p=>!p.isDead&&(p.charname||'').toLowerCase().includes((STATE.search||'').toLowerCase()));
 const dead=STATE.players.filter(p=>p.isDead&&(p.charname||'').toLowerCase().includes((STATE.search||'').toLowerCase()));
@@ -1305,10 +1309,29 @@ return`<div style="display:flex;gap:8px;margin-bottom:12px"> <div style="positio
 
 function playerCard(p){
 const pct=Math.max(0,(p.hp/p.maxHp)*100);const hc=hpColor(pct);
-return`<div class="player-card${p.protectionBalance>0?' protected':''}${p.isDead?' dead':''}" onclick="STATE.selectedPlayer=${p.id};render()"> <div style="display:flex;justify-content:space-between;align-items:flex-start"> <div> <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)}${p.isDead?' ☠':''}</div> <div style="font-size:0.62rem;color:var(--purple-light);font-family:Arial,sans-serif">${CLASS_ICON[p.cls]||''} ${p.cls} · @${esc(p.username)}</div> <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">📍 ${esc(p.origin||'')}</div> ${p.title?`<div style="font-size:0.62rem;color:var(--gold);font-style:italic">✦ ${esc(p.title)}</div>`:''} </div> <span style="font-size:0.6rem;color:var(--dim);font-family:Arial,sans-serif">Tap →</span> </div> <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:${hc};margin-top:9px;margin-bottom:2px;font-family:Arial,sans-serif"><span style="font-weight:bold">HP</span><span>${p.hp}/${p.maxHp}</span></div> <div class="hp-bar-wrap"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 6px ${hc}"></div></div> ${statBars(p)} ${p.traitLevel?`<div style="font-size:0.6rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'#bbb'};margin-top:5px;font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:6px"> ${p.isDead?'<span class="tag pill-wanted">☠ DEAD</span>':''} ${p.protectionBalance>0?`<span class="tag" style="background:rgba(60,50,10,0.8);color:var(--gold)">🛡 ${p.protectionBalance.toLocaleString()}</span>`:''} ${(p.consequences||[]).map(c=>`<span class="tag pill-${c.type||'curse'}">${c.label}</span>`).join('')}
-</div>
-
-  </div>`;
+return`<div class="player-card${p.protectionBalance>0?' protected':''}${p.isDead?' dead':''}" onclick="STATE.selectedPlayer=${p.id};render()"> 
+  <div style="display:flex;justify-content:space-between;align-items:flex-start"> 
+    <div style="display:flex; gap:10px; align-items:center">
+      ${p.pfpImage ? `<img src="${p.pfpImage}" style="width:40px; height:40px; border-radius:8px; object-fit:cover; border:1px solid var(--border);">` : `<div style="width:40px; height:40px; border-radius:8px; background:rgba(10,8,30,0.8); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.2rem;">${CLASS_ICON[p.cls]||'👤'}</div>`}
+      <div> 
+        <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)}${p.isDead?' ☠':''}</div> 
+        <div style="font-size:0.62rem;color:var(--purple-light);font-family:Arial,sans-serif">${CLASS_ICON[p.cls]||''} ${p.cls} · @${esc(p.username)}</div> 
+        <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">📍 ${esc(p.origin||'')}</div> 
+        ${p.title?`<div style="font-size:0.62rem;color:var(--gold);font-style:italic">✦ ${esc(p.title)}</div>`:''} 
+      </div> 
+    </div>
+    <span style="font-size:0.6rem;color:var(--dim);font-family:Arial,sans-serif">Tap →</span> 
+  </div> 
+  <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:${hc};margin-top:9px;margin-bottom:2px;font-family:Arial,sans-serif"><span style="font-weight:bold">HP</span><span>${p.hp}/${p.maxHp}</span></div> 
+  <div class="hp-bar-wrap"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 6px ${hc}"></div></div> 
+  ${statBars(p)} 
+  ${p.traitLevel?`<div style="font-size:0.6rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'#bbb'};margin-top:5px;font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} 
+  <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:6px"> 
+    ${p.isDead?'<span class="tag pill-wanted">☠ DEAD</span>':''} 
+    ${p.protectionBalance>0?`<span class="tag" style="background:rgba(60,50,10,0.8);color:var(--gold)">🛡 ${p.protectionBalance.toLocaleString()}</span>`:''} 
+    ${(p.consequences||[]).map(c=>`<span class="tag pill-${c.type||'curse'}">${c.label}</span>`).join('')}
+  </div>
+</div>`;
 }
 
 function renderPlayerModal(){
@@ -1316,27 +1339,100 @@ const p=STATE.players.find(x=>x.id===STATE.selectedPlayer);if(!p)return'';
 const pct=Math.max(0,(p.hp/p.maxHp)*100);const hc=hpColor(pct);
 const stats=getPlayerStats(p);
 const FULL={STR:'Strength',DEF:'Defense',INT:'Intelligence',WIS:'Wisdom',SPD:'Speed',CHA:'Charisma',LCK:'Luck'};
-return`<div class="modal-box"> <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"> <div> <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)} — ${CLASS_ICON[p.cls]||''} ${p.cls}</div> <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">@${esc(p.username)} · ${esc(p.origin||'')} · ${p.joined||''}</div> ${p.title?`<div style="font-size:0.7rem;color:var(--gold);font-style:italic;margin-top:2px">✦ ${esc(p.title)}</div>`:''} </div> <button style="background:none;border:none;color:var(--dim);font-size:1.3rem;cursor:pointer" onclick="STATE.selectedPlayer=null;render()">✕</button> </div> <div class="card" style="margin-bottom:12px"> <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"> <span style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;font-family:Arial,sans-serif">Hit Points</span> <span style="font-size:1.1rem;font-weight:bold;color:${hc};font-family:Arial,sans-serif">${p.hp}<span style="font-size:0.7rem;color:var(--dim)"> / ${p.maxHp}</span></span> </div> <div class="hp-bar-wrap" style="height:10px;margin-bottom:8px"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 10px ${hc}"></div></div> <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"> ${[-5,-3,-2,-1].map(d=>`<button class="btn btn-sm btn-red" onclick="adjHP(${p.id},${d});render()">${d}</button>`).join('')} <div style="flex:1"></div> ${[1,2,3,5].map(d=>`<button class="btn btn-sm btn-green" onclick="adjHP(${p.id},${d});render()">+${d}</button>`).join('')} <button class="btn btn-sm" onclick="updatePlayer(${p.id},{hp:${p.maxHp}});render()">Full</button> </div> <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin-bottom:10px"></div> <div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-family:Arial,sans-serif">Character Stats</div> <div class="stat-grid"> ${Object.entries(stats).map(([s,v])=>{const c=STAT_COLORS[s];const pct2=Math.min(100,(v/12)*100);return`<div><div class="stat-label"><span style="color:${c};font-weight:bold">${FULL[s]||s}</span><span style="font-size:0.85rem;font-weight:bold;color:${c}">${v}</span></div><div class="stat-bar-wrap" style="height:5px"><div class="stat-bar" style="width:${pct2}%;background:${c};box-shadow:0 0 5px ${c}60"></div></div></div>`;}).join('')} </div> ${p.traitLevel?`<div style="margin-top:10px;padding:5px 10px;background:rgba(138,90,220,0.1);border-radius:6px;font-size:0.68rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'var(--purple-light)'};font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} </div> ${p.repPassive?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✦ Rep: </span>${esc(p.repPassive)}</div>`:''} ${p.signatureSkill?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--blue);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--blue);font-weight:bold">⚡ ${esc(p.signatureSkill)}: </span>${esc(p.signatureSkillDesc||'')}</div>`:''} ${p.shadowTrait?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--red);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--red);font-weight:bold">🌑 ${esc(p.shadowTrait)}: </span>${esc(p.shadowTraitDesc||'')}</div>`:''} ${p.enchantment?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✨ ${esc(p.enchantment)}: </span>${esc(p.enchantmentDesc||'')}</div>`:''} ${p.destinyThread?`<div style="background:rgba(30,10,50,0.8);border-left:2px solid #ce93d8;padding:6px 10px;font-size:0.68rem;color:#ce93d8;margin-bottom:14px;border-radius:0 6px 6px 0;font-style:italic;font-family:Arial,sans-serif">🔮 “${esc(p.destinyThread)}”</div>`:''} <div class="section-title">Position</div> <input class="input" style="margin-bottom:12px" value="${esc(p.position||'')}" onblur="updatePlayer(${p.id},{position:this.value})"> <div class="section-title">Inventory (${(p.inventory||[]).length})</div> ${(p.inventory||[]).map((item,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.74rem;color:#bbb;font-family:Arial,sans-serif"><span>${esc(item)}</span><button onclick="rmInvItem(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer">✕</button></div>`).join('')} <div style="display:flex;gap:6px;margin-top:6px;margin-bottom:12px"> <input class="input" style="flex:1" id="inv-add-${p.id}" placeholder="Add item..."> <button class="btn btn-sm btn-green" onclick="addInvItem(${p.id})">Add</button> </div> <div class="section-title">Consequences</div> <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px"> ${[{type:'curse',label:'⚗ Cursed'},{type:'wanted',label:'🎯 Wanted'},{type:'exile',label:'🚫 Exiled'},{type:'servant',label:'⛓ Servant'}].map(c=>`<button class="btn btn-sm" style="background:rgba(30,20,50,0.8)" onclick="addConsequence(${p.id},'${c.type}','${c.label}')">+ ${c.label}</button>`).join('')} </div> ${(p.consequences||[]).map((c,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 8px;background:rgba(10,8,25,0.8);border-radius:5px;margin-bottom:5px;font-size:0.72rem;font-family:Arial,sans-serif"><span>${c.label}</span><button onclick="rmConsequence(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:0.68rem">✕ Lift</button></div>`).join('')} <div class="section-title" style="margin-top:12px">Gift Power</div> <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"> <span style="font-size:0.72rem;color:${p.giftPowerUsed?'var(--dim)':'var(--green)'};font-family:Arial,sans-serif">${p.giftPowerUsed?'✕ Used':'✓ Available'}</span> <button class="btn btn-sm" onclick="updatePlayer(${p.id},{giftPowerUsed:${!p.giftPowerUsed}});render()">${p.giftPowerUsed?'Reset':'Mark Used'}</button> </div> <div style="display:flex;gap:8px;flex-wrap:wrap"> ${p.isDead?`<button class="btn" style="background:var(--gold);color:#000" onclick="resurrect(${p.id})">⚗ Resurrect</button>`:`<button class="btn btn-red" onclick="markDead(${p.id})">☠ Mark Dead</button>`}
-<button class="btn" style="background:rgba(20,16,50,0.9);color:var(--dim);border:1px solid var(--border)" onclick="STATE.selectedPlayer=null;render()">Close</button>
-</div>
-
-  </div>`;
+return`<div class="modal-box"> 
+  ${p.charImage ? `<div style="width:100%; height:160px; border-radius:8px; margin-bottom:14px; background-image:url('${p.charImage}'); background-size:cover; background-position:center; border:1px solid var(--border-glow); box-shadow:0 0 20px rgba(138,90,220,0.2);"></div>` : ''}
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"> 
+    <div style="display:flex; gap:12px; align-items:center">
+      ${p.pfpImage ? `<img src="${p.pfpImage}" style="width:50px; height:50px; border-radius:10px; object-fit:cover; border:1px solid var(--purple-light);">` : ''}
+      <div> 
+        <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)} — ${CLASS_ICON[p.cls]||''} ${p.cls}</div> 
+        <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">@${esc(p.username)} · ${esc(p.origin||'')} · ${p.joined||''}</div> 
+        ${p.title?`<div style="font-size:0.7rem;color:var(--gold);font-style:italic;margin-top:2px">✦ ${esc(p.title)}</div>`:''} 
+      </div> 
+    </div>
+    <button style="background:none;border:none;color:var(--dim);font-size:1.3rem;cursor:pointer" onclick="STATE.selectedPlayer=null;render()">✕</button> 
+  </div> 
+  <div class="card" style="margin-bottom:12px"> 
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"> <span style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;font-family:Arial,sans-serif">Hit Points</span> <span style="font-size:1.1rem;font-weight:bold;color:${hc};font-family:Arial,sans-serif">${p.hp}<span style="font-size:0.7rem;color:var(--dim)"> / ${p.maxHp}</span></span> </div> 
+    <div class="hp-bar-wrap" style="height:10px;margin-bottom:8px"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 10px ${hc}"></div></div> 
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"> ${[-5,-3,-2,-1].map(d=>`<button class="btn btn-sm btn-red" onclick="adjHP(${p.id},${d});render()">${d}</button>`).join('')} <div style="flex:1"></div> ${[1,2,3,5].map(d=>`<button class="btn btn-sm btn-green" onclick="adjHP(${p.id},${d});render()">+${d}</button>`).join('')} <button class="btn btn-sm" onclick="updatePlayer(${p.id},{hp:${p.maxHp}});render()">Full</button> </div> 
+    <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin-bottom:10px"></div> 
+    <div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-family:Arial,sans-serif">Character Stats</div> 
+    <div class="stat-grid"> ${Object.entries(stats).map(([s,v])=>{const c=STAT_COLORS[s];const pct2=Math.min(100,(v/12)*100);return`<div><div class="stat-label"><span style="color:${c};font-weight:bold">${FULL[s]||s}</span><span style="font-size:0.85rem;font-weight:bold;color:${c}">${v}</span></div><div class="stat-bar-wrap" style="height:5px"><div class="stat-bar" style="width:${pct2}%;background:${c};box-shadow:0 0 5px ${c}60"></div></div></div>`;}).join('')} </div> 
+    ${p.traitLevel?`<div style="margin-top:10px;padding:5px 10px;background:rgba(138,90,220,0.1);border-radius:6px;font-size:0.68rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'var(--purple-light)'};font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} 
+  </div> 
+  ${p.repPassive?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✦ Rep: </span>${esc(p.repPassive)}</div>`:''} 
+  ${p.signatureSkill?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--blue);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--blue);font-weight:bold">⚡ ${esc(p.signatureSkill)}: </span>${esc(p.signatureSkillDesc||'')}</div>`:''} 
+  ${p.shadowTrait?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--red);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--red);font-weight:bold">🌑 ${esc(p.shadowTrait)}: </span>${esc(p.shadowTraitDesc||'')}</div>`:''} 
+  ${p.enchantment?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✨ ${esc(p.enchantment)}: </span>${esc(p.enchantmentDesc||'')}</div>`:''} 
+  ${p.destinyThread?`<div style="background:rgba(30,10,50,0.8);border-left:2px solid #ce93d8;padding:6px 10px;font-size:0.68rem;color:#ce93d8;margin-bottom:14px;border-radius:0 6px 6px 0;font-style:italic;font-family:Arial,sans-serif">🔮 “${esc(p.destinyThread)}”</div>`:''} 
+  <div class="section-title">Position</div> <input class="input" style="margin-bottom:12px" value="${esc(p.position||'')}" onblur="updatePlayer(${p.id},{position:this.value})"> 
+  <div class="section-title">Inventory (${(p.inventory||[]).length})</div> ${(p.inventory||[]).map((item,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.74rem;color:#bbb;font-family:Arial,sans-serif"><span>${esc(item)}</span><button onclick="rmInvItem(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer">✕</button></div>`).join('')} 
+  <div style="display:flex;gap:6px;margin-top:6px;margin-bottom:12px"> <input class="input" style="flex:1" id="inv-add-${p.id}" placeholder="Add item..."> <button class="btn btn-sm btn-green" onclick="addInvItem(${p.id})">Add</button> </div> 
+  <div class="section-title">Consequences</div> <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px"> ${[{type:'curse',label:'⚗ Cursed'},{type:'wanted',label:'🎯 Wanted'},{type:'exile',label:'🚫 Exiled'},{type:'servant',label:'⛓ Servant'}].map(c=>`<button class="btn btn-sm" style="background:rgba(30,20,50,0.8)" onclick="addConsequence(${p.id},'${c.type}','${c.label}')">+ ${c.label}</button>`).join('')} </div> 
+  ${(p.consequences||[]).map((c,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 8px;background:rgba(10,8,25,0.8);border-radius:5px;margin-bottom:5px;font-size:0.72rem;font-family:Arial,sans-serif"><span>${c.label}</span><button onclick="rmConsequence(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:0.68rem">✕ Lift</button></div>`).join('')} 
+  <div class="section-title" style="margin-top:12px">Gift Power</div> <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"> <span style="font-size:0.72rem;color:${p.giftPowerUsed?'var(--dim)':'var(--green)'};font-family:Arial,sans-serif">${p.giftPowerUsed?'✕ Used':'✓ Available'}</span> <button class="btn btn-sm" onclick="updatePlayer(${p.id},{giftPowerUsed:${!p.giftPowerUsed}});render()">${p.giftPowerUsed?'Reset':'Mark Used'}</button> </div> 
+  <div style="display:flex;gap:8px;flex-wrap:wrap"> ${p.isDead?`<button class="btn" style="background:var(--gold);color:#000" onclick="resurrect(${p.id})">⚗ Resurrect</button>`:`<button class="btn btn-red" onclick="markDead(${p.id})">☠ Mark Dead</button>`}
+  <button class="btn" style="background:rgba(20,16,50,0.9);color:var(--dim);border:1px solid var(--border)" onclick="STATE.selectedPlayer=null;render()">Close</button>
+  </div>
+</div>`;
 }
+
 
 // CREATE TAB
 function renderCreate(){
 const c=STATE.creation;
 const trait=c.traitRoll?getTrait(c.traitRoll):null;
 const base=c.cls?CLASS_BASE_STATS[c.cls]:null;
-return`<div class="card"> <div class="section-title">New Character — 7-Roll Creation</div> <div style="margin-bottom:8px"><label class="label">TikTok Username</label><input class="input" value="${esc(c.username)}" oninput="STATE.creation.username=this.value" placeholder="@username"></div> <div style="margin-bottom:8px"><label class="label">Character Name</label> <select class="select" onchange="STATE.creation.charname=this.value"> <option value="">— Select Name —</option> ${NAMES.filter(n=>!STATE.players.find(p=>p.charname===n&&!p.isDead)).map(n=>`<option${c.charname===n?' selected':''}>${n}</option>`).join('')} </select></div> <div style="margin-bottom:8px"><label class="label">Class</label> <select class="select" onchange="STATE.creation={...STATE.creation,cls:this.value,repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null};render()"> <option value="">— Select Class —</option> ${CLASSES.map(cl=>`<option value="${cl}"${c.cls===cl?' selected':''}>${CLASS_ICON[cl]} ${cl} — HP ${CLASS_HP[cl]}</option>`).join('')} </select></div> ${base?`<div class="roll-box" style="margin-bottom:8px">
-<div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;font-family:Arial,sans-serif">Base Stats</div>
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
-${Object.entries(base).map(([s,v])=>{const col=STAT_COLORS[s];const bonus=trait&&PRIMARY_STAT[c.cls]===s?trait.bonus:0;return`<div style="text-align:center"><div style="font-size:0.56rem;color:var(--dim);font-family:Arial,sans-serif">${s}</div><div style="font-size:0.9rem;font-weight:bold;color:${col}">${v+bonus}${bonus?`<span style="font-size:0.5rem;color:var(--green)"> +${bonus}</span>`:''}</div></div>`;}).join('')}
-</div></div>`:'' } <div style="margin-bottom:8px"><label class="label">Origin</label> <select class="select" onchange="STATE.creation.origin=this.value"> <option value="">— Select Origin —</option> ${ORIGINS.map(o=>`<option${c.origin===o?' selected':''}>${o}</option>`).join('')} </select></div> <div style="margin-bottom:12px"><label class="label">Notes</label><textarea class="textarea" oninput="STATE.creation.notes=this.value" placeholder="Player notes...">${esc(c.notes)}</textarea></div> ${c.cls?`<div class="roll-box"><div class="section-title">Creation Rolls — ${c.cls}</div>${renderCreationRolls(c)}</div>`:''}
-<button class="btn btn-purple btn-full" style="margin-top:12px" onclick="addPlayer()">✦ Add to The Hollow Realm</button>
 
-  </div>`;
+return `<div class="card"> 
+  <div class="section-title">New Character — 7-Roll Creation</div> 
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px">
+    <div>
+      <label class="label">Player PFP</label>
+      <div style="display:flex; gap:8px; align-items:center">
+        <div class="avatar-preview">
+          ${c.pfpImage ? `<img src="${c.pfpImage}">` : `<span style="font-size:1.2rem">👤</span>`}
+        </div>
+        <label class="btn btn-sm" style="flex:1; text-align:center; padding:10px 0">
+          Upload
+          <input type="file" accept="image/*" style="display:none" onchange="handleImageUpload(this, 'pfpImage')">
+        </label>
+      </div>
+    </div>
+    <div>
+      <label class="label">Character Art</label>
+      <div style="display:flex; gap:8px; align-items:center">
+        <div class="avatar-preview">
+          ${c.charImage ? `<img src="${c.charImage}">` : `<span style="font-size:1.2rem">🪆</span>`}
+        </div>
+        <label class="btn btn-sm" style="flex:1; text-align:center; padding:10px 0">
+          Upload
+          <input type="file" accept="image/*" style="display:none" onchange="handleImageUpload(this, 'charImage')">
+        </label>
+      </div>
+    </div>
+  </div>
+  <div style="margin-bottom:8px"><label class="label">TikTok Username</label><input class="input" value="${esc(c.username)}" oninput="STATE.creation.username=this.value" placeholder="@username"></div> 
+  <div style="margin-bottom:8px"><label class="label">Character Name</label> <select class="select" onchange="STATE.creation.charname=this.value"> <option value="">— Select Name —</option> ${NAMES.filter(n=>!STATE.players.find(p=>p.charname===n&&!p.isDead)).map(n=>`<option${c.charname===n?' selected':''}>${n}</option>`).join('')} </select></div> 
+  <div style="margin-bottom:8px"><label class="label">Class</label> <select class="select" onchange="STATE.creation={...STATE.creation,cls:this.value,repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null};render()"> <option value="">— Select Class —</option> ${CLASSES.map(cl=>`<option value="${cl}"${c.cls===cl?' selected':''}>${CLASS_ICON[cl]} ${cl} — HP ${CLASS_HP[cl]}</option>`).join('')} </select></div> 
+  
+  ${base?`<div class="roll-box" style="margin-bottom:8px">
+  <div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;font-family:Arial,sans-serif">Base Stats</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+  ${Object.entries(base).map(([s,v])=>{const col=STAT_COLORS[s];const bonus=trait&&PRIMARY_STAT[c.cls]===s?trait.bonus:0;return`<div style="text-align:center"><div style="font-size:0.56rem;color:var(--dim);font-family:Arial,sans-serif">${s}</div><div style="font-size:0.9rem;font-weight:bold;color:${col}">${v+bonus}${bonus?`<span style="font-size:0.5rem;color:var(--green)"> +${bonus}</span>`:''}</div></div>`;}).join('')}
+  </div></div>`:'' } 
+  
+  <div style="margin-bottom:8px"><label class="label">Origin</label> <select class="select" onchange="STATE.creation.origin=this.value"> <option value="">— Select Origin —</option> ${ORIGINS.map(o=>`<option${c.origin===o?' selected':''}>${o}</option>`).join('')} </select></div> 
+  <div style="margin-bottom:12px"><label class="label">Notes</label><textarea class="textarea" oninput="STATE.creation.notes=this.value" placeholder="Player notes...">${esc(c.notes)}</textarea></div> 
+  
+  ${c.cls?`<div class="roll-box"><div class="section-title">Creation Rolls — ${c.cls}</div>${renderCreationRolls(c)}</div>`:''}
+  
+  <button class="btn btn-purple btn-full" style="margin-top:12px" onclick="addPlayer()">✦ Add to The Hollow Realm</button>
+</div>`;
 }
+
 
 function renderCreationRolls(c){
 const rolls=[
@@ -1374,12 +1470,9 @@ const wpn=c.weaponRoll?getWeapon(c.cls,c.weaponRoll):null;
 const skl=c.skillRoll?getSkill(c.cls,c.skillRoll):null;
 const shd=c.shadowRoll?getShadow(c.cls,c.shadowRoll):null;
 const dest=c.destinyRoll?getDestiny(c.cls,c.destinyRoll):null;
-return`<div style="background:rgba(138,90,220,0.05);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px"> <div style="font-size:0.58rem;color:var(--purple-light);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-family:Arial,sans-serif">Character Preview</div> <div style="font-weight:bold;font-size:0.8rem;color:#fff;margin-bottom:4px">${esc(c.charname||'—')} · ${CLASS_ICON[c.cls]||''} ${c.cls}</div> ${rep?`<div style="font-size:0.66rem;color:var(--gold);font-style:italic;margin-bottom:2px">✦ ${esc(rep.title)}</div>`:''} ${wpn?`<div style="font-size:0.66rem;color:${RARITY_COLOR[wpn.rarity]||'#bbb'};margin-bottom:2px">⚔️ ${esc(wpn.name)}</div>`:''} ${skl?`<div style="font-size:0.66rem;color:var(--blue);margin-bottom:2px">⚡ ${esc(skl.name)}</div>`:''} ${shd?`<div style="font-size:0.66rem;color:var(--red);margin-bottom:2px">🌑 ${esc(shd.name)}</div>`:''} ${dest?`<div style="font-size:0.65rem;color:#ce93d8;font-style:italic">🔮 “${esc(dest.thread.slice(0,80))}…”</div>`:''}
-
-  </div>`;
+return`<div style="background:rgba(138,90,220,0.05);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px"> <div style="font-size:0.58rem;color:var(--purple-light);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-family:Arial,sans-serif">Character Preview</div> <div style="font-weight:bold;font-size:0.8rem;color:#fff;margin-bottom:4px">${esc(c.charname||'—')} · ${CLASS_ICON[c.cls]||''} ${c.cls}</div> ${rep?`<div style="font-size:0.66rem;color:var(--gold);font-style:italic;margin-bottom:2px">✦ ${esc(rep.title)}</div>`:''} ${wpn?`<div style="font-size:0.66rem;color:${RARITY_COLOR[wpn.rarity]||'#bbb'};margin-bottom:2px">⚔️ ${esc(wpn.name)}</div>`:''} ${skl?`<div style="font-size:0.66rem;color:var(--blue);margin-bottom:2px">⚡ ${esc(skl.name)}</div>`:''} ${shd?`<div style="font-size:0.66rem;color:var(--red);margin-bottom:2px">🌑 ${esc(shd.name)}</div>`:''} ${dest?`<div style="font-size:0.65rem;color:#ce93d8;font-style:italic">🔮 “${esc(dest.thread.slice(0,80))}…”</div>`:''}</div>`;
 }
 
-// 🏠 NPC TAB (Base Residents)
 function renderNPCs() {
   return `
     <div class="card-glow">
@@ -1389,7 +1482,6 @@ function renderNPCs() {
           ${STATE.showAddResident ? '✕ Cancel' : '+ Add NPC'}
         </button>
       </div>
-      
       ${STATE.showAddResident ? `
         <div class="roll-box" style="margin-bottom:12px">
           <label class="label">NPC Name</label>
@@ -1401,13 +1493,12 @@ function renderNPCs() {
           <button class="btn btn-purple btn-full" onclick="addResident()">Confirm Resident</button>
         </div>
       ` : ''}
-
       ${STATE.baseResidents.length === 0 ? '<div class="empty-state">No residents currently at HQ.</div>' : 
         STATE.baseResidents.map((r, i) => `
           <div class="room-card card" style="margin-bottom:8px; padding:10px">
             <div style="display:flex; justify-content:space-between; align-items:center">
               <div>
-                <div style="font-weight:bold; font-size:0.85rem; color:${RESIDENT_ROLES[r.role].color}">${RESIDENT_ROLES[r.role].icon} ${r.name}</div>
+                <div style="font-weight:bold; font-size:0.85rem; color:${RESIDENT_ROLES[r.role].color}">${RESIDENT_ROLES[r.role].icon} ${esc(r.name)}</div>
                 <div style="font-size:0.65rem; color:var(--dim)">Role: ${RESIDENT_ROLES[r.role].label}</div>
                 <div style="font-size:0.6rem; color:var(--purple-light); margin-top:2px">✦ ${RESIDENT_ROLES[r.role].bonus}</div>
               </div>
@@ -1419,108 +1510,99 @@ function renderNPCs() {
   `;
 }
 
-// 🎭 VILLAINS TAB (Freeze-Proof Version)
 function renderVillains() {
-  const allVillains = [...(VILLAIN_LORE || []), ...(STATE.customVillains || [])];
+  const custVil = STATE.customVillains || [];
+  const allVillains = [...VILLAIN_LORE, ...custVil];
   const activeVillains = allVillains.filter(v => (STATE.villainsLive || []).includes(v.id));
   const inactiveVillains = allVillains.filter(v => !(STATE.villainsLive || []).includes(v.id));
+
+  const buildCard = (v, isActive) => `
+    <div class="card" style="border-color:${v.color}${isActive ? '90' : '30'}; background:rgba(20,10,30,${isActive ? '0.8' : '0.4'}); margin-bottom:12px">
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <div style="display:flex; gap:10px; align-items:center">
+          <span style="font-size:1.5rem; ${!isActive ? 'filter:grayscale(1); opacity:0.6;' : ''}">${v.icon}</span>
+          <div>
+            <div style="font-weight:bold; color:${isActive ? '#fff' : 'var(--dim)'}">${esc(v.name)}</div>
+            <div style="font-size:0.6rem; color:${v.color}">${esc(v.title)}</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:5px">
+          ${isActive 
+            ? `<button class="btn btn-sm btn-red" onclick="toggleVillain('${v.id}')">Retire</button>` 
+            : `<button class="btn btn-sm btn-green" onclick="toggleVillain('${v.id}')">Activate</button>
+               ${v.id.startsWith('custom_') ? `<button class="btn btn-sm btn-red" onclick="deleteCustomVillain('${v.id}')">🗑</button>` : ''}`
+          }
+        </div>
+      </div>
+      <div class="lore-tab-bar" style="margin-top:12px">
+        ${['lore', 'combat', 'phases', 'loot'].map(sec => `
+          <div class="lore-tab ${STATE.villainTab === v.id && STATE.villainSec === sec ? 'active' : ''}" 
+               onclick="STATE.villainTab='${v.id}'; STATE.villainSec='${sec}'; render()">
+            ${sec.charAt(0).toUpperCase() + sec.slice(1)}
+          </div>
+        `).join('')}
+      </div>
+      <div style="margin-top:10px; font-size:0.7rem; min-height:80px; color:var(--text); line-height:1.4">
+        ${renderVillainSubSection(v)}
+      </div>
+    </div>
+  `;
 
   return `
     <div class="card-glow">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
         <div class="section-title" style="margin-bottom:0; color:var(--red)">🎭 ACTIVE BOSSES</div>
         <button class="btn btn-sm" style="border-color:var(--red); color:var(--red)" onclick="STATE.showAddVillain=!STATE.showAddVillain;render()">
-          ${STATE.showAddVillain ? '✕' : '＋ New Villain'}
+          ${STATE.showAddVillain ? '✕ Cancel' : '＋ New Villain'}
         </button>
       </div>
-
       ${STATE.showAddVillain ? `
         <div class="roll-box" style="border-color:var(--red); margin-bottom:15px">
-          <label class="label">Villain Name</label><input class="input" id="v-name" style="margin-bottom:8px">
-          <label class="label">Title</label><input class="input" id="v-title" style="margin-bottom:8px">
+          <label class="label">Villain Name</label><input class="input" id="v-name" style="margin-bottom:8px" placeholder="e.g. The Blood Priest">
+          <label class="label">Title</label><input class="input" id="v-title" style="margin-bottom:8px" placeholder="e.g. Keeper of the Old Ways">
           <label class="label">Icon</label><input class="input" id="v-icon" placeholder="💀" style="margin-bottom:8px">
           <label class="label">Max HP</label><input class="input" id="v-hp" type="number" value="100" style="margin-bottom:10px">
           <button class="btn btn-red btn-full" onclick="addCustomVillain()">✦ Forge Boss</button>
         </div>
       ` : ''}
-
-      ${activeVillains.length === 0 ? '<div class="empty-state">No villains are currently active.</div>' : 
-        activeVillains.map(v => `
-          <div class="card" style="border-color:${v.color}60; background:rgba(20,10,30,0.8)">
-            <div style="display:flex; justify-content:space-between; align-items:center">
-              <div style="display:flex; gap:10px; align-items:center">
-                <span style="font-size:1.5rem">${v.icon}</span>
-                <div>
-                  <div style="font-weight:bold; color:#fff">${v.name}</div>
-                  <div style="font-size:0.6rem; color:${v.color}">${v.title}</div>
-                </div>
-              </div>
-              <button class="btn btn-sm btn-red" onclick="toggleVillain('${v.id}')">Retire</button>
-            </div>
-            
-            <div class="lore-tab-bar" style="margin-top:12px">
-              ${['lore', 'combat', 'phases', 'loot'].map(sec => `
-                <div class="lore-tab ${STATE.villainTab === v.id && STATE.villainSec === sec ? 'active' : ''}" 
-                     onclick="STATE.villainTab='${v.id}'; STATE.villainSec='${sec}'; render()">
-                  ${sec.charAt(0).toUpperCase() + sec.slice(1)}
-                </div>
-              `).join('')}
-            </div>
-
-            <div style="margin-top:10px; font-size:0.7rem; min-height:80px; color:var(--text); line-height:1.4">
-              ${renderVillainSubSection(v)}
-            </div>
-          </div>
-        `).join('')}
+      ${activeVillains.length === 0 ? '<div class="empty-state">No villains are currently active.</div>' : activeVillains.map(v => buildCard(v, true)).join('')}
     </div>
-
     <div class="card">
-      <div class="section-title">Villain Dossier (Inactive)</div>
-      <div style="display:grid; grid-template-columns:1fr; gap:6px">
-        ${inactiveVillains.map(v => `
-          <div style="display:flex; gap:5px; align-items:center">
-            <button class="btn btn-sm" style="flex:1; justify-content:flex-start; text-align:left; background:rgba(10,8,30,0.6)" onclick="toggleVillain('${v.id}')">
-              ${v.icon} Activate ${v.name}
-            </button>
-            ${v.id.startsWith('custom_') ? `<button class="btn btn-sm btn-red" onclick="deleteCustomVillain('${v.id}')">🗑</button>` : ''}
-          </div>
-        `).join('')}
-      </div>
+      <div class="section-title">Bestiary (Inactive / Prep)</div>
+      ${inactiveVillains.length === 0 ? '<div style="color:var(--dim); font-size:0.7rem;">All villains are active.</div>' : inactiveVillains.map(v => buildCard(v, false)).join('')}
     </div>
   `;
 }
 
-// Separate helper function with a UNIQUE name to prevent recursion
 function renderVillainSubSection(v) {
   const sec = (STATE.villainTab === v.id) ? STATE.villainSec : 'lore';
   switch(sec) {
-    case 'lore': return `<div><b>Motivation:</b> ${v.motivation}</div><div style="margin-top:8px; font-style:italic; color:var(--dim)">"${v.lore}"</div>`;
+    case 'lore': return `<div><b>Motivation:</b> ${esc(v.motivation)}</div><div style="margin-top:8px; font-style:italic; color:var(--dim)">"${esc(v.lore)}"</div>`;
     case 'combat': return `
       <div class="section-title">Combat Strengths</div>
-      ${(v.strengths || []).map(s => `<div style="color:var(--green); margin-bottom:2px">✦ ${s}</div>`).join('')}
+      ${(v.strengths || []).map(s => `<div style="color:var(--green); margin-bottom:2px">✦ ${esc(s)}</div>`).join('')}
       <div class="section-title" style="margin-top:8px">Weaknesses</div>
-      ${(v.weaknesses || []).map(w => `<div style="color:var(--red); margin-bottom:2px">⚔️ ${w}</div>`).join('')}
+      ${(v.weaknesses || []).map(w => `<div style="color:var(--red); margin-bottom:2px">⚔️ ${esc(w)}</div>`).join('')}
     `;
     case 'phases': return (v.phases || []).map(p => `
-      <div class="phase-card" style="background:${p.color}15; border:1px solid ${p.color}40; margin-bottom:5px; padding:8px; border-radius:6px">
-        <div style="display:flex; justify-content:space-between; font-weight:bold; color:${p.color}">
-          <span>P${p.phase}: ${p.name}</span>
-          <span>${p.hp}</span>
+      <div class="phase-card" style="background:${p.color||'var(--dim)'}15; border:1px solid ${p.color||'var(--dim)'}40; margin-bottom:5px; padding:8px; border-radius:6px">
+        <div style="display:flex; justify-content:space-between; font-weight:bold; color:${p.color||'#fff'}">
+          <span>P${p.phase}: ${esc(p.name)}</span>
+          <span>${esc(p.hp)}</span>
         </div>
-        <div style="font-size:0.6rem; color:#ccc; margin-top:2px">${p.desc}</div>
+        <div style="font-size:0.6rem; color:#ccc; margin-top:2px">${esc(p.desc)}</div>
       </div>
     `).join('');
     case 'loot': return (v.loot || []).map(l => `
       <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border)">
-        <span>${l.item}</span>
-        <span style="color:var(--gold)">${l.chance}</span>
+        <span>${esc(l.item)}</span>
+        <span style="color:var(--gold)">${esc(l.chance)}</span>
       </div>
     `).join('');
     default: return 'Select a section above.';
   }
 }
 
-// DICE TAB
 function renderDice(){
 const display=getDiceDisplay(STATE.diceRoll);
 const spin=STATE.diceSpinning;
@@ -1537,7 +1619,15 @@ ${dc.player?`<div style="font-size:0.65rem;color:rgba(255,255,255,0.5);margin-to
 ${spin?'Rolling...':'ROLL THE DICE'}
 </button>
 </div>
-
+</div>
+  <div class="card" style="border-color:var(--red)40">
+    <div style="display:flex; justify-content:space-between; align-items:center">
+      <div class="section-title" style="margin-bottom:0; color:var(--red)">🌑 SHADOW TRIGGER</div>
+      <button class="btn btn-sm btn-red" onclick="rollShadowTrigger()">🎲 Test Shadow</button>
+    </div>
+    <div id="shadow-result" style="font-size:0.65rem; color:var(--dim); margin-top:8px; font-family:Arial,sans-serif">
+      Roll to see if a player's Shadow Trait manifests. (DC 15+ to resist)
+    </div>
   </div>
   <div class="card">
     <div class="section-title">Roll Context</div>
@@ -1583,7 +1673,6 @@ ${spin?'Rolling...':'ROLL THE DICE'}
   </div>`:''}`;
 }
 
-// BATTLE TAB
 function renderBattle(){
 const mins=Math.floor(STATE.battleTime/60);const secs=(STATE.battleTime%60).toString().padStart(2,'0');
 const pct=(STATE.battleTime/180)*100;
@@ -1594,9 +1683,7 @@ return`<div class="card-glow"> <div class="section-title">⚔️ Box Battle</div
 <div style="font-weight:bold;color:${tier.color};font-size:1rem;margin-bottom:4px">${tier.tier}</div>
 <div style="font-size:0.74rem;color:#ccc;font-family:Arial,sans-serif">${tier.cons}</div>
 ${c1!==c2?`<div style="font-size:0.7rem;color:var(--gold);margin-top:4px;font-family:Arial,sans-serif">Winner: ${esc(c1>c2?STATE.battleP1||'P1':STATE.battleP2||'P2')} · Gap: ${diff.toLocaleString()} coins</div>`:''}
-</div>`:''}
-
-  </div>
+</div>`:''}</div>
   <div class="card"><div class="section-title">Consequence Ladder</div>
     ${TIERS.map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
       <div style="min-width:12px;height:12px;border-radius:50%;background:${t.color};box-shadow:0 0 5px ${t.color};flex-shrink:0"></div>
@@ -1606,7 +1693,6 @@ ${c1!==c2?`<div style="font-size:0.7rem;color:var(--gold);margin-top:4px;font-fa
   </div>`;
 }
 
-// LOG TAB
 function renderLog(){
 const elapsed=STATE.sessionActive&&STATE.sessionStartTime?Math.floor((Date.now()-STATE.sessionStartTime)/60000):0;
 const filtered=STATE.sessionLog.filter(e=>(STATE.logFilter==='all'||e.type===STATE.logFilter)&&(!STATE.logSearch||(e.who||'').toLowerCase().includes(STATE.logSearch.toLowerCase())||(e.what||'').toLowerCase().includes(STATE.logSearch.toLowerCase())));
@@ -1734,6 +1820,17 @@ return`<button class="btn btn-sm" style="margin-bottom:14px" onclick="STATE.mapL
       <div style="display:flex;gap:4px">${[1,2,3,4,5].map(d=>`<div style="flex:1;height:8px;border-radius:4px;cursor:pointer;background:${d<=danger?DANGER_COLORS[d]:'rgba(255,255,255,0.06)'}" onclick="STATE.mapDanger['${loc.id}']=${d};save('map_danger',STATE.mapDanger);render()"></div>`).join('')}</div>
     </div>
   </div>
+
+  <div class="card" style="border-color:var(--gold)40">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
+      <div class="section-title" style="margin-bottom:0; color:var(--gold)">⚔️ ENCOUNTER GENERATOR</div>
+      <button class="btn btn-sm btn-purple" onclick="generateEncounter('${loc.id}')">🎲 Generate</button>
+    </div>
+    <div id="encounter-result" style="font-size:0.72rem; color:var(--text); line-height:1.4; font-family:Arial,sans-serif">
+      <span style="color:var(--dim)">Tap generate to spawn a random threat and loot...</span>
+    </div>
+  </div>
+
   <div class="card"><div class="section-title">📡 Active Event</div>
     <textarea class="textarea" style="min-height:55px" oninput="STATE.mapEvents['${loc.id}']=this.value;save('map_events',STATE.mapEvents)" placeholder="What's happening here...">${esc(event)}</textarea>
   </div>
@@ -1773,10 +1870,6 @@ entries(PIN_TYPES).map(([k,pt])=>{
 
 // ═══════════════════════════════════════════════════
 // REMAINING UI TAB RENDERERS
-// ═══════════════════════════════════════════════════
-
-// ═══════════════════════════════════════════════════
-// NEW COMPLETED TAB RENDERERS
 // ═══════════════════════════════════════════════════
 
 function renderRaids() {
@@ -1852,28 +1945,36 @@ function renderBase() {
   return `
     <div class="card-glow">
       <div class="section-title">🏠 Moon Squad HQ — Defense: ${STATE.baseDefense}</div>
-      <div class="info-bar">Upgrade rooms to unlock player bonuses and protect the vault from NPC raids.</div>
+      <div class="info-bar">Upgrade rooms to unlock player bonuses and protect the vault.</div>
       ${Object.entries(BASE_ROOMS).map(([id, room]) => {
         const level = STATE.baseRooms[id] || 0;
         const current = room.tiers[level - 1] || { bonus: 'Not Constructed' };
         const next = room.tiers[level];
         return `
-          <div class="room-card" style="padding:10px 0; border-bottom:1px solid var(--border)">
-            <div style="flex:1">
-              <div style="font-weight:bold; font-size:0.8rem">${room.icon} ${room.name} <span style="color:var(--purple-light)">Lv.${level}</span></div>
-              <div style="font-size:0.65rem; color:var(--dim)">${current.bonus}</div>
+          <div class="room-card card" style="display:block; padding:12px; margin-bottom:10px; border-color:rgba(138,90,220,0.2)">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+              <div>
+                <div style="font-weight:bold; font-size:0.9rem; color:#fff">${room.icon} ${room.name} <span style="color:var(--purple-light)">Lv.${level}</span></div>
+                <div style="font-size:0.65rem; color:var(--dim); font-style:italic; margin-top:4px;">${room.desc}</div>
+              </div>
+              ${next ? `<button class="btn btn-sm" style="color:var(--gold); border-color:var(--gold)" onclick="upgradeRoom('${id}', ${next.cost})">Upgrade (${next.cost})</button>` : '<span style="font-size:0.6rem; color:var(--green); font-weight:bold;">MAXED</span>'}
             </div>
-            ${next ? `<button class="btn btn-sm" style="color:var(--gold)" onclick="upgradeRoom('${id}', ${next.cost})">Upgrade (${next.cost})</button>` : '<span style="font-size:0.6rem; color:var(--green)">MAXED</span>'}
+            <div style="font-size:0.65rem; color:var(--text); background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; border-left:2px solid var(--purple-light);">
+              <b style="color:var(--purple-light)">Current Bonus:</b> ${current.bonus}
+            </div>
+            ${next ? `<div style="font-size:0.6rem; color:var(--dimmer); margin-top:6px; text-align:right;">Next Lv: ${next.bonus}</div>` : ''}
           </div>
         `;
       }).join('')}
     </div>
     <div class="card">
       <div class="section-title">Base Residents (${STATE.baseResidents.length})</div>
-      ${STATE.baseResidents.map(r => `
-        <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-bottom:5px">
-          <span>${RESIDENT_ROLES[r.role].icon} <b>${r.name}</b> (${RESIDENT_ROLES[r.role].label})</span>
-          <span style="color:var(--dim)">${RESIDENT_ROLES[r.role].bonus}</span>
+      ${STATE.baseResidents.length === 0 ? '<div style="font-size:0.7rem; color:var(--dim); text-align:center; padding:10px 0;">No residents currently at HQ.</div>' : ''}
+      ${STATE.baseResidents.map((r, i) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; margin-bottom:6px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.05)">
+          <span>${RESIDENT_ROLES[r.role].icon} <b style="color:#fff">${r.name}</b> <span style="color:var(--dim)">(${RESIDENT_ROLES[r.role].label})</span></span>
+          <span style="color:var(--purple-light)">${RESIDENT_ROLES[r.role].bonus}</span>
+          <button class="btn btn-sm btn-red" style="padding:2px 6px" onclick="rmResident(${i})">✕</button>
         </div>
       `).join('')}
     </div>
@@ -2048,32 +2149,18 @@ function addPlayer() {
     ...c
   };
 
-  // Assign generated traits to the final player object
-  if(c.repRoll) { 
-    newPlayer.title = getRep(c.cls, c.repRoll)?.title; 
-    newPlayer.repPassive = getRep(c.cls, c.repRoll)?.passive; 
-  }
+  if(c.repRoll) { newPlayer.title = getRep(c.cls, c.repRoll)?.title; newPlayer.repPassive = getRep(c.cls, c.repRoll)?.passive; }
   if(c.traitRoll) newPlayer.traitLevel = getTrait(c.traitRoll)?.level;
-  if(c.weaponRoll) { 
-    newPlayer.inventory.push(getWeapon(c.cls, c.weaponRoll)?.name); 
-  }
-  if(c.skillRoll) { 
-    newPlayer.signatureSkill = getSkill(c.cls, c.skillRoll)?.name; 
-    newPlayer.signatureSkillDesc = getSkill(c.cls, c.skillRoll)?.desc; 
-  }
-  if(c.shadowRoll) { 
-    newPlayer.shadowTrait = getShadow(c.cls, c.shadowRoll)?.name; 
-    newPlayer.shadowTraitDesc = getShadow(c.cls, c.shadowRoll)?.desc; 
-  }
-  if(c.enchantRoll) { 
-    newPlayer.enchantment = getEnchant(c.cls, c.enchantRoll)?.name; 
-    newPlayer.enchantmentDesc = getEnchant(c.cls, c.enchantRoll)?.desc; 
-  }
+  if(c.weaponRoll) { newPlayer.inventory.push(getWeapon(c.cls, c.weaponRoll)?.name); }
+  if(c.skillRoll) { newPlayer.signatureSkill = getSkill(c.cls, c.skillRoll)?.name; newPlayer.signatureSkillDesc = getSkill(c.cls, c.skillRoll)?.desc; }
+  if(c.shadowRoll) { newPlayer.shadowTrait = getShadow(c.cls, c.shadowRoll)?.name; newPlayer.shadowTraitDesc = getShadow(c.cls, c.shadowRoll)?.desc; }
+  if(c.enchantRoll) { newPlayer.enchantment = getEnchant(c.cls, c.enchantRoll)?.name; newPlayer.enchantmentDesc = getEnchant(c.cls, c.enchantRoll)?.desc; }
   if(c.destinyRoll) newPlayer.destinyThread = getDestiny(c.cls, c.destinyRoll)?.thread;
   
   STATE.players.unshift(newPlayer);
   STATE.tab = 'players';
-  STATE.creation = {username:'',charname:'',cls:'',origin:'',payment:'tiktok',notes:'',repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null};
+  STATE.creation = {username:'',charname:'',cls:'',origin:'',payment:'tiktok',notes:'',repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null, pfpImage:null, charImage:null};
+
   saveAll();
   render();
 }
@@ -2096,13 +2183,7 @@ function rollDice() {
     });
     
     if(STATE.sessionActive) {
-       addLog({ 
-         type: 'dice', 
-         who: STATE.diceContext.player || 'DM', 
-         what: `Rolled a d20 for ${purposeLabel}`, 
-         result: STATE.diceRoll, 
-         label: purposeLabel 
-       });
+       addLog({ type: 'dice', who: STATE.diceContext.player || 'DM', what: `Rolled a d20 for ${purposeLabel}`, result: STATE.diceRoll, label: purposeLabel });
     }
     saveAll();
     render();
@@ -2113,12 +2194,7 @@ function toggleBattle() {
   STATE.battleRunning = !STATE.battleRunning;
   if(STATE.battleRunning) {
      STATE.battleInterval = setInterval(() => {
-        if(STATE.battleTime > 0) { 
-          STATE.battleTime--; 
-          render(); 
-        } else { 
-          toggleBattle(); // Auto-pause when hitting 0
-        }
+        if(STATE.battleTime > 0) { STATE.battleTime--; render(); } else { toggleBattle(); }
      }, 1000);
   } else {
      clearInterval(STATE.battleInterval);
@@ -2133,7 +2209,7 @@ function resetBattle() {
   STATE.battleCoins1 = '';
   STATE.battleCoins2 = '';
   render();
-  }
+}
 
 function beginSession() {
   STATE.sessionActive = true;
@@ -2165,65 +2241,34 @@ function addInvItem(playerId) {
   const input = document.getElementById(`inv-add-${playerId}`);
   if(!input || !input.value.trim()) return;
   const p = STATE.players.find(x => x.id === playerId);
-  if(p) { 
-    if(!p.inventory) p.inventory = [];
-    p.inventory.push(input.value.trim()); 
-    input.value = '';
-    saveAll(); 
-    render(); 
-  }
+  if(p) { if(!p.inventory) p.inventory = []; p.inventory.push(input.value.trim()); input.value = ''; saveAll(); render(); }
 }
 
 function rmInvItem(playerId, index) {
   const p = STATE.players.find(x => x.id === playerId);
-  if(p && p.inventory) { 
-    p.inventory.splice(index, 1); 
-    saveAll(); 
-    render(); 
-  }
+  if(p && p.inventory) { p.inventory.splice(index, 1); saveAll(); render(); }
 }
 
 function addConsequence(playerId, type, label) {
   const p = STATE.players.find(x => x.id === playerId);
-  if(p) { 
-    if(!p.consequences) p.consequences = [];
-    p.consequences.push({type, label}); 
-    saveAll(); 
-    render(); 
-  }
+  if(p) { if(!p.consequences) p.consequences = []; p.consequences.push({type, label}); saveAll(); render(); }
 }
 
 function rmConsequence(playerId, index) {
   const p = STATE.players.find(x => x.id === playerId);
-  if(p && p.consequences) { 
-    p.consequences.splice(index, 1); 
-    saveAll(); 
-    render(); 
-  }
+  if(p && p.consequences) { p.consequences.splice(index, 1); saveAll(); render(); }
 }
 
 function markDead(playerId) {
   if(!confirm("Mark this player as permanently DEAD?")) return;
   const p = STATE.players.find(x => x.id === playerId);
-  if(p) { 
-    p.isDead = true; 
-    p.hp = 0; 
-    addLog({type:'death', who:p.charname, what:'Character died.'}); 
-    saveAll(); 
-    render(); 
-  }
+  if(p) { p.isDead = true; p.hp = 0; addLog({type:'death', who:p.charname, what:'Character died.'}); saveAll(); render(); }
 }
 
 function resurrect(playerId) {
   if(!confirm("Resurrect this player?")) return;
   const p = STATE.players.find(x => x.id === playerId);
-  if(p) { 
-    p.isDead = false; 
-    p.hp = p.maxHp; 
-    addLog({type:'heal', who:p.charname, what:'Character was resurrected!'}); 
-    saveAll(); 
-    render(); 
-  }
+  if(p) { p.isDead = false; p.hp = p.maxHp; addLog({type:'heal', who:p.charname, what:'Character was resurrected!'}); saveAll(); render(); }
 }
 
 function deleteCustomVillain(id) {
@@ -2252,6 +2297,124 @@ function rmResident(index) {
   render();
 }
 
+function toggleVillain(id) {
+  if (!STATE.villainsLive) STATE.villainsLive = [];
+  if (STATE.villainsLive.includes(id)) {
+    STATE.villainsLive = STATE.villainsLive.filter(v => v !== id);
+  } else {
+    STATE.villainsLive.push(id);
+    addLog({ type: 'battle', who: 'DM', what: `Boss Activated: ${id}` });
+  }
+  saveAll();
+  render();
+}
+
+function addCustomVillain() {
+  const name = document.getElementById('v-name').value;
+  const title = document.getElementById('v-title').value;
+  const icon = document.getElementById('v-icon').value || '💀';
+  const hp = document.getElementById('v-hp').value || 100;
+  if(!name) return;
+  
+  if(!STATE.customVillains) STATE.customVillains = [];
+  
+  STATE.customVillains.push({
+    id: 'custom_' + Date.now(),
+    name: name, title: title, icon: icon, color: '#ef5350', hp: hp,
+    motivation: 'Generated by GM.',
+    lore: 'A new threat enters the Hollow Realm.',
+    strengths: ['Unknown'], weaknesses: ['Unknown'],
+    phases: [{phase: 1, name: 'Initial Encounter', hp: hp + ' HP', desc: 'The battle begins.'}],
+    loot: [{item: 'Unknown Boss Loot', chance: '100%'}]
+  });
+  
+  STATE.showAddVillain = false;
+  saveAll();
+  render();
+}
+
+function upgradeRoom(id, cost) {
+  if (!confirm(`Spend ${cost} coins to upgrade ${id}?`)) return;
+  if (!STATE.baseRooms) STATE.baseRooms = {};
+  STATE.baseRooms[id] = (STATE.baseRooms[id] || 0) + 1;
+  saveAll();
+  render();
+}
+
+function generateEncounter(locId) {
+  const raidData = RAID_LOCATIONS[locId];
+  if (!raidData) return;
+  const encounter = raidData.encounters[Math.floor(Math.random() * raidData.encounters.length)];
+  const resDiv = document.getElementById('encounter-result');
+  if(!resDiv) return;
+  
+  resDiv.innerHTML = `
+    <div class="fade-in">
+      <div style="font-weight:bold; color:var(--red); margin-bottom:4px">⚠️ THREAT: ${encounter.name}</div>
+      <div style="margin-bottom:6px">Type: <span style="color:var(--purple-light)">${encounter.type.toUpperCase()}</span> | Difficulty: <span style="color:var(--gold)">DC ${encounter.difficulty}</span></div>
+      <div style="background:rgba(0,0,0,0.3); padding:8px; border-radius:6px; margin-bottom:8px; border-left:2px solid var(--red)">
+        <div style="font-size:0.65rem; color:var(--dim); text-transform:uppercase">Combat Details</div>
+        <div style="color:#fff">${encounter.enemy}</div>
+      </div>
+      <div style="font-size:0.65rem; color:var(--dim); text-transform:uppercase">Potential Reward</div>
+      <div style="color:var(--green)">💰 ${encounter.reward}</div>
+    </div>
+  `;
+  
+  if(STATE.sessionActive) {
+    addLog({ type: 'battle', who: 'World', what: `Encounter spawned at ${raidData.name}: ${encounter.name} (DC ${encounter.difficulty})` });
+  }
+}
+
+function copyToClipboard(txt) {
+  navigator.clipboard.writeText(txt).then(() => {
+    alert("Copied to clipboard: " + txt);
+  }).catch(err => {
+    console.error('Failed to copy: ', err);
+  });
+}
+
+  // --- Image Compressor & Uploader ---
+function handleImageUpload(input, type) {
+  const file = input.files[0];
+  if(!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      // Create a canvas to shrink the image
+      const canvas = document.createElement('canvas');
+      const MAX_SIZE = 150; // Keeps file size tiny for LocalStorage
+      let w = img.width; let h = img.height;
+      
+      if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } }
+      else { if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; } }
+      
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      
+      // Save the tiny compressed image to the creation state
+      STATE.creation[type] = canvas.toDataURL('image/jpeg', 0.7);
+      render();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// --- Global Ripple Listener ---
+document.addEventListener('click', function(e) {
+  const ripple = document.createElement('div');
+  ripple.className = 'ripple';
+  ripple.style.left = e.clientX + 'px';
+  ripple.style.top = e.clientY + 'px';
+  document.body.appendChild(ripple);
+  
+  // Clean up the ripple element after the animation finishes
+  setTimeout(() => ripple.remove(), 500);
+});
 
 // ═══════════════════════════════════════════════════
 // INITIALIZATION
