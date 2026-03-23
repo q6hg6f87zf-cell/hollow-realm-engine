@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>The Hollow Realm — GM Suite</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Georgia',serif;background:#050510;color:#e8e0ff;min-height:100vh;overflow-x:hidden}
+:root{
+  --purple:#8a5adc;--purple-light:#b388ff;--purple-dim:#3d2b6b;
+  --gold:#ffd54f;--green:#66bb6a;--red:#ef5350;--blue:#4fc3f7;
+  --dim:#7b6fa0;--dimmer:#3d3560;--text:#c8c0e8;
+  --card:rgba(20,16,50,0.9);--border:rgba(138,90,220,0.25);
+  --border-glow:rgba(138,90,220,0.6);
+  --bg:linear-gradient(135deg,#050510 0%,#0a0825 50%,#050510 100%);
+}
+/* Layout */
+#app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--bg)}
+.header{background:rgba(10,8,30,0.98);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:50}
+.header-title{font-weight:bold;font-size:0.9rem;color:#fff;letter-spacing:2px}
+.header-title span{color:var(--purple-light)}
+.header-sub{font-size:0.55rem;color:var(--dim);letter-spacing:1px;font-family:Arial,sans-serif}
+.header-badge{background:linear-gradient(135deg,var(--purple),#3f51b5);color:#fff;font-size:0.58rem;font-weight:bold;padding:3px 10px;border-radius:20px;letter-spacing:1px;box-shadow:0 0 12px rgba(138,90,220,0.4)}
+/* Tab bar */
+.tabs{display:flex;overflow-x:auto;gap:0;background:rgba(5,4,18,0.98);border-bottom:1px solid var(--border);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:10px 12px;font-size:0.65rem;color:var(--dim);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all 0.15s;font-family:Arial,sans-serif;flex-shrink:0}
+.tab.active{color:var(--purple-light);border-bottom-color:var(--purple)}
+/* Panel */
+.panel{padding:12px 12px 80px}
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px}
+.card-glow{background:linear-gradient(135deg,rgba(30,20,60,0.95),rgba(10,8,30,0.98));border:1px solid var(--border-glow);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 0 30px rgba(138,90,220,0.15)}
+.section-title{font-size:0.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--purple-light);margin-bottom:10px;font-family:Arial,sans-serif}
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;font-family:Arial,sans-serif;font-size:0.75rem;font-weight:bold;transition:all 0.15s;gap:5px}
+.btn-purple{background:linear-gradient(135deg,var(--purple),#3f51b5);color:#fff;box-shadow:0 0 15px rgba(138,90,220,0.3)}
+.btn-sm{padding:5px 10px;font-size:0.65rem;border-radius:6px;border:1px solid var(--border);background:rgba(138,90,220,0.15);color:var(--purple-light);cursor:pointer;font-family:Arial,sans-serif}
+.btn-red{background:rgba(80,10,10,0.9);color:var(--red);border:1px solid rgba(239,83,80,0.3)}
+.btn-green{background:rgba(10,50,20,0.9);color:var(--green);border:1px solid rgba(102,187,106,0.3)}
+.btn-full{width:100%;display:block;text-align:center}
+/* Inputs */
+.input{background:rgba(10,8,30,0.9);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:#fff;font-size:0.78rem;font-family:Arial,sans-serif;width:100%;outline:none}
+.input:focus{border-color:var(--purple)}
+.select{background:rgba(10,8,30,0.9);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:#fff;font-size:0.75rem;font-family:Arial,sans-serif;width:100%;outline:none;-webkit-appearance:none}
+.textarea{background:rgba(10,8,30,0.9);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:#fff;font-size:0.75rem;font-family:Arial,sans-serif;width:100%;outline:none;resize:vertical;min-height:70px}
+.label{display:block;font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;font-family:Arial,sans-serif}
+/* Tags */
+.tag{display:inline-block;padding:2px 7px;border-radius:8px;font-size:0.58rem;font-family:Arial,sans-serif;margin:1px}
+/* HP bar */
+.hp-bar-wrap{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-top:3px}
+.hp-bar{height:100%;border-radius:3px;transition:width 0.3s}
+/* Stat bars */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:8px}
+.stat-row{}
+.stat-label{display:flex;justify-content:space-between;font-size:0.58rem;font-family:Arial,sans-serif;margin-bottom:2px}
+.stat-bar-wrap{height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden}
+.stat-bar{height:100%;border-radius:2px}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(2,1,15,0.97);z-index:200;overflow-y:auto;padding:16px}
+.modal-overlay.active{display:block}
+.modal-box{background:rgba(15,12,40,0.99);border:1px solid var(--border-glow);border-radius:12px;padding:18px;max-width:480px;margin:0 auto;box-shadow:0 0 40px rgba(138,90,220,0.2)}
+/* Player card */
+.player-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px;transition:border-color 0.2s}
+.player-card.protected{border-color:rgba(255,213,79,0.4)}
+.player-card.dead{opacity:0.6;border-color:rgba(239,83,80,0.3)}
+/* Consequence pills */
+.pill-curse{background:rgba(50,10,60,0.8);color:#e1bee7}
+.pill-wanted{background:rgba(60,10,10,0.8);color:#ffcdd2}
+.pill-exile{background:rgba(20,20,30,0.8);color:#bbb}
+.pill-servant{background:rgba(5,30,25,0.8);color:#b2dfdb}
+/* Dice */
+.dice-svg{display:block;margin:0 auto}
+/* Battle */
+.consequence-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+/* Map SVG */
+#map-svg{width:100%;cursor:pointer}
+/* Roll box */
+.roll-box{background:rgba(8,6,25,0.9);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:8px}
+/* Divider */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:12px 0}
+/* Active session indicator */
+.session-live{display:inline-block;width:7px;height:7px;border-radius:50%;background:#66bb6a;box-shadow:0 0 6px #66bb6a;animation:pulse 1.5s ease-in-out infinite;margin-right:5px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+/* Raid phase bar */
+.phase-bar{display:flex;gap:3px}
+.phase-pip{flex:1;height:5px;border-radius:3px;transition:all 0.2s}
+/* Spin animation for dice */
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.spinning{animation:spin 0.15s linear infinite;transform-origin:center}
+/* Fade in */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn 0.25s ease forwards}
+/* Search */
+.search-wrap{position:relative;margin-bottom:10px}
+.search-wrap input{padding-left:30px}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:0.8rem;pointer-events:none}
+/* Empty state */
+.empty-state{text-align:center;color:var(--dimmer);padding:50px 16px;font-size:0.82rem}
+.empty-icon{font-size:2.5rem;margin-bottom:10px}
+/* Tooltip-style info bar */
+.info-bar{background:rgba(138,90,220,0.08);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:0.68rem;color:var(--dim);font-family:Arial,sans-serif;margin-bottom:10px;line-height:1.5}
+/* Classes lore */
+.lore-tab-bar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
+.lore-tab{padding:5px 10px;border-radius:14px;font-size:0.62rem;font-family:Arial,sans-serif;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--dim);transition:all 0.15s}
+.lore-tab.active{background:rgba(138,90,220,0.2);color:var(--purple-light);border-color:var(--purple)}
+/* Villain phases */
+.phase-card{border-radius:8px;padding:12px;margin-bottom:8px}
+/* Base rooms */
+.room-card{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+/* Inventory */
+.item-card{background:rgba(8,6,25,0.8);border-radius:6px;padding:8px 10px;margin-bottom:6px}
+/* Log feed */
+.log-entry{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.log-time{flex-shrink:0;width:52px;text-align:right;font-size:0.58rem;color:var(--dim);font-family:Arial,sans-serif;padding-top:1px}
+.log-icon{flex-shrink:0;width:20px;text-align:center;font-size:0.8rem}
+.log-body{flex:1}
+.log-who{font-size:0.7rem;font-weight:bold;font-family:Arial,sans-serif}
+.log-what{font-size:0.72rem;color:var(--text);font-family:Arial,sans-serif;margin-top:1px}
+/* Responsive overflow */
+.overflow-x{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.overflow-x::-webkit-scrollbar{display:none}
+
+/* Arsenal Styles */
+.arsenal-nav { display:flex; gap:6px; overflow-x:auto; margin-bottom:14px; padding-bottom:5px; scrollbar-width:none; }
+.arsenal-nav::-webkit-scrollbar { display:none; }
+.arsenal-tab { padding:8px 14px; border-radius:20px; cursor:pointer; border:1px solid var(--border); background:rgba(10,8,30,0.8); color:var(--dim); white-space:nowrap; font-size:0.7rem; font-family:Arial,sans-serif; transition:all 0.2s; }
+.arsenal-tab.active { border-color:var(--purple); background:rgba(138,90,220,0.15); color:var(--purple-light); font-weight:bold; }
+.item-details { display:none; padding:0 12px 12px; border-top:1px solid rgba(255,255,255,0.05); margin-top:10px; padding-top:10px; }
+.item-card.open .item-details { display:block; }
+.item-card.open { box-shadow:0 0 18px rgba(138,90,220,0.15); border-color:var(--purple); }
+.rarity-badge { font-size:0.6rem; padding:2px 8px; border-radius:10px; font-weight:bold; font-family:Arial,sans-serif; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="header-title"><span>✦</span> THE HOLLOW REALM <span>✦</span></div>
+        <div class="header-sub">MOON SQUAD RPG · GM SUITE</div>
+      </div>
+      <div style="text-align:right">
+        <div class="header-badge">⚡ LIVE READY</div>
+        <div style="font-size:0.52rem;color:var(--dim);margin-top:3px;font-family:Arial,sans-serif">MAY 2, 2026</div>
+      </div>
+    </div>
+  </div>
+  <div id="tab-bar" class="tabs"></div>
+  <div id="panel" class="panel"></div>
+</div>
+<div id="player-modal" class="modal-overlay"></div>
+<div id="inventory-modal" class="modal-overlay"></div>
+<script>
+// ═══════════════════════════════════════════════════
+// HOLLOW REALM — ALL GAME DATA
+// ═══════════════════════════════════════════════════
+
+const NAMES = ["Bubbles","Wiggles","Dottie","Fern","Pippa","Coco","Boo","Thistle","Mochi","Remy","Pebble","Snoot","Clover","Noodle","Zazu","Binky","Tangle","Marshy","Grim","Wick","Wren","Fizz","Dusk","Vex","Rue","Hollow","Sable","Thorn","Cinder","Ash"];
+const ORIGINS = ["Dark Enchanted Forest","Crumbling Kingdom","Underground Caverns","Hollow’s Edge","Sunken Library"];
+const CLASSES = ["Warrior","Wizard","Rogue","Healer","Merchant","Bard"];
+const CLASS_HP = {Warrior:12,Wizard:7,Rogue:8,Healer:9,Merchant:8,Bard:8};
+const CLASS_ICON = {Warrior:"⚔️",Wizard:"🔮",Rogue:"🗡️",Healer:"💚",Merchant:"💰",Bard:"🎵"};
+const CLASS_BASE_STATS = {
+Warrior: {STR:8,DEF:7,INT:3,WIS:4,SPD:4,CHA:3,LCK:3},
+Wizard:  {STR:3,DEF:2,INT:9,WIS:7,SPD:5,CHA:4,LCK:4},
+Rogue:   {STR:5,DEF:3,INT:5,WIS:4,SPD:9,CHA:6,LCK:7},
+Healer:  {STR:3,DEF:4,INT:6,WIS:9,SPD:4,CHA:7,LCK:5},
+Merchant:{STR:3,DEF:3,INT:6,WIS:5,SPD:5,CHA:8,LCK:8},
+Bard:    {STR:3,DEF:2,INT:5,WIS:6,SPD:6,CHA:10,LCK:5}
+};
+const CLASS_PACK_CAP = {Warrior:8,Wizard:6,Rogue:10,Healer:8,Merchant:12,Bard:7};
+const TRAIT_TIERS = [
+{level:"⚠ Weakened",  range:[1,4],  color:"#ef5350",bonus:-1},
+{level:"✓ Standard",  range:[5,9],  color:"#bbb",   bonus:0},
+{level:"★ Strong",    range:[10,14],color:"#4fc3f7", bonus:1},
+{level:"✦ Exceptional",range:[15,19],color:"#ffd54f",bonus:2},
+{level:"⚡ LEGENDARY", range:[20,20],color:"#ce93d8", bonus:3}
+];
+const RARITY_COLOR = {Common:"#aaa",Uncommon:"#66bb6a",Rare:"#4fc3f7",Legendary:"#ffd54f",Mythic:"#ce93d8",Cursed:"#ef5350"};
+const STAT_COLORS = {STR:"#ef5350",DEF:"#ffd54f",INT:"#7c4dff",WIS:"#66bb6a",SPD:"#4fc3f7",CHA:"#ff9800",LCK:"#ce93d8"};
+const PRIMARY_STAT = {Warrior:"STR",Wizard:"INT",Rogue:"SPD",Healer:"WIS",Merchant:"CHA",Bard:"CHA"};
+
+const REP = {
+Warrior:[
+{r:[1,1],title:"The Broken Shield",passive:"-1 first combat roll/session."},
+{r:[2,2],title:"The Deserter",passive:"Cannot call authority back. +1 solo stealth."},
+{r:[3,3],title:"The Cursed Blade",passive:"First weapon roll/arc disadvantaged."},
+{r:[4,4],title:"The Unfinished War",passive:"+1 intimidation. -1 social with nobility."},
+{r:[5,7],title:"The Steadfast",passive:"Allies nearby cannot be coerced."},
+{r:[8,9],title:"The Iron Wall",passive:"+1 DEF when protecting another character."},
+{r:[10,11],title:"The Oathkeeper",passive:"Declare an oath once/session. +2 if kept."},
+{r:[12,13],title:"The Last Line",passive:"+2 combat at 3 HP or below."},
+{r:[14,14],title:"The Hollow’s Bulwark",passive:"Immune to first curse each arc."},
+{r:[15,16],title:"The Undying",passive:"If dying, roll d20. 10+ = survive at 1 HP."},
+{r:[17,18],title:"The Warlord of Ash",passive:"Can command allies. 15+ roll = they obey."},
+{r:[19,19],title:"The Unkillable",passive:"+1 all combat. Hostiles must target others first."},
+{r:[20,20],title:"THE HOLLOW’S CHAMPION",passive:"Once/arc, call on The Hollow for automatic success."}
+],
+Wizard:[
+{r:[1,1],title:"The Silenced",passive:"First spell/session: d6, 1-2 = backfire."},
+{r:[2,2],title:"The Forbidden Scholar",passive:"+2 INT, -1 WIS. Access to restricted knowledge."},
+{r:[3,3],title:"The Unstable",passive:"On fumble, spell affects random target."},
+{r:[4,4],title:"The Once-Great",passive:"-1 spell rolls but +2 in academic settings."},
+{r:[5,7],title:"The Theorist",passive:"+1 puzzle-solving and knowledge rolls."},
+{r:[8,9],title:"The Practical Caster",passive:"Cast minor spells without a roll."},
+{r:[10,11],title:"The Arcanist",passive:"+1 all INT. Arcane locks open without a roll."},
+{r:[12,13],title:"The Seeker",passive:"Once/session, ask DM one question answered truthfully."},
+{r:[14,14],title:"The Hollow’s Eye",passive:"+2 detecting illusions, hidden paths, Hollow entities."},
+{r:[15,16],title:"The Void Speaker",passive:"Once/arc, attempt communication with any entity."},
+{r:[17,18],title:"The Architect of Ruin",passive:"+2 area-effect and destructive spells."},
+{r:[19,19],title:"The Worldbreaker",passive:"+2 all spells. Average-INT NPCs fear them."},
+{r:[20,20],title:"THE HOLLOW’S ORACLE",passive:"Once/arc, DM must give one true future event."}
+],
+Rogue:[
+{r:[1,1],title:"The Marked",passive:"Once/session an NPC may recognise them."},
+{r:[2,2],title:"The Burned Informant",passive:"-1 trust rolls. +1 solo stealth."},
+{r:[3,3],title:"The Clumsy Thief",passive:"First theft/session: roll d6. 1-2 = caught."},
+{r:[4,4],title:"The Wanted",passive:"Faction is actively looking for them."},
+{r:[5,7],title:"The Shadow",passive:"+1 stealth in urban environments."},
+{r:[8,9],title:"The Grifter",passive:"+1 deception. NPCs believe first lie automatically."},
+{r:[10,11],title:"The Ghost",passive:"Leave no trace unless rolling 1-3."},
+{r:[12,13],title:"The Contractor",passive:"Once/arc, name a price for a dangerous task. NPC pays."},
+{r:[14,14],title:"The Hollow’s Shadow",passive:"+2 all stealth in Hollow locations."},
+{r:[15,16],title:"The Phantom",passive:"Cannot be detected by mundane means in darkness."},
+{r:[17,18],title:"The Ghost Contract",passive:"Once/arc, complete one action with no roll required."},
+{r:[19,19],title:"The Unseen Hand",passive:"Others take blame for their actions unless witnessed."},
+{r:[20,20],title:"THE HOLLOW’S KNIFE",passive:"Once/arc, any action succeeds. No roll. No consequence."}
+],
+Healer:[
+{r:[1,1],title:"The Burnout",passive:"First heal/session costs 1 HP from themselves."},
+{r:[2,2],title:"The Doubted",passive:"-1 trust with strangers. +2 with those they’ve saved."},
+{r:[3,3],title:"The Rattled",passive:"In combat, healing rolls -1 until they take damage."},
+{r:[4,4],title:"The Haunted",passive:"Has lost someone. -1 in situations that mirror the loss."},
+{r:[5,7],title:"The Field Medic",passive:"+1 stabilising downed characters."},
+{r:[8,9],title:"The Trusted",passive:"NPCs in need seek them out. +1 social in distress situations."},
+{r:[10,11],title:"The Keeper",passive:"Once/session, prevent a character from going below 1 HP."},
+{r:[12,13],title:"The Order’s Voice",passive:"Healing Order NPCs offer resources without cost."},
+{r:[14,14],title:"The Hollow’s Hands",passive:"+2 all healing in Hollow locations."},
+{r:[15,16],title:"The Saint",passive:"Once/arc, full heal any character. No roll."},
+{r:[17,18],title:"The Death’s Edge",passive:"Can attempt revival of dead characters. 15+ to succeed."},
+{r:[19,19],title:"The Miracle",passive:"Once/arc, any healing roll automatically succeeds at max."},
+{r:[20,20],title:"THE HOLLOW’S GRACE",passive:"Once/arc, reverse a death that occurred this session."}
+],
+Merchant:[
+{r:[1,1],title:"The Debtor",passive:"Owes someone. DM holds the debt."},
+{r:[2,2],title:"The Fraudster",passive:"+1 deception but -2 with guilds if exposed."},
+{r:[3,3],title:"The Undercut",passive:"First trade/session: rival appears with better offer."},
+{r:[4,4],title:"The Blacklisted",passive:"One major faction refuses to deal with them."},
+{r:[5,7],title:"The Traveller",passive:"+1 to finding rare goods in new locations."},
+{r:[8,9],title:"The Negotiator",passive:"+1 all trade and negotiation rolls."},
+{r:[10,11],title:"The Connected",passive:"In any location, knows one useful NPC."},
+{r:[12,13],title:"The Broker",passive:"Once/session, create a deal between two NPCs."},
+{r:[14,14],title:"The Hollow’s Coin",passive:"+2 all transactions in Hollow locations."},
+{r:[15,16],title:"The Kingmaker",passive:"Once/arc, elevate or ruin one NPC’s status."},
+{r:[17,18],title:"The Cartel",passive:"Controls prices in one location. +3 all rolls there."},
+{r:[19,19],title:"The Exchange",passive:"Once/arc, trade any item for any item at equal value."},
+{r:[20,20],title:"THE HOLLOW’S PRICE",passive:"Once/arc, name a price for anything. NPC pays it."}
+],
+Bard:[
+{r:[1,1],title:"The Heckled",passive:"First performance/session: audience hostile on 1-3."},
+{r:[2,2],title:"The One-Hit",passive:"-1 repeat performances with the same audience."},
+{r:[3,3],title:"The Plagiarist",passive:"+1 copying others’ styles. -2 if exposed."},
+{r:[4,4],title:"The Forgotten",passive:"NPCs don’t remember their name without prompting."},
+{r:[5,7],title:"The Entertainer",passive:"+1 first performance in any new location."},
+{r:[8,9],title:"The Crowd-Reader",passive:"+1 mass persuasion and performance rolls."},
+{r:[10,11],title:"The Storyteller",passive:"Once/session, reframe a situation with a story. +2 result."},
+{r:[12,13],title:"The Court Favourite",passive:"Noble NPCs grant access and favours."},
+{r:[14,14],title:"The Hollow’s Voice",passive:"+2 performances in Hollow locations. Hollow responds."},
+{r:[15,16],title:"The Legend",passive:"Once/arc, performance reaches any audience regardless of distance."},
+{r:[17,18],title:"The Memory",passive:"Stories they tell become permanent NPC memories."},
+{r:[19,19],title:"The Epoch",passive:"Once/arc, performance changes faction attitudes permanently."},
+{r:[20,20],title:"THE HOLLOW’S SONG",passive:"Once/arc, perform something the Hollow remembers forever."}
+]
+};
+
+const WEAPONS = {
+Warrior:[
+{r:[1,3],name:"Cracked Garrison Sword",rarity:"Common",special:"None."},
+{r:[4,6],name:"Standard Garrison Blade",rarity:"Common",special:"+1 to standard attack rolls."},
+{r:[7,9],name:"Reinforced Garrison Sword",rarity:"Common",special:"+1 ATK. Won’t break on fumble."},
+{r:[10,12],name:"Hollow-Edged Longsword",rarity:"Uncommon",special:"+1 ATK in Hollow locations."},
+{r:[13,15],name:"Tempered Hollow Steel",rarity:"Rare",special:"+2 ATK. Ignores 1 point of DEF."},
+{r:[16,18],name:"The Warden’s Blade",rarity:"Legendary",special:"+3 ATK. Allies gain +1 DEF nearby."},
+{r:[19,19],name:"The Hollow’s Edge",rarity:"Legendary",special:"+3 ATK. On Critical, effect carries to next session."},
+{r:[20,20],name:"THE VOID CLEAVER",rarity:"Mythic",special:"UNIQUE. +4 ATK. Strikes ignore armour entirely."}
+],
+Wizard:[
+{r:[1,3],name:"Cracked Focus Crystal",rarity:"Common",special:"None."},
+{r:[4,6],name:"Standard Arcane Focus",rarity:"Common",special:"+1 to spell rolls."},
+{r:[7,9],name:"Reinforced Focus",rarity:"Common",special:"+1 spell. Won’t shatter on fumble."},
+{r:[10,12],name:"Hollow-Tuned Grimoire",rarity:"Uncommon",special:"+1 spell rolls in Hollow locations."},
+{r:[13,15],name:"Resonant Void Crystal",rarity:"Rare",special:"+2 spell. Spells have extended range."},
+{r:[16,18],name:"The Arcanist’s Tome",rarity:"Legendary",special:"+3 spell. Once/session, repeat last spell free."},
+{r:[19,19],name:"The Hollow’s Lens",rarity:"Legendary",special:"+3 spell. See through one illusion per session."},
+{r:[20,20],name:"THE VOID CODEX",rarity:"Mythic",special:"UNIQUE. +4 spell. Once/arc, cast beyond tier."}
+],
+Rogue:[
+{r:[1,3],name:"Rusty Stiletto",rarity:"Common",special:"None."},
+{r:[4,6],name:"Standard Stiletto",rarity:"Common",special:"+1 to stealth strikes."},
+{r:[7,9],name:"Balanced Stiletto",rarity:"Common",special:"+1 ATK. +1 to concealment rolls."},
+{r:[10,12],name:"Hollow-Edged Stiletto",rarity:"Uncommon",special:"+1 ATK in Hollow locations."},
+{r:[13,15],name:"Shadow-Forged Blade",rarity:"Rare",special:"+2 ATK. Draws no attention when drawn."},
+{r:[16,18],name:"The Ghost Blade",rarity:"Legendary",special:"+3 ATK. Leave no wound evidence."},
+{r:[19,19],name:"The Hollow’s Fang",rarity:"Legendary",special:"+3 ATK. Targets cannot call for help when struck."},
+{r:[20,20],name:"THE VOID NEEDLE",rarity:"Mythic",special:"UNIQUE. +4 ATK. Once/arc, strike from impossibly far."}
+],
+Healer:[
+{r:[1,3],name:"Cracked Healing Rod",rarity:"Common",special:"None."},
+{r:[4,6],name:"Standard Healing Rod",rarity:"Common",special:"+1 to healing rolls."},
+{r:[7,9],name:"Reinforced Healing Rod",rarity:"Common",special:"+1 heal. Won’t break under pressure."},
+{r:[10,12],name:"Hollow-Blessed Staff",rarity:"Uncommon",special:"+1 healing in Hollow locations."},
+{r:[13,15],name:"The Mender’s Wand",rarity:"Rare",special:"+2 heal. Stabilise downed instantly."},
+{r:[16,18],name:"The Saint’s Rod",rarity:"Legendary",special:"+3 heal. Once/session, full heal one character."},
+{r:[19,19],name:"The Hollow’s Touch",rarity:"Legendary",special:"+3 heal. Touched characters cannot die this session."},
+{r:[20,20],name:"THE FIRST LIGHT",rarity:"Mythic",special:"UNIQUE. +4 heal. Once/arc, reverse a death."}
+],
+Merchant:[
+{r:[1,3],name:"Cracked Counting Rod",rarity:"Common",special:"None."},
+{r:[4,6],name:"Standard Merchant Cane",rarity:"Common",special:"+1 to negotiation rolls."},
+{r:[7,9],name:"Gilded Merchant Cane",rarity:"Common",special:"+1 CHA. Looks expensive."},
+{r:[10,12],name:"Hollow-Lined Ledger",rarity:"Uncommon",special:"+1 trade in Hollow locations."},
+{r:[13,15],name:"The Broker’s Scales",rarity:"Rare",special:"+2 trade. Know true value of any item."},
+{r:[16,18],name:"The Exchange Key",rarity:"Legendary",special:"+3 trade. Once/session, any deal succeeds."},
+{r:[19,19],name:"The Hollow’s Coin",rarity:"Legendary",special:"+3 trade. Create value where none exists."},
+{r:[20,20],name:"THE VOID LEDGER",rarity:"Mythic",special:"UNIQUE. +4 trade. Once/arc, any transaction accepted."}
+],
+Bard:[
+{r:[1,3],name:"Cracked Instrument",rarity:"Common",special:"None."},
+{r:[4,6],name:"Standard Instrument",rarity:"Common",special:"+1 to performance rolls."},
+{r:[7,9],name:"Well-Made Instrument",rarity:"Common",special:"+1 perf. Won’t go out of tune at bad moments."},
+{r:[10,12],name:"Hollow-Carved Instrument",rarity:"Uncommon",special:"+1 performance in Hollow locations."},
+{r:[13,15],name:"The Resonant Lyre",rarity:"Rare",special:"+2 perf. Performance reaches twice the audience."},
+{r:[16,18],name:"The Legend’s Instrument",rarity:"Legendary",special:"+3 perf. Once/session, reach any audience anywhere."},
+{r:[19,19],name:"The Hollow’s Voice",rarity:"Legendary",special:"+3 perf. The Hollow itself amplifies performances."},
+{r:[20,20],name:"THE VOID SONG",rarity:"Mythic",special:"UNIQUE. +4 perf. Once/arc, performance becomes permanent world memory."}
+]
+};
+
+const SIGNATURE_SKILLS = {
+Warrior:[
+{r:[1,2],name:"Reckless Charge",desc:"-1 DEF, +2 first attack roll each session."},
+{r:[3,4],name:"Broken Form",desc:"Unpredictable style. +1 to surprise strikes."},
+{r:[5,6],name:"Shield Wall",desc:"Allies behind them get +1 DEF while stationary."},
+{r:[7,8],name:"Weapon Read",desc:"+1 to all rolls against same enemy after first exchange."},
+{r:[9,10],name:"War Cry",desc:"Once/session, enemy NPC must roll to act against them next turn."},
+{r:[11,12],name:"Controlled Aggression",desc:"+2 to first strike after spending a full turn observing."},
+{r:[13,14],name:"Endurance Fighter",desc:"In extended conflicts, gains +1 each subsequent round."},
+{r:[15,16],name:"Execution Strike",desc:"+3 attack against any enemy below half HP."},
+{r:[17,18],name:"Counter",desc:"When an attack fails against them, rolls a free response strike."},
+{r:[19,19],name:"Battlefield Commander",desc:"Once/session, every allied player gets +1 to their next roll."},
+{r:[20,20],name:"THE HOLLOW’S BLADE",desc:"UNIQUE. On a Critical, the effect lingers into next session."}
+],
+Wizard:[
+{r:[1,2],name:"Volatile Casting",desc:"Spells hit harder but 1-in-6 chance of unexpected side effect."},
+{r:[3,4],name:"Forbidden Indexing",desc:"Can attempt any knowledge roll regardless of subject."},
+{r:[5,6],name:"Spell Dampening",desc:"Reduce an incoming magical effect by half. Once/session."},
+{r:[7,8],name:"Rune Reading",desc:"+2 to deciphering magical inscriptions and Hollow markings."},
+{r:[9,10],name:"Projection",desc:"Cast a minor illusion without a roll. Once/session."},
+{r:[11,12],name:"Arcane Diagnosis",desc:"Touch something and identify any magical effect on it. No roll."},
+{r:[13,14],name:"Counter-Spell",desc:"When enemy spell cast, attempt to interrupt. Roll INT vs difficulty."},
+{r:[15,16],name:"Hollow Channelling",desc:"Once/arc, cast a spell beyond normal tier."},
+{r:[17,18],name:"Memory Casting",desc:"Replicate any spell witnessed once before. +1 to replicated spells."},
+{r:[19,19],name:"The Eye",desc:"See through one illusion, deception, or hidden thing per session."},
+{r:[20,20],name:"THE HOLLOW’S TONGUE",desc:"UNIQUE. Once/arc, ask the Hollow anything. DM must answer truthfully."}
+],
+Rogue:[
+{r:[1,2],name:"Pickpocketing",desc:"Lift small items on SPD roll. Fail means they notice."},
+{r:[3,4],name:"Lock Reading",desc:"Identify any lock mechanism in 30 seconds. +2 lockpicking."},
+{r:[5,6],name:"Forgery",desc:"Produce convincing false documents. CHA roll to use them."},
+{r:[7,8],name:"Tailing",desc:"Follow a target without detection. Roll only if actively watched."},
+{r:[9,10],name:"Disguise",desc:"Assume different identity. +2 CHA while in disguise."},
+{r:[11,12],name:"Poison Craft",desc:"Apply contact poison to any item. Effect negotiated with DM."},
+{r:[13,14],name:"Escape Artist",desc:"Cannot be restrained for more than one round without SPD roll."},
+{r:[15,16],name:"Rooftop Navigation",desc:"Full speed across vertical terrain. No penalty rolls."},
+{r:[17,18],name:"Dead Drop Network",desc:"Once/arc, retrieve useful intel from a hidden cache."},
+{r:[19,19],name:"Ghost Entry",desc:"Enter any non-magical location without a roll. Leaves no trace."},
+{r:[20,20],name:"THE HOLLOW’S SHADOW",desc:"UNIQUE. Becomes functionally invisible for one full scene/arc."}
+],
+Healer:[
+{r:[1,2],name:"Field Stitching",desc:"Stabilise any wound without materials. Buys two rounds."},
+{r:[3,4],name:"Poison Identification",desc:"Identify any toxin by sight or smell. +2 treating poisoned."},
+{r:[5,6],name:"Psychic First Aid",desc:"Treat mental trauma, fear, and psychological status effects."},
+{r:[7,8],name:"Curse Reading",desc:"Identify nature and source of any curse on contact."},
+{r:[9,10],name:"Pain Management",desc:"Suppress injury penalty for one session. Damage still exists."},
+{r:[11,12],name:"Emergency Revival",desc:"Bring downed character to consciousness. One action, no roll, once/session."},
+{r:[13,14],name:"Herbal Synthesis",desc:"Create a restorative item from available materials. Once/location."},
+{r:[15,16],name:"Hollow Medicine",desc:"Treatments in Hollow locations have doubled effect."},
+{r:[17,18],name:"Death Diagnosis",desc:"Determine cause and time of death from a body with complete accuracy."},
+{r:[19,19],name:"Vital Read",desc:"By observation alone, know exact HP and conditions of any character."},
+{r:[20,20],name:"THE HOLLOW’S HANDS",desc:"UNIQUE. Once/arc, full heal any character instantly."}
+],
+Merchant:[
+{r:[1,2],name:"Fast Talk",desc:"Distract or confuse an NPC. Buys one round without a roll."},
+{r:[3,4],name:"Counterfeit Detection",desc:"Identify fake currency, forged documents, or fraudulent goods instantly."},
+{r:[5,6],name:"Bulk Negotiation",desc:"+2 group trade rolls. Always secures better combined rates."},
+{r:[7,8],name:"Market Reading",desc:"Know approximate value and demand of any item. No roll."},
+{r:[9,10],name:"Smuggling Routes",desc:"Move restricted goods through any location. Risk roll only at checkpoints."},
+{r:[11,12],name:"Credit Network",desc:"Access funds beyond current inventory. Repaid within one arc."},
+{r:[13,14],name:"Auction Control",desc:"Control pace and pressure of any bidding situation."},
+{r:[15,16],name:"Bribery",desc:"CHA roll to find any NPC price. On success, they cooperate once."},
+{r:[17,18],name:"Hollow Arbitrage",desc:"Once/arc, turn a worthless item into something useful."},
+{r:[19,19],name:"The Long Game",desc:"Plant an arrangement. It pays off two sessions later without further action."},
+{r:[20,20],name:"THE HOLLOW’S PRICE",desc:"UNIQUE. Once/arc, name a price for anything. Any NPC will pay it."}
+],
+Bard:[
+{r:[1,2],name:"Crowd Reading",desc:"+2 to all mass persuasion rolls."},
+{r:[3,4],name:"Improvisation",desc:"Perform without preparation. No penalty for unexpected situations."},
+{r:[5,6],name:"Emotional Manipulation",desc:"Shift one NPC emotion in a chosen direction. CHA roll."},
+{r:[7,8],name:"Satire",desc:"Publicly humiliate a target. They lose one social interaction this session."},
+{r:[9,10],name:"Lullaby",desc:"Calm one hostile NPC. They cannot attack for one round."},
+{r:[11,12],name:"War Song",desc:"All allies gain +1 to their next roll when performed in combat."},
+{r:[13,14],name:"The Long Memory",desc:"Recall any piece of lore or history heard before. +3 knowledge rolls."},
+{r:[15,16],name:"Hollow Resonance",desc:"In Hollow locations, performance has unpredictable additional effect."},
+{r:[17,18],name:"The Turning Song",desc:"Once/session, change the emotional state of an entire room."},
+{r:[19,19],name:"The Epic",desc:"Once/arc, tell a story that permanently changes how one faction views a player."},
+{r:[20,20],name:"THE HOLLOW’S SONG",desc:"UNIQUE. Once/arc, performance becomes permanent in world memory."}
+]
+};
+
+const SHADOW_TRAITS = {
+Warrior:[
+{r:[1,2],name:"The Coward’s Scar",desc:"Has run from one fight. Will avoid similar situations. Rolls -1 in matching circumstances."},
+{r:[3,4],name:"The Berserker Flaw",desc:"Below 3 HP, must roll WIS 10+ to choose targets. Failure = attack nearest."},
+{r:[5,6],name:"The Oath-Breaker",desc:"Broke a vow. One faction knows. -2 with that faction permanently."},
+{r:[7,8],name:"The Blood Debt",desc:"Owes a life. The creditor hasn’t collected yet."},
+{r:[9,10],name:"The Haunted Blade",desc:"Weapon carries a death. Once/arc it reacts unexpectedly."},
+{r:[11,12],name:"The War Fatigue",desc:"Extended combat without rest: -1 cumulative per session over 3."},
+{r:[13,14],name:"The Fallen Banner",desc:"Their side lost a war. Some factions remember. -1 trust with Kingdom remnants."},
+{r:[15,16],name:"The Unnecessary Death",desc:"Someone died because of their choice. DM knows who."},
+{r:[17,18],name:"The Pride",desc:"Cannot accept help when at full HP. Must attempt alone first."},
+{r:[19,20],name:"The Hollow’s Claim",desc:"The Hollow marked them in their worst moment. It is owed a service."}
+],
+Wizard:[
+{r:[1,2],name:"The Forbidden Study",desc:"Accessed knowledge they shouldn’t. Something knows they know."},
+{r:[3,4],name:"The Failed Spell",desc:"A spell went wrong. Someone was hurt. They don’t discuss it."},
+{r:[5,6],name:"The Dependency",desc:"Relies on an arcane substance. Without it: -1 all rolls after session 2."},
+{r:[7,8],name:"The Stolen Research",desc:"Their best work isn’t theirs. The original scholar is looking for it."},
+{r:[9,10],name:"The Unfinished Experiment",desc:"Left something running. It has been running since. DM decides what."},
+{r:[11,12],name:"The Hollow Contact",desc:"Something reached out to them once. They responded. It remembers."},
+{r:[13,14],name:"The Broken Equation",desc:"A calculation they can’t solve. They keep trying. -1 WIS when it comes up."},
+{r:[15,16],name:"The Rival",desc:"Another scholar wants their position. They are more connected."},
+{r:[17,18],name:"The Hubris",desc:"Believes their intelligence exempts them from consequence. Once/arc this is wrong."},
+{r:[19,20],name:"The Void Conversation",desc:"The Hollow spoke to them directly once. They are not sure if they understood correctly."}
+],
+Rogue:[
+{r:[1,2],name:"The Burned Contact",desc:"Sold someone out. They escaped. They know."},
+{r:[3,4],name:"The Recognisable Face",desc:"Too well known in one location. -2 stealth there."},
+{r:[5,6],name:"The Loose Ledger",desc:"Their name appears in a crime record. Someone has it."},
+{r:[7,8],name:"The Unkept Promise",desc:"Failed to deliver something. The client is patient. For now."},
+{r:[9,10],name:"The Double Life",desc:"Maintaining two identities. Once/arc, the wrong one surfaces."},
+{r:[11,12],name:"The Collateral",desc:"Someone innocent was hurt during a job. They know. The Rogue knows they know."},
+{r:[13,14],name:"The Ghost That Talks",desc:"Left a witness alive once. The witness has been talking."},
+{r:[15,16],name:"The Hollow’s Record",desc:"The Hollow tracked one of their jobs. The record exists somewhere."},
+{r:[17,18],name:"The Price on the Head",desc:"A faction has an open contract on them. Amount: unknown."},
+{r:[19,20],name:"The Thing They Kept",desc:"Stole something they should have returned. It has significance they haven’t understood yet."}
+],
+Healer:[
+{r:[1,2],name:"The One They Couldn’t Save",desc:"A patient died despite everything. They remember every detail."},
+{r:[3,4],name:"The Hollow Debt",desc:"Used something from the Hollow to save a life. The Hollow considers this a transaction."},
+{r:[5,6],name:"The Restricted Knowledge",desc:"Knows a healing method the Order forbids. Has used it."},
+{r:[7,8],name:"The Mercy Problem",desc:"Once helped someone who later caused harm. They don’t know yet."},
+{r:[9,10],name:"The Healer’s Burnout",desc:"Giving too much. Once/arc, one healing roll automatically fails."},
+{r:[11,12],name:"The Forbidden Patient",desc:"Healed someone they were told not to. The person who told them remembers."},
+{r:[13,14],name:"The Misdiagnosis",desc:"Got something wrong once. The patient recovered. The error remains in the record."},
+{r:[15,16],name:"The Last Rite",desc:"Performed a death rite for someone who wasn’t quite dead. They came back changed."},
+{r:[17,18],name:"The Order’s Eye",desc:"The Healing Order is watching their methods. Not yet disapproving. Watching."},
+{r:[19,20],name:"The Hollow’s Ward",desc:"The Hollow protected them once when they should have died. It expects something in return."}
+],
+Merchant:[
+{r:[1,2],name:"The Unpaid Debt",desc:"Owes a significant sum. Creditor has not yet called it in."},
+{r:[3,4],name:"The Forged Ledger",desc:"One major transaction was fraudulent. The record exists."},
+{r:[5,6],name:"The Ruined Partner",desc:"A previous partner lost everything in a deal they made together."},
+{r:[7,8],name:"The Cursed Stock",desc:"Sold something cursed without knowing. Buyer suffered. Buyer remembers."},
+{r:[9,10],name:"The Guild Suspension",desc:"Was removed from a guild temporarily. Reason: classified."},
+{r:[11,12],name:"The Leverage",desc:"Someone has information about them. Has not used it. Yet."},
+{r:[13,14],name:"The Hollow Trade",desc:"Completed a transaction in a Hollow location. The Hollow considers it binding."},
+{r:[15,16],name:"The Undercut",desc:"Deliberately destroyed a competitor. The competitor has rebuilt. With allies."},
+{r:[17,18],name:"The Stolen Route",desc:"Uses a trade route that belongs to someone else. They have noticed the profit drop."},
+{r:[19,20],name:"The Price of Everything",desc:"Knows the value of everything. Once/arc this knowledge is used against them."}
+],
+Bard:[
+{r:[1,2],name:"The Stolen Song",desc:"Their most famous work belongs to someone else. That person is still alive."},
+{r:[3,4],name:"The Told Secret",desc:"Used someone’s confidence in a performance. They heard it."},
+{r:[5,6],name:"The Exaggerated Legend",desc:"A story they tell about themselves is not entirely true. Someone knows the real version."},
+{r:[7,8],name:"The Inspired Enemy",desc:"A performance once moved the wrong person. They took it personally."},
+{r:[9,10],name:"The Hollow Audience",desc:"Performed in a Hollow location. Something in the audience has not forgotten."},
+{r:[11,12],name:"The Unfinished Saga",desc:"Began a story they never finished. The subjects are waiting."},
+{r:[13,14],name:"The Witness",desc:"Saw something they were not supposed to see. Turned it into art. Art can be found."},
+{r:[15,16],name:"The Price of Fame",desc:"Known widely enough that anonymity is impossible in populated areas."},
+{r:[17,18],name:"The Last Performance",desc:"Once performed for someone who died immediately after. Some say the performance caused it."},
+{r:[19,20],name:"The Hollow’s Memory",desc:"The Hollow has recorded one of their performances. They do not know what it will do with it."}
+]
+};
+
+const ENCHANTMENTS = {
+Warrior:[
+{r:[1,3],name:"Iron Oath",desc:"Declare a target. +1 ATK against that target until they are defeated."},
+{r:[4,6],name:"Blood Memory",desc:"After taking damage, +1 ATK for rest of that session."},
+{r:[7,9],name:"The Unbreaking",desc:"Weapon cannot be destroyed, damaged, or disarmed. Ever."},
+{r:[10,12],name:"Hollow Temper",desc:"In Hollow locations, weapon deals +1 damage."},
+{r:[13,15],name:"The Last Word",desc:"Once/arc, weapon guarantees final strike against a marked enemy."},
+{r:[16,18],name:"War’s Echo",desc:"First attack each session is always at maximum effect."},
+{r:[19,19],name:"The Hollow’s Hunger",desc:"Each session, weapon grows stronger. +1 cumulative (resets per arc)."},
+{r:[20,20],name:"THE VOID BLESSING",desc:"UNIQUE. Weapon exists partially in the Hollow. Strikes bypass all resistances."}
+],
+Wizard:[
+{r:[1,3],name:"Arcane Loop",desc:"Once/session, a failed spell can be re-cast without cost."},
+{r:[4,6],name:"Hollow Resonance",desc:"Spells in Hollow locations have +1 effect."},
+{r:[7,9],name:"The Unbinding",desc:"Once/arc, break any magical effect or ward. No roll required."},
+{r:[10,12],name:"Echo Casting",desc:"Spells leave a faint echo. Can trigger again on 15+ next round."},
+{r:[13,15],name:"Void Channel",desc:"Once/session, channel the Hollow directly. Effect determined by DM."},
+{r:[16,18],name:"Memory Archive",desc:"Store any piece of knowledge permanently. Perfect recall."},
+{r:[19,19],name:"The Hollow’s Library",desc:"Once/arc, access any piece of knowledge the Hollow has."},
+{r:[20,20],name:"THE VOID MIND",desc:"UNIQUE. Spells cannot fail completely. Minimum result is always Weak Hit."}
+],
+Rogue:[
+{r:[1,3],name:"Shadow Step",desc:"Once/session, avoid one consequence entirely. No roll."},
+{r:[4,6],name:"The Clean Exit",desc:"Once/session, leave any situation without being followed."},
+{r:[7,9],name:"Hollow Fade",desc:"In Hollow locations, become briefly undetectable once/session."},
+{r:[10,12],name:"The Long Memory",desc:"Never forget a face, location, or overheard conversation."},
+{r:[13,15],name:"Ghost Touch",desc:"Handling items leaves no physical trace."},
+{r:[16,18],name:"The Null",desc:"Once/arc, an action you took cannot be proven to have happened."},
+{r:[19,19],name:"The Hollow’s Cloak",desc:"The Hollow itself obscures their identity. Impossible to scry."},
+{r:[20,20],name:"THE VOID STEP",desc:"UNIQUE. Once/arc, be in two locations simultaneously for one scene."}
+],
+Healer:[
+{r:[1,3],name:"The Mending",desc:"Healing rolls always restore at least 1 HP, even on failure."},
+{r:[4,6],name:"Hollow Touch",desc:"Healing in Hollow locations restores an additional 1 HP."},
+{r:[7,9],name:"The Ward",desc:"Once/session, prevent all damage to one character for one round."},
+{r:[10,12],name:"Soul Read",desc:"By touch, know exact HP and all active conditions of any character."},
+{r:[13,15],name:"The Stitch",desc:"Repair item conditions by one tier once/session."},
+{r:[16,18],name:"Life Debt",desc:"Characters they revive carry +1 to all rolls for the following session."},
+{r:[19,19],name:"The Hollow’s Grace",desc:"Once/arc, heal is maximised without a roll."},
+{r:[20,20],name:"THE VOID MEND",desc:"UNIQUE. Once/arc, undo one physical event from this session."}
+],
+Merchant:[
+{r:[1,3],name:"Gilded Tongue",desc:"First trade each session automatically goes in their favour."},
+{r:[4,6],name:"Hollow Market",desc:"In Hollow locations, find one item unavailable anywhere else."},
+{r:[7,9],name:"The Living Ledger",desc:"Automatically know if any deal is unfair to them."},
+{r:[10,12],name:"Demand Creation",desc:"Once/session, make an NPC want something they did not want before."},
+{r:[13,15],name:"The Network",desc:"Once/arc, a contact delivers something useful. No cost."},
+{r:[16,18],name:"Compound Interest",desc:"Each session without making a deal, next deal has +1 bonus (max +3)."},
+{r:[19,19],name:"The Hollow’s Economy",desc:"Once/arc, exchange anything for anything at agreed value."},
+{r:[20,20],name:"THE VOID MARKET",desc:"UNIQUE. Once/arc, create an item that does not exist from nothing."}
+],
+Bard:[
+{r:[1,3],name:"The Encore",desc:"Once/session, repeat the effect of any successful performance."},
+{r:[4,6],name:"Hollow Song",desc:"In Hollow locations, performances have an additional unpredictable effect."},
+{r:[7,9],name:"The Living Record",desc:"Any story they tell becomes true memory for NPCs who hear it."},
+{r:[10,12],name:"Crowd Pull",desc:"Once/session, draw any NPC’s attention completely for one round."},
+{r:[13,15],name:"The Long Note",desc:"A performance effect can persist until next session. Once/arc."},
+{r:[16,18],name:"The Stirring",desc:"Once/session, change the emotional state of an entire crowd."},
+{r:[19,19],name:"The Hollow’s Resonance",desc:"Once/arc, performance affects even Hollow entities."},
+{r:[20,20],name:"THE VOID CHORUS",desc:"UNIQUE. Once/arc, perform something that changes one permanent world truth."}
+]
+};
+
+const DESTINY_THREADS = {
+Warrior:[
+{r:[1,3],thread:"You will face something that cannot be killed by force alone. What you do in that moment defines what the Hollow thinks of you."},
+{r:[4,6],thread:"Someone you protect will betray you. You will see it coming and choose to let it happen anyway."},
+{r:[7,9],thread:"The war you fought is not over. The side you fought for is not the side you thought it was."},
+{r:[10,12],thread:"You will be given a choice between your weapon and something you value more. The Hollow is watching which you choose."},
+{r:[13,15],thread:"A battle is coming that you cannot win. You will fight it anyway. What you lose in it is not what you expect."},
+{r:[16,18],thread:"You will become the thing others make stories about. The story will not be the one you would have chosen."},
+{r:[19,19],thread:"The Hollow made you a warrior for a specific purpose. You have not yet understood what that purpose is."},
+{r:[20,20],thread:"UNIQUE. You are the last of something. When you understand what, everything changes."}
+],
+Wizard:[
+{r:[1,3],thread:"The knowledge you are seeking will change what you are. You are seeking it anyway."},
+{r:[4,6],thread:"You will find something in the Hollow that no one was meant to find. The finding is the point."},
+{r:[7,9],thread:"The answer you need is in a place you cannot go without becoming something you do not want to become."},
+{r:[10,12],thread:"Something you know will save a life and end another. You will not know which is which until it is done."},
+{r:[13,15],thread:"The Hollow has a question for you. You will not recognise it as a question when it is asked."},
+{r:[16,18],thread:"You will be offered everything you have ever wanted. The offering is the test. What you do with the test is the point."},
+{r:[19,19],thread:"You are not researching the Hollow. The Hollow is researching you."},
+{r:[20,20],thread:"UNIQUE. You already know how this ends. You have not admitted it to yourself yet."}
+],
+Rogue:[
+{r:[1,3],thread:"The person you are running from is not who you think they are. Neither are you."},
+{r:[4,6],thread:"You will steal something that cannot be unfound. The finder will use it. The use will matter."},
+{r:[7,9],thread:"Someone is using you without your knowledge. When you find out, you will have to decide if it matters."},
+{r:[10,12],thread:"The one job you refuse to take will find you anyway."},
+{r:[13,15],thread:"You will be in the right place at the wrong time or the wrong place at the right time. The Hollow has not decided which."},
+{r:[16,18],thread:"Your real name will surface. What people do with it determines what you do next."},
+{r:[19,19],thread:"You have already changed something permanently. You do not know what it was."},
+{r:[20,20],thread:"UNIQUE. The Hollow has been following your work. It has an offer. The offer is not what you would expect."}
+],
+Healer:[
+{r:[1,3],thread:"You will save someone who should not have survived. What they do with that survival is on you."},
+{r:[4,6],thread:"The one you could not save will become relevant again. How is not something you can prepare for."},
+{r:[7,9],thread:"You will be asked to choose between two lives. The Hollow will not tell you which choice is correct."},
+{r:[10,12],thread:"Your healing will be used for something you would not have chosen. You will find out after."},
+{r:[13,15],thread:"Something is using your compassion against you. You will have to decide if you care."},
+{r:[16,18],thread:"You will face a death you cannot prevent. What you do in the aftermath is the destiny, not the death."},
+{r:[19,19],thread:"The Hollow wants something healed that it will not name. You will know it when you see it."},
+{r:[20,20],thread:"UNIQUE. You are not here by accident. The Hollow placed you here specifically for one moment that has not happened yet."}
+],
+Merchant:[
+{r:[1,3],thread:"The deal that defines you is coming. You will not recognise it as the defining one until it is done."},
+{r:[4,6],thread:"You will possess something priceless. The price will be extracted whether you sell it or not."},
+{r:[7,9],thread:"The network you have built will be used against you by someone inside it."},
+{r:[10,12],thread:"You will be offered a transaction that is genuinely fair. It will be the most dangerous thing anyone has ever offered you."},
+{r:[13,15],thread:"Something in the Hollow economy responds to you specifically. You do not yet know if that is good."},
+{r:[16,18],thread:"The currency you are actually trading in is not coin. The Hollow is about to show you what it is."},
+{r:[19,19],thread:"You will make a deal with something that does not deal in conventional terms. You will not know until after."},
+{r:[20,20],thread:"UNIQUE. The Hollow considers you its merchant. This means something specific that you have not been told."}
+],
+Bard:[
+{r:[1,3],thread:"The song that defines the Hollow Realm is not yet written. The Hollow is waiting to see if you are the one who writes it."},
+{r:[4,6],thread:"You will tell a story that becomes true. You will not know it was a prophecy when you were telling it."},
+{r:[7,9],thread:"Your most important audience has not heard you yet. When they do, something permanent happens."},
+{r:[10,12],thread:"The story you are afraid to tell is the one that matters most."},
+{r:[13,15],thread:"You will witness the defining moment of this arc. What you do with the witness is what the Hollow is interested in."},
+{r:[16,18],thread:"Something in the Hollow remembers an older version of a song you know. It wants to hear it again."},
+{r:[19,19],thread:"The Hollow is listening to everything you perform. It is building something with what it hears."},
+{r:[20,20],thread:"UNIQUE. You are the narrator of this story. You have not realised this means you can change how it ends."}
+]
+};
+
+const ROLL_PURPOSES = {
+combat:{label:"⚔️ Combat",color:"#ef5350",options:["Attack roll","Counter-attack","Sneak attack","Defensive strike","Power Strike","Boss Phase transition","Pack coordination"]},
+skill:{label:"🎯 Skill Check",color:"#4fc3f7",options:["Stealth check","Lockpicking","Persuasion","Intimidation","Deception","Perception","Arcane knowledge","Healing check","Negotiation","Tracking"]},
+save:{label:"🛡 Saving Throw",color:"#ffd54f",options:["Death save","Curse resist","Hollow Pull resist","Fear resist","Poison resist","Trap avoid","Environmental hazard"]},
+magic:{label:"🔮 Spell",color:"#7c4dff",options:["Spell cast","Arcane Surge","Counter-spell","Hollow channelling","Void touch","Entity communication"]},
+social:{label:"🤝 Social",color:"#ff9800",options:["NPC negotiation","Bribe attempt","Deception check","Alliance declaration","Betrayal consequence","Faction standing roll"]},
+explore:{label:"🔍 Explore",color:"#66bb6a",options:["Search area","Chest discovery","Trap detection","Loot roll","Document recovery","Hollow rift interaction"]},
+heal:{label:"💚 Healing",color:"#66bb6a",options:["Healing roll","Stabilise downed","Curse removal","Resurrection roll","Emergency revival"]},
+raid:{label:"⚔️ Raid",color:"#ff9800",options:["Strike action","Defend action","Search action","Special ability","Power Strike","Boss encounter","Extract attempt","Breach roll"]},
+destiny:{label:"🔮 Destiny",color:"#ce93d8",options:["Destiny Thread trigger","Shadow Trait activation","Hollow Pull resist","Enchantment check","Warden Test"]},
+custom:{label:"✏️ Custom",color:"#bbb",options:[]}
+};
+
+const RAID_TIERS = {
+scouting:{label:"🔍 Scouting",desc:"Light recon. Low risk, low reward.",giftCost:"100 coins/action",color:"#66bb6a",maxParty:2,phases:["Enter","Encounter","Extract"]},
+skirmish:{label:"⚔️ Skirmish",desc:"Hit hard, get out. Medium risk.",giftCost:"500 coins/action",color:"#4fc3f7",maxParty:3,phases:["Enter","Encounter","Combat","Loot","Extract"]},
+fullraid:{label:"🔥 Full Raid",desc:"Commit fully. High risk, high reward.",giftCost:"5,000 coins/action",color:"#ff9800",maxParty:5,phases:["Deploy","Breach","Combat","Boss/Event","Loot","Extract"]},
+bossassault:{label:"💀 Boss Assault",desc:"Full commitment against a named villain.",giftCost:"29,999 coins",color:"#ef5350",maxParty:6,phases:["Deploy","Breach","Elite Guards","Boss Phase 1","Boss Phase 2","Loot or Flee"]}
+};
+
+const RAID_LOCATIONS = {
+forest:{name:"Dark Enchanted Forest",icon:"🌲",encounters:[
+{name:"Ashen Pack Scouts",difficulty:5,type:"combat",enemy:"2d4 wolves",reward:"Ashen Fang x2"},
+{name:"Hollow Wisp Swarm",difficulty:7,type:"combat",enemy:"Hollow wisps — INT rolls",reward:"Hollow ore fragment"},
+{name:"Ancient Tree Spirit",difficulty:10,type:"negotiate",enemy:"WIS challenge",reward:"Forest cache location"},
+{name:"Gravenor’s Border",difficulty:14,type:"boss",enemy:"Gravenor — Phase 1",reward:"Pack Sigil, Ashen Fang x4"},
+{name:"Abandoned Camp",difficulty:3,type:"explore",enemy:"None — search rolls",reward:"Random forest loot"}
+]},
+kingdom:{name:"Crumbling Kingdom",icon:"🏰",encounters:[
+{name:"Garrison Remnant Patrol",difficulty:4,type:"combat",enemy:"3 soldiers",reward:"Garrison weapons, coin pouch"},
+{name:"Vault Breach",difficulty:12,type:"stealth",enemy:"Vault guardian, traps",reward:"Kingdom Vault loot"},
+{name:"Throne Room Confrontation",difficulty:15,type:"boss",enemy:"Valdris — Phase 1",reward:"Chancellor Ring, Kingdom Signet"},
+{name:"Rubble Excavation",difficulty:5,type:"explore",enemy:"Structural hazards",reward:"Garrison footlocker contents"},
+{name:"Kingdom Archive",difficulty:7,type:"explore",enemy:"Undead scholars",reward:"Research notes, arc intel"}
+]},
+caverns:{name:"Underground Caverns",icon:"⛏️",encounters:[
+{name:"Deep Ore Vein",difficulty:4,type:"explore",enemy:"Cave-ins",reward:"Hollow ore x3"},
+{name:"Thessaly Trap Network",difficulty:11,type:"stealth",enemy:"Precision traps",reward:"Master Cavern Map fragment"},
+{name:"Cave Creature Nest",difficulty:8,type:"combat",enemy:"d6 cave creatures",reward:"Creature components"},
+{name:"Mushroom Field Harvest",difficulty:3,type:"explore",enemy:"Toxic spore chance",reward:"d4 healing compounds"},
+{name:"Cavern Smuggler Cache",difficulty:6,type:"stealth",enemy:"Smuggler guard",reward:"Black market goods"}
+]},
+edge:{name:"Hollow’s Edge",icon:"🌑",encounters:[
+{name:"Rift Deposit",difficulty:5,type:"explore",enemy:"The Pull — WIS rolls",reward:"Hollow rift loot"},
+{name:"Null Warden Test",difficulty:16,type:"boss",enemy:"The Null Warden",reward:"Edge Fragment"},
+{name:"Edge Entity",difficulty:12,type:"negotiate",enemy:"Unknown entity",reward:"Forbidden knowledge"},
+{name:"Transition Zone Harvest",difficulty:6,type:"explore",enemy:"Environmental instability",reward:"Hollow-Carved materials x2"}
+]},
+library:{name:"Sunken Library",icon:"📚",encounters:[
+{name:"Archive Dive",difficulty:5,type:"explore",enemy:"Flooding — SPD rolls",reward:"Research notes"},
+{name:"The Drowned Scholars",difficulty:9,type:"survive",enemy:"Animated scholars",reward:"Waterlogged scroll"},
+{name:"Restricted Section Breach",difficulty:11,type:"stealth",enemy:"Library defences",reward:"Forbidden text"},
+{name:"The Sink Encounter",difficulty:17,type:"boss",enemy:"The Sink — Phase 2",reward:"Drowned Archive fragment x2"},
+{name:"Flooded Vault",difficulty:7,type:"explore",enemy:"Water depth",reward:"Scholar’s case contents"}
+]}
+};
+
+const RAID_ACTIONS = [
+{coins:100,label:"Scout Ahead",desc:"Reveals what is in the next encounter before committing."},
+{coins:500,label:"Strike",desc:"Player attacks. Roll d20. Result determines outcome."},
+{coins:500,label:"Defend",desc:"Player holds position. +2 DEF this round."},
+{coins:500,label:"Search",desc:"Player searches area. Roll d20. 10+ finds something."},
+{coins:1000,label:"Special Ability",desc:"Player uses signature skill. Auto-success on one action."},
+{coins:1000,label:"Use Item",desc:"Player uses consumable from pack. Effect applied immediately."},
+{coins:5000,label:"Power Strike",desc:"All-in attack. 15+ deals major damage. 1-9 leaves exposed."},
+{coins:5000,label:"Gift Power",desc:"Activate class Gift Power. Automatic success."},
+{coins:10000,label:"Clutch Moment",desc:"Player defines what their character does. DM rolls for consequence scale only."},
+{coins:29999,label:"EPIC ACTION",desc:"World-level action. Changes raid outcome regardless of state."}
+];
+
+const BASE_ROOMS = {
+vault:{name:"The Vault",icon:"🏦",desc:"Stores items safely between sessions.",tiers:[
+{level:1,cost:0,bonus:"Basic storage. 20 item capacity."},
+{level:2,cost:5000,bonus:"50 item capacity. Items organised by type."},
+{level:3,cost:15000,bonus:"100 item capacity. Condition degrades slower."}
+]},
+barracks:{name:"The Barracks",icon:"⚔️",desc:"Housing for guard NPCs.",tiers:[
+{level:1,cost:3000,bonus:"2 guard slots. Base defended on 12+."},
+{level:2,cost:8000,bonus:"4 guards. Defense roll reduced to 9+."},
+{level:3,cost:20000,bonus:"6 guards. Raid requires 14+ to breach."}
+]},
+forge:{name:"The Forge",icon:"🔨",desc:"Repairs and upgrades items.",tiers:[
+{level:1,cost:4000,bonus:"Repair Damaged to Worn (500 coins)."},
+{level:2,cost:10000,bonus:"Repair any condition. Apply Common enchantments."},
+{level:3,cost:25000,bonus:"Full repair and Rare enchantments."}
+]},
+infirmary:{name:"The Infirmary",icon:"💚",desc:"Rest and recovery.",tiers:[
+{level:1,cost:3000,bonus:"Rest at base restores 3 HP."},
+{level:2,cost:8000,bonus:"Rest restores full HP. Cures standard curses."},
+{level:3,cost:18000,bonus:"Full recovery. +1 all rolls next session after rest."}
+]},
+watchtower:{name:"The Watchtower",icon:"🗼",desc:"Advance warning of incoming raids.",tiers:[
+{level:1,cost:4000,bonus:"1 session warning before a base raid."},
+{level:2,cost:10000,bonus:"2 session warning. Reveals attacker type."},
+{level:3,cost:22000,bonus:"Full intel. Remove one encounter from incoming raid."}
+]}
+};
+
+const RESIDENT_ROLES = {
+guard:{label:"Guard",icon:"🛡",bonus:"Counts toward barracks defense.",color:"#ef5350"},
+healer:{label:"Healer",icon:"💚",bonus:"Infirmary heals +2 HP/session.",color:"#66bb6a"},
+smith:{label:"Smith",icon:"🔨",bonus:"Forge repair costs -20%.",color:"#ffd54f"},
+scholar:{label:"Scholar",icon:"📜",bonus:"Vault items auto-identified.",color:"#4fc3f7"},
+merchant:{label:"Merchant",icon:"💰",bonus:"Base income: 50 coins/session.",color:"#ff9800"},
+bard:{label:"Bard",icon:"🎵",bonus:"All players +1 first roll after resting.",color:"#ce93d8"}
+};
+
+const WORLD_LOCATIONS = [
+{id:"forest",name:"The Dark Enchanted Forest",short:"Forest",icon:"🌲",color:"#2e7d32",x:18,y:28,danger:3,
+desc:"Ancient. Breathing. The trees here remember everything.",
+features:["Hollow-adjacent plant material at tree line","Ashen Pack territory — Gravenor hunts here","Forest caches hidden throughout","Sound travels strangely"],
+connectedTo:["kingdom","edge"]},
+{id:"kingdom",name:"The Crumbling Kingdom",short:"Kingdom",icon:"🏰",color:"#c62828",x:48,y:20,danger:2,
+desc:"What is left of an empire. The walls still stand in places.",
+features:["Garrison footlockers in ruins","Valdris holds the throne room","Kingdom vault accessible with key","Military remnants patrol unpredictably"],
+connectedTo:["forest","caverns","library"]},
+{id:"caverns",name:"The Underground Caverns",short:"Caverns",icon:"⛏️",color:"#6a1b9a",x:36,y:64,danger:3,
+desc:"The deep dark beneath everything else.",
+features:["Hollow ore deposits — primary weapon material","Thessaly operates from deep unmapped sections","Cavern mushroom clusters","Deepest sections never fully mapped"],
+connectedTo:["kingdom","library"]},
+{id:"edge",name:"The Hollow’s Edge",short:"Edge",icon:"🌑",color:"#9c27b0",x:74,y:36,danger:5,
+desc:"Where the Hollow ends and whatever comes next begins.",
+features:["Hollow rift deposits appear unpredictably","The Null Warden holds the deep boundary","Time moves differently here","Transition zone materials"],
+connectedTo:["forest","library"]},
+{id:"library",name:"The Sunken Library",short:"Library",icon:"📚",color:"#1565c0",x:64,y:68,danger:2,
+desc:"Partially submerged. Still functional. Still sinking.",
+features:["Scholar cases throughout readable levels","The Sink in permanently flooded lower levels","Restricted archive","Research desks surface occasionally"],
+connectedTo:["kingdom","caverns","edge"]}
+];
+
+const PIN_TYPES = {
+player:{label:"Player",color:"#b388ff",icon:"🧙"},
+villain:{label:"Villain",color:"#ef5350",icon:"🎭"},
+npc:{label:"NPC",color:"#4fc3f7",icon:"👤"},
+merchant:{label:"Merchant",color:"#ffd54f",icon:"💰"},
+event:{label:"Event",color:"#ff9800",icon:"⚡"},
+danger:{label:"Danger",color:"#f44336",icon:"⚠️"},
+ally:{label:"Ally",color:"#66bb6a",icon:"🤝"},
+mystery:{label:"Mystery",color:"#ce93d8",icon:"❓"}
+};
+
+const DANGER_LABELS = ["","Calm","Tense","Dangerous","Hostile","Extreme"];
+const DANGER_COLORS = ["","#66bb6a","#81c784","#ff9800","#ef5350","#b71c1c"];
+
+const LOG_TYPES = {
+session:{label:"Session",color:"#ffd54f",icon:"⏱"},
+dice:{label:"Dice",color:"#ce93d8",icon:"🎲"},
+hp:{label:"HP",color:"#66bb6a",icon:"❤️"},
+death:{label:"Death",color:"#ef5350",icon:"☠️"},
+action:{label:"Action",color:"#4fc3f7",icon:"⚔️"},
+gift:{label:"Gift",color:"#ff9800",icon:"🎁"},
+battle:{label:"Battle",color:"#e91e63",icon:"⚔️"},
+item:{label:"Item",color:"#81c784",icon:"🎒"},
+note:{label:"Note",color:"#bbb",icon:"📝"},
+consequence:{label:"Effect",color:"#9c27b0",icon:"⚗️"}
+};
+
+const CLASS_LORE = {
+Warrior:{
+tagline:"They showed up when things were falling apart. They haven’t left.",
+overview:"Warriors in the Hollow Realm are defined by persistence more than power. The Kingdom fell. The Forest turned hostile. The Edge destabilised. Warriors are the ones who were still standing when everything else stopped.",
+strengths:["Highest HP (12) — takes punishment that would destroy others","Natural protector — Gift Power shields allies from damage","DEF 7 — most durable class in sustained combat","Intimidation baseline — NPCs defer to them in tense situations"],
+weaknesses:["INT 3 — magical and knowledge challenges are hard","Social finesse is limited — blunt by default","Dependent on allies for healing","High HP creates overconfidence that gets them in trouble"],
+giftPower:"Shield Block — absorb incoming damage for an ally. Completely. Once per session. No roll required.",
+playstyle:"Warriors anchor the party. They take the hit, hold the line, buy time. The best Warriors are the ones who make everyone else better by being there.",
+lore:"In the Kingdom records, Warriors appear in every account of catastrophe. Not as heroes — as the last ones out, the ones who covered the retreat, the ones found standing over the bodies. The Hollow seems to find this useful."
+},
+Wizard:{
+tagline:"Magic in the Hollow Realm is not a skill — it is a conversation. Wizards are the ones who keep talking.",
+overview:"Wizards trade safety for capability. INT 9 and a spell kit that scales into things other classes cannot touch. The tradeoff is 7 HP and a relationship with the Hollow that is more direct and more dangerous than other classes.",
+strengths:["INT 9 — unmatched knowledge and magical capability","Hollow interactions are deeper and more direct","Arcane Surge doubles next roll effect — session-defining","Access to forbidden knowledge other classes cannot reach"],
+weaknesses:["7 HP — dies fast if targeted","DEF 2 — near-zero physical defence","Spell fumbles have consequences","The Hollow pays closer attention to them"],
+giftPower:"Arcane Surge — double the effect of the next roll. Any roll. Once per session.",
+playstyle:"Wizards change what is possible. They cannot take damage. They can make the difference between a difficult encounter and a solved one. The player who understands that their job is capability, not combat, plays Wizard well.",
+lore:"The Sunken Library is believed to have been a Wizard’s construction. Nobody has confirmed this. The Library has opinions about Wizards that it does not have about other classes."
+},
+Rogue:{
+tagline:"Rogues exist in the space between things. Between factions, between identities, between what happened and what anyone can prove.",
+overview:"SPD 9 and LCK 7 make Rogues the most unpredictable class. They have tools for every situation except sustained frontal combat. They solve problems sideways.",
+strengths:["SPD 9 — fastest class, initiative always","LCK 7 — the Hollow bends in their favour","Shadow Step avoids one consequence entirely — no roll","Stealth, deception, and social manipulation all scale"],
+weaknesses:["DEF 3 — fragile in direct confrontation","WIS 4 — the Hollow’s stranger effects hit harder","Reputation system matters more for them — trust is currency","Solo focus can leave party unsupported"],
+giftPower:"Shadow Step — avoid one consequence entirely. No roll required. Once per session.",
+playstyle:"Rogues do not fight fair. They should not. The player who tries to play a Rogue like a Warrior will die quickly and interestingly. The player who uses the environment, the exits, the other people in the room — that player is terrifying.",
+lore:"The Underground Caverns were mapped by a Rogue whose name does not appear in any official record. The maps are accurate. The cartographer is still alive. Neither fact has an explanation."
+},
+Healer:{
+tagline:"They have seen the worst the Hollow can do. They came back anyway.",
+overview:"WIS 9 and the only class with death prevention in their Gift Power. Healers are the difference between a session ending and a session continuing. They are also, quietly, the class the Hollow respects most.",
+strengths:["WIS 9 — highest wisdom, reads situations others miss","Miracle Touch brings downed players back to 1 HP — no roll","Hollow interactions are often protective toward them","Social trust is automatic in distress situations"],
+weaknesses:["Not a combat class — alone, they are vulnerable","Certain title tiers cause NPCs to over-rely on them","STR 3 — cannot force their way through anything","Their value makes them a target"],
+giftPower:"Miracle Touch — restore a downed character to 1 HP. Instant. No roll. Once per session.",
+playstyle:"Healers win sessions that should have ended. The player who understands their job is keeping the party alive — not dealing damage — is one of the most impactful in the game.",
+lore:"Every documented resurrection in the Hollow Realm involved a Healer being present. This is not a coincidence. The Hollow appears to route its capacity for reversal through them specifically."
+},
+Merchant:{
+tagline:"Everything has a price. They are the one who set it.",
+overview:"CHA 8 and LCK 8 — the highest combined social stats. Merchants do not fight and do not sneak. They negotiate, and when they cannot negotiate, they find someone who will do it for a reasonable fee.",
+strengths:["Highest pack capacity (12) — carries more than anyone","CHA 8 + LCK 8 — social and economic dominance","Black Market Gift Power creates options mid-session","Trade route knowledge makes them irreplaceable in movement"],
+weaknesses:["DEF 3 — fragile physically","STR 3 — cannot hold their own in combat","Dependent on the economy being functional","The Guild has opinions about them"],
+giftPower:"Black Market — purchase one special item mid-session from a contact. Once per session.",
+playstyle:"Merchants make the impossible affordable. The player who treats every problem as a transaction — who to pay, what to offer, who to leverage — plays Merchant correctly.",
+lore:"The most expensive transaction ever recorded in the Hollow Realm was facilitated by a Merchant whose class title was The Hollow’s Price. What was traded has not been disclosed."
+},
+Bard:{
+tagline:"Bards came to the Hollow Realm to document it. Or to escape something. Or both.",
+overview:"CHA 10 — highest single stat in the game. Bards shape how the story is told, which in the Hollow Realm means shaping what actually happened. The Hollow pays attention to them in a way that is not entirely comfortable.",
+strengths:["CHA 10 — unmatched social and performance capability","Encore re-rolls any failed roll — session insurance","The Hollow responds to their performances in Hollow locations","Story-shaping ability extends beyond mechanics"],
+weaknesses:["DEF 2 — lowest defence in the game","STR 3 — physically the least capable","The Hollow’s attention is not always benevolent","Fame creates recognition problems"],
+giftPower:"Encore — re-roll any failed roll. Any. Once per session.",
+playstyle:"Bards play the game at a different layer. Combat is a story. NPCs are characters in a narrative. The Hollow is an audience. The player who understands this and leans into it produces the most memorable sessions.",
+lore:"The Hollow Realm’s Memory title has been held once. That Bard’s work is what gave the Hollow its current shape. Nobody is entirely sure if this is metaphor."
+}
+};
+
+const VILLAIN_LORE = [
+{
+id:"gravenor",name:"Gravenor",title:"The Hollow’s Hound — Alpha of the Ashen Pack",
+type:"Werewolf — Arc Boss",arc:"Arc I — The Ashen Hunt",
+location:"Dark Enchanted Forest",threat:"Extreme",color:"#9c27b0",icon:"🐺",
+tagline:"He was a man once. The Hollow made him something more useful.",
+lore:"Gravenor was a Warrior stationed at the Forest edge. His unit did not come back. He did. Whatever the Hollow did to him, it kept something — the planning, the memory, the grudges. He leads the Ashen Pack not by command but by agreement. He is not cruel. He is not simple. He is patient in a way that makes him more dangerous than either.",
+motivation:"Reclaiming something the Hollow took from him. The players are obstacles, witnesses, or occasionally tools depending on what they have done.",
+strengths:["Regenerates 2 HP/round in Forest or low-light","Cannot be flanked — senses all within 40 feet","Pack Coordination — wolves gain +1 when he is above half HP","Hollow-Hardened — standard weapons deal -1 damage","Tracking — once scented, can find anywhere in Forest","Intimidation Aura — characters at 3 HP must roll WIS 12+ to act aggressively"],
+weaknesses:["Silver — bypasses Hollow-Hardened and deals +2","Fire — cannot regenerate when fire damage received","His honour — cannot pursue formal surrender","Daylight on open ground — -1 all rolls","The thing he lost — if present or named, loses one action"],
+phases:[
+{phase:1,name:"The Watcher",hp:"Full — 80 HP",desc:"Observes. Tests player responses. Will speak if approached with respect.",color:"#4fc3f7"},
+{phase:2,name:"The Hunter",hp:"Below 60 HP",desc:"Engages directly. Targets who did most damage to his pack. Precise, tactical.",color:"#ff9800"},
+{phase:3,name:"The Feral",hp:"Below 30 HP",desc:"The man recedes. Reckless, devastating. Pack members scatter.",color:"#ef5350"},
+{phase:4,name:"The Reckoning",hp:"At 0 HP",desc:"Collapses. The man surfaces. One round of lucidity. He speaks. What he says is arc-relevant.",color:"#ce93d8"}
+],
+loot:[
+{item:"Ashen Fang (weapon enchantment)",chance:"65%"},
+{item:"Pack Sigil (faction key)",chance:"80%"},
+{item:"Hollow-Touched Pelt",chance:"45%"},
+{item:"Gravenor’s Memory (arc item)",chance:"Phase 4 only — 100%"}
+]
+},
+{
+id:"valdris",name:"Valdris the Unmourned",title:"Last Chancellor of the Crumbling Kingdom",
+type:"Undead Political Villain — Arc Boss",arc:"Arc II — The Kingdom’s Debt",
+location:"Crumbling Kingdom throne room",threat:"High",color:"#ef5350",icon:"👑",
+tagline:"The Kingdom fell. He did not have the decency to go with it.",
+lore:"Valdris did not cause the Kingdom collapse. He facilitated it. He spent his chancellorship building leverage — favours, secrets, alliances that looked like loyalty and functioned like ownership. When collapse came, he had prepared an exit that required sacrificing every connection he had spent a career building. He made the trades. They worked. Then the Hollow noticed the accounting. He has been in the throne room since. Unable to leave. Unable to die. Unable to settle what he owes.",
+motivation:"He wants out. Settling his debts legitimately would cost him everything. He is actively recruiting others to transfer the debts to instead.",
+strengths:["Political Intelligence — knows leverage on every faction","Immune to damage inside throne room","Debt Transfer — applies Debt consequence to those who accept his deals","Undying — cannot be permanently killed until debts settled","Plausible Deniability — CHA 15+ required to accuse him"],
+weaknesses:["Outside Kingdom ruins — powers significantly reduced","His debts — returning items to specific people weakens him permanently","Cannot lie outright — only mislead","He needs the players — without someone to transfer debt to, he is stuck"],
+phases:[
+{phase:1,name:"The Chancellor",hp:"Full — 60 HP",desc:"Diplomatic. Charming. Genuinely helpful — selectively. Building trust to spend later.",color:"#4fc3f7"},
+{phase:2,name:"The Negotiator",hp:"Below 45 HP",desc:"Desperation shows. Offers improve. Costs worsen. Sets players against each other.",color:"#ff9800"},
+{phase:3,name:"The Unmourned",hp:"Below 20 HP",desc:"Drops the facade. Uses every piece of leverage simultaneously.",color:"#ef5350"}
+],
+loot:[
+{item:"Kingdom Vault Key",chance:"75%"},
+{item:"Debt Ledger",chance:"60%"},
+{item:"Chancellor’s Ring",chance:"40%"},
+{item:"Kingdom Signet",chance:"55%"}
+]
+},
+{
+id:"sink",name:"The Sink",title:"What Lives at the Bottom of the Sunken Library",
+type:"Entity — Unknown Classification",arc:"Arc III — The Drowned Archive",
+location:"Sunken Library — permanently submerged lowest level",threat:"Unknown",color:"#4fc3f7",icon:"🌊",
+tagline:"It did not sink the Library. It was why the Library was built there.",
+lore:"The Sunken Library was built on this location because of what was already here. The founders believed proximity to The Sink made knowledge more accessible. They were correct. Nobody has confirmed what the original negotiation cost. The record is in the flooded sections.",
+motivation:"Unknown. Possibly not goal-oriented in ways that translate to motivation. The working theory is that it is collecting — absorbing the knowledge in the drowned sections as the water rises.",
+strengths:["Omniscience (partial) — knows everything in drowned sections","Water domain — all enemy rolls -2 in flooded areas","The Pull — WIS 12+ each round in deep water or drift deeper","Cannot be damaged by conventional means in deep water","Information Weapon — can reveal Shadow Traits and Destiny Threads"],
+weaknesses:["Surface — power significantly reduced above water","Light — sustained magical light reduces The Pull by half","Direct questions — it answers them. Always. The answers are true.",
+"The founding documents describe a counter-condition"],
+phases:[
+{phase:1,name:"The Archive",hp:"Inapplicable",desc:"Passive. Provides information freely to any character who asks.",color:"#4fc3f7"},
+{phase:2,name:"The Collector",hp:"100 HP (partial emergence)",desc:"Responds to characters reaching deep levels. The Pull intensifies. Characters feel themselves being read.",color:"#9c27b0"},
+{phase:3,name:"The Answer",hp:"Cannot be killed — only recedes",desc:"Direct confrontation. Asks one question of each character about their Destiny Thread.",color:"#ce93d8"}
+],
+loot:[
+{item:"Drowned Archive fragment",chance:"70%"},
+{item:"Founding Document (arc key)",chance:"40%"},
+{item:"Waterlogged Enchantment Scroll",chance:"35%"}
+]
+},
+{
+id:"thessaly",name:"Thessaly Vane",title:"The Burned Cartographer",
+type:"Human Villain — Recurring",arc:"Arc IV — The Unmapped",
+location:"Underground Caverns — deep unmapped sections",threat:"High",color:"#ff9800",icon:"🗺️",
+tagline:"She mapped the Hollow Realm. Then she started making changes.",
+lore:"Thessaly was the Hollow Realm’s foremost cartographer before she went underground and stopped coming back up. Her maps are used by every faction. The early work stopped a few years ago. What she has been making since is different — maps that describe changes she made to the Hollow itself. The changes are real. The Hollow has not stopped her.",
+motivation:"She believes the Hollow is broken and she can fix it. She is correct about the first part. Her fix has side effects she has not fully accounted for, and she knows this.",
+strengths:["Environmental Mastery — knows Caverns completely, +3 terrain use","Remapping — can alter Cavern layout between sessions","Trap Network — every corridor she controls has one trap","Precision — called shots bypass armour on 17+"],
+weaknesses:["Above ground — loses advantage completely","Her maps — if players obtain one they have her plans","The burn — her right hand. Fire damage causes additional -1 to next action","She wants someone to understand and agree it is worth it"],
+phases:[
+{phase:1,name:"The Guide",hp:"Full — 70 HP",desc:"Presents as a resource. Genuinely helpful. Her help always serves her project.",color:"#4fc3f7"},
+{phase:2,name:"The Architect",hp:"Below 50 HP",desc:"Players have figured it out. She stops pretending and starts explaining.",color:"#ff9800"},
+{phase:3,name:"The Burned",hp:"Below 25 HP",desc:"Project near completion. Cannot be stopped by conventional means.",color:"#ef5350"}
+],
+loot:[
+{item:"Master Cavern Map",chance:"85%"},
+{item:"Burnt Cartographer Tools",chance:"60%"},
+{item:"Project Blueprint",chance:"55%"},
+{item:"Hollow Anchor material",chance:"35%"}
+]
+},
+{
+id:"warden",name:"The Null Warden",title:"Keeper of the Hollow’s Edge",
+type:"Entity — Environmental Boss",arc:"Arc V — The Edge",
+location:"The Hollow’s Edge exclusively",threat:"Absolute within domain",color:"#ce93d8",icon:"🌑",
+tagline:"It does not guard the Edge to keep things out. It guards it to keep things in.",
+lore:"The Null Warden holds the boundary between the Hollow and whatever exists beyond it. Before its arrival, things moved between the Hollow and the beyond without restriction. The Warden established current boundary conditions. The Hollow retained its character. The beyond retained its character. The interaction became regulated.",
+motivation:"Maintains the boundary. Whether it has motivations beyond this in ways players can engage with through normal means is unclear. It has helped characters working to stabilise the Edge and impeded characters unknowingly contributing to destabilisation.",
+strengths:["Domain absolute — cannot be defeated within Edge, only negotiated with","Null field — all magical effects suppressed in direct proximity","Patience — operates on timescales that make sessions irrelevant","The boundary itself — can make characters partially intangible","Cannot be surprised"],
+weaknesses:["Away from Edge — power diminishes significantly","Direct questions answered directly","Characters who genuinely understand the boundary are treated differently","Commitment — if players formally commit to stabilising, it becomes an ally"],
+phases:[
+{phase:1,name:"The Boundary",hp:"Environmental",desc:"Players feel it as directional wrongness. Observes. Does not interfere.",color:"#7b6fa0"},
+{phase:2,name:"The Warden",hp:"150 HP — Edge only",desc:"Tests each character. The test relates to their Shadow Trait or Destiny Thread.",color:"#9c27b0"},
+{phase:3,name:"The Keeper",hp:"Becomes a character",desc:"If players engaged honestly, meets them as a communicative presence. Negotiation about the boundary’s future.",color:"#ce93d8"}
+],
+loot:[
+{item:"Edge Fragment (mythic material)",chance:"Phase 2 pass — 60%"},
+{item:"Boundary Access (consequence)",chance:"Phase 2 pass — 100%"},
+{item:"The Record’s Summary",chance:"Phase 3 — 100%"}
+]
+}
+];
+
+const RULES_SECTIONS = [
+{id:"overview",title:"How The Hollow Realm Works",content:`The Hollow Realm is a live TikTok RPG. Viewers become characters. Gifts drive the story. The d20 decides everything.
+
+Every session follows five steps:
+
+1. Open World — DM sets the scene and announces what is active
+1. Players Take Actions — viewers gift coins to trigger character actions
+1. Dice Decides — d20 roll determines outcome for every action
+1. World Events — consequences cascade, the world changes
+1. Close Session — state saves, everything persists to next session
+
+Nothing resets between sessions. Every consequence, every alliance, every death carries forward. The Hollow Realm remembers everything.`}, {id:"dice",title:"The d20 System",content:`All outcomes are decided by a single d20 roll.
+
+1 = FUMBLE — Catastrophic backfire. The worst possible outcome plus a complication.
+2–4 = FAIL — Action fails entirely. No progress.
+5–9 = WEAK HIT — Partial success. Something goes wrong alongside what goes right.
+10–14 = SUCCESS — Clean success. The intended outcome.
+15–19 = STRONG HIT — Success plus a bonus effect of the DM’s choice.
+20 = CRITICAL — Legendary outcome. Announced to stream. Carries narrative weight.
+
+The roll is final. Players can gift for Re-Rolls:
+First re-roll: 500 coins (result is final)
+Second re-roll: 1,500 coins (absolutely final — cannot be re-rolled again)`}, {id:"gifts",title:"Gift System",content:`Viewers gift TikTok coins to take actions in the game. The DM resolves each gift as an action and rolls the d20.
+
+Entry (create a character): 1,000 coins
+Minor Roll (small action): 100 coins
+Moderate Roll (significant action): 500 coins
+Major Roll (story-level action): 5,000 coins
+Epic Roll (world-level): 29,999 coins (Lion gift)
+Episode Commission: 5,000+ coins
+Origin Story Episode: 10,000 coins
+Gift a Legend: 20,000 coins
+Resurrection: 6,000 coins
+Protection Mode (per session missed): 1,000 coins
+First Re-Roll: 500 coins
+Second Re-Roll: 1,500 coins
+Item Trade: 1,000 coins
+Box Battle Vote: 500 coins minimum
+
+PayPal option available at 80% of TikTok coin value.`}, {id:"death",title:"Death and Resurrection",content:`When a character reaches 0 HP they are DOWNED — not dead. A Healer can revive a downed character this session.
+
+If no revival comes, the character dies.
+
+Death is permanent unless the community pays for a Resurrection (6,000 coins). A new character costs 1,000 coins. Dead character names retire permanently — no one else uses that name. Their legacy stays in the lore forever.
+
+The Domino Rule: every death creates permanent ripple effects. NPCs react. Factions shift. The Hollow notices.`}, {id:"protection",title:"Protection Mode",content:`Players can pay 1,000 coins per session they will miss to maintain Protection Mode.
+
+Protection Mode covers:
+
+- Death protection (cannot be killed while protected)
+- Box Battle targeting (cannot be forced into a Battle while protected)
+
+Protection Mode does NOT cover:
+
+- Curses
+- World events
+- NPC relationship changes
+- Story consequences
+- Anything that happens to them narratively
+
+The Discord Insurance Board tracks Protection Mode publicly. Everyone can see who is and is not protected.`}, {id:"battle",title:"Box Battle System",content:`Box Battles are TikTok Live battles between two players. The community decides the outcome with coins.
+
+How it works:
+
+1. Chat votes to initiate (500 coin minimum)
+1. Both players enter TikTok boxes
+1. Communities throw coins for 3 minutes
+1. Highest coin total wins
+
+Consequence Ladder:
+MINOR (under 5,000 coins difference): Lose title OR stat debuff
+MODERATE (5,000–9,999): Cursed for 2 sessions OR item stolen
+MAJOR (10,000–19,999): Exile OR servant
+SEVERE (20,000–44,999): Killed OR curse + exile + theft
+OP CONTROL (45,000+): Winner narrates anything for one session`}
+];
+
+const FAQ = [
+{q:"Can I join mid-arc?",a:"Yes. Create a character for 1,000 coins. You begin at a starting position and enter the world at the next session."},
+{q:"What happens if I miss a session?",a:"Your character exists and can be affected. Pay 1,000 coins Protection Mode per session missed to prevent death and Box Battle targeting. You cannot prevent curses, story events, or NPC relationship changes."},
+{q:"Can I betray another player?",a:"Yes. No declaration required. The betrayal happens, the DM narrates consequences, and the Domino Rule applies. It cannot be undone. It will be a Kling episode."},
+{q:"What is the Domino Rule?",a:"Every significant action creates permanent ripple effects. A betrayal changes relationships. A death shifts faction balance. A critical roll echoes forward. Nothing in the Hollow Realm happens in isolation."},
+{q:"Can dead characters come back?",a:"Yes, for 6,000 coins (Resurrection). Or create a new character for 1,000 coins. Dead character names retire permanently — the name cannot be reused."},
+{q:"How does the Hollow’s Edge work?",a:"It is the boundary of the known world. Entering it requires the Null Warden’s tolerance. Things come back from the Edge changed. Three characters across documented Hollow history crossed fully. None returned."},
+{q:"What is the Hall of Fame?",a:"Inducted for: Natural 20 world-changing action, story-defining death, Box Battle OP tier, Legendary title, or Origin Story episode. Hall of Fame characters are announced every live session and referenced permanently in arc finales."}
+];
+const ARSENAL_WEAPONS = {
+  Warrior: [
+    { name: "Kingdom Issue Broadsword", type: "Slashing", rarity: "Common", damage: "1d8 DMG", effect: "None.", location: "Crumbling Kingdom — guard barracks", lore: "The edge is dull, and the grip is slick with old sweat. It killed mostly deserters at the end.", image: "🗡️", color: "#aaa", bg: "rgba(40,40,50,0.8)" },
+    { name: "Hollow-Iron Greatsword", type: "Heavy Slashing", rarity: "Rare", damage: "2d6 DMG", effect: "Ignores the first point of armor on enemies native to the Hollow.", location: "Underground Cavern Forges", lore: "It is uncomfortably cold to the touch. When swung, it makes absolutely no sound, leaving a quiet vacuum in its wake.", image: "⚔️", color: "#4fc3f7", bg: "rgba(5,30,50,0.8)" },
+    { name: "The Nameless Warden’s Cleaver", type: "Relic Heavy", rarity: "Legendary", damage: "2d8+2 DMG", effect: "Once per arc, if an attack reduces an enemy to 0 HP, immediately take another full turn.", location: "Throne Room Depths (Guarded)", lore: "The Warden forgot his name long before he forgot his duty. The blade remembers the violence, if not the reason for it.", image: "🪓", color: "#ffd54f", bg: "rgba(40,30,5,0.8)" }
+  ],
+  Rogue: [
+    { name: "Gutter-Spike", type: "Piercing", rarity: "Common", damage: "1d4 DMG", effect: "+1 to hit if the target doesn't know you are there.", location: "Black Market, Slums", lore: "It’s practically just a sharpened piece of fence. Tetanus is a feature, not a bug.", image: "🔪", color: "#aaa", bg: "rgba(40,40,50,0.8)" },
+    { name: "Void-Glass Stiletto", type: "Precision", rarity: "Mythic", damage: "1d6 DMG", effect: "Critical hits permanently sever a piece of the target's shadow, reducing their max HP by 2 for the rest of the arc.", location: "Beyond the Hollow's Edge", lore: "You can see right through the blade. Sometimes, if you look closely, you see things looking back.", image: "🌌", color: "#ce93d8", bg: "rgba(30,5,50,0.8)" }
+  ],
+  Wizard: [
+    { name: "Splintered Teaching Staff", type: "Blunt / Focus", rarity: "Common", damage: "1d4 DMG", effect: "Can be used as a basic light source.", location: "Sunken Library — initiate quarters", lore: "The wood is petrified. It’s better for hitting things than casting magic, but it remembers a few basic sparks.", image: "🦯", color: "#aaa", bg: "rgba(40,40,50,0.8)" },
+    { name: "Sunken Library Lantern", type: "Off-hand Focus", rarity: "Uncommon", damage: "+1 Spell DMG", effect: "Reveals invisible entities within 15 feet. They don't like being looked at.", location: "Sunken Library — flooded archives", lore: "The flame inside doesn't need oil. It burns on the secrets you haven't told anyone yet.", image: "🏮", color: "#66bb6a", bg: "rgba(10,40,15,0.8)" },
+    { name: "Hollow-Glass Tome", type: "Grimoire", rarity: "Rare", damage: "1d8 DMG", effect: "Spells cast through this tome deal +2 DMG, but you take 1 DMG every time you roll a natural 1 or 2.", location: "Hollow’s Edge — buried in the ash", lore: "The pages are made of a thin, translucent material. The words rearrange themselves when you aren't looking.", image: "📖", color: "#4fc3f7", bg: "rgba(5,30,50,0.8)" },
+    { name: "The Arcanist’s Spine", type: "Relic Staff", rarity: "Legendary", damage: "2d6 DMG", effect: "Once per arc, cast any spell without spending mana or requiring a roll. It simply succeeds.", location: "The Grand Archive", lore: "A literal spinal column dipped in quicksilver. Magic flows through it better than blood ever did.", image: "🦴", color: "#ffd54f", bg: "rgba(40,30,5,0.8)" },
+    { name: "Tear in the Tapestry", type: "Anomaly", rarity: "Mythic", damage: "3d6 DMG", effect: "Attacks ignore physical barriers. Once per arc: erase a non-boss enemy from reality entirely.", location: "Beyond the Hollow's Edge", lore: "You aren't holding a weapon. You are holding a glitch in the world's code. Try not to drop it.", image: "🌌", color: "#ce93d8", bg: "rgba(30,5,50,0.8)" }
+  ],
+  Healer: [
+    { name: "Rusted Field Scalpel", type: "Piercing", rarity: "Common", damage: "1d4 DMG", effect: "Can be used to extract venom or infection with a successful INT roll.", location: "Healing Order supply points", lore: "Sterilized by fire so many times the blade has warped. It hurts, but it saves the limb.", image: "🔪", color: "#aaa", bg: "rgba(40,40,50,0.8)" },
+    { name: "Order Censer", type: "Blunt / AoE", rarity: "Uncommon", damage: "1d6 DMG", effect: "Allies within 10 feet slowly regenerate 1 HP per round outside of combat.", location: "Abandoned sanctuaries", lore: "Swinging it creates a thick, sweet-smelling smoke that numbs pain and clouds the mind.", image: "🏺", color: "#66bb6a", bg: "rgba(10,40,15,0.8)" },
+    { name: "Blood-Glass Syringe", type: "Precision", rarity: "Rare", damage: "1d6 Piercing", effect: "On successful hit, drain 2 HP from target and heal yourself or adjacent ally for same amount.", location: "Underground Caverns", lore: "The glass is always warm. It doesn't just take blood; it distills it into pure vitality.", image: "💉", color: "#4fc3f7", bg: "rgba(5,30,50,0.8)" },
+    { name: "The First Saint’s Femur", type: "Relic Mace", rarity: "Legendary", damage: "1d10 DMG", effect: "Healing spells cast while holding this weapon heal for maximum possible value.", location: "The Deep Catacombs", lore: "They say the First Saint never harmed a soul. Whoever wields his leg bone today can't make the same promise.", image: "🦴", color: "#ffd54f", bg: "rgba(40,30,5,0.8)" },
+    { name: "Hollow-Woven Suture", type: "Tool / Weapon", rarity: "Mythic", damage: "1d4 DMG", effect: "Can 'stitch' an enemy's mouth shut or stitch an ally's soul back into their body (preventing instant death).", location: "Given by the Hollow to a true pacifist.", lore: "Thread spun from the fabric of the void. It binds things together that have no business touching.", image: "🪡", color: "#ce93d8", bg: "rgba(30,5,50,0.8)" }
+  ],
+  Merchant: [
+    { name: "Iron-Shod Walking Stick", type: "Blunt", rarity: "Common", damage: "1d6 DMG", effect: "Can test for traps by tapping the ground.", location: "Trade routes", lore: "Heavy enough to lean on during long treks. Heavy enough to crack a goblin's jaw.", image: "🦯", color: "#aaa", bg: "rgba(40,40,50,0.8)" },
+    { name: "Weighted Ledger", type: "Heavy Blunt", rarity: "Uncommon", damage: "1d8 DMG", effect: "Hitting an enemy has a 20% chance to knock loose 1d4 coins from their pockets.", location: "Guild outposts", lore: "Bound in thick leather and filled with debts. Literally throwing the book at them.", image: "📓", color: "#66bb6a", bg: "rgba(10,40,15,0.8)" },
+    { name: "Guildmaster’s Cane", type: "Blunt / Finesse", rarity: "Rare", damage: "1d6+2 DMG", effect: "Contains a hidden spring-loaded blade. First strike in combat has advantage.", location: "Guild vaults", lore: "A symbol of status, hollowed out to hide a vicious streak. Much like the Guild itself.", image: "🪄", color: "#4fc3f7", bg: "rgba(5,30,50,0.8)" },
+    { name: "The Debt Collector’s Scales", type: "Flail", rarity: "Legendary", damage: "Variable DMG", effect: "Damage scales with the amount of gold you are carrying. Max 2d10.", location: "The Hollow's Economy", lore: "Two heavy iron baskets on chains. The heavier your purse, the harder they hit.", image: "⚖️", color: "#ffd54f", bg: "rgba(40,30,5,0.8)" },
+    { name: "Coin of the Void Realm", type: "Thrown", rarity: "Mythic", damage: "Infinite or Zero", effect: "Flip the coin. Heads: Target is erased. Tails: You lose all gold and take 99% of max HP as damage.", location: "Awarded for impossible transaction.", lore: "It has no face, no tails, just an ever-shifting void. Do you feel lucky?", image: "🪙", color: "#ce93d8", bg: "rgba(30,5,50,0.8)" }
+  ],
+  Bard: [
+    { name: "Scuffed Tavern Lute", type: "Instrument", rarity: "Common", damage: "1d4 DMG", effect: "+1 to performance in seedy establishments.", location: "Any market or tavern", lore: "Two strings are out of tune and there's a crack in the base, but it plays a decent drinking song.", image: "🎸", color: "#aaa", bg: "rgba(40,40,50,0.8)" },
+    { name: "Courtier’s Concealed Blade", type: "Finesse Piercing", rarity: "Uncommon", damage: "1d6 DMG", effect: "Easily hidden in formal wear. Guards will not find it on a standard search.", location: "Court tailors", lore: "Looks like a decorative fan or a hairpin until the moment it suddenly doesn't.", image: "🗡️", color: "#66bb6a", bg: "rgba(10,40,15,0.8)" },
+    { name: "Hollow-Bone Flute", type: "Instrument / Focus", rarity: "Rare", damage: "1d4 Sonic DMG", effect: "Playing a dissonant chord forces enemies to attack the nearest creature to them for one round.", location: "The Hollow’s Edge", lore: "Carved from a bone that doesn't match any known animal. The notes it produces make your teeth itch.", image: "🪈", color: "#4fc3f7", bg: "rgba(5,30,50,0.8)" },
+    { name: "The Maestro’s Baton", type: "Wand / Focus", rarity: "Legendary", damage: "1d8 DMG", effect: "Once per session, dictate the movement of up to 3 enemies for one turn, as if conducting them.", location: "Hollow locations", lore: "The wood is stained with sweat and a little blood. The music it demands is always a tragedy.", image: "🪄", color: "#ffd54f", bg: "rgba(40,30,5,0.8)" },
+    { name: "Chord of the Final Song", type: "String / Garrote", rarity: "Mythic", damage: "2d10 DMG", effect: "Strung across an instrument, deafens permanently. As a garrote, cuts armor seamlessly.", location: "Where great stories ended.", lore: "A single wire pulled from the tension between dimensions. It hums with the sound of everything ending.", image: "🎼", color: "#ce93d8", bg: "rgba(30,5,50,0.8)" }
+  ]
+};
+
+const ARSENAL_ARMOR = {
+  Warrior: [
+    { name: "Ironhide Brigandine", slot: "Chest", rarity: "Uncommon", defense: "+2 DEF", effect: "Reduce first damage taken each session by 1.", location: "Military outposts", lore: "Layered iron rings over boiled leather. Favoured by soldiers who expected to survive.", image: "🛡", color: "#66bb6a", bg: "rgba(10,40,15,0.8)" },
+    { name: "The Void Carapace", slot: "Full Armor", rarity: "Mythic", defense: "+6 DEF", effect: "Damage below 3 is reduced to 0. Once per arc: enter an invulnerable stance for one round.", location: "The Hollow’s Edge", lore: "It doesn't look like armor. It looks like the Hollow decided to protect someone.", image: "🌑", color: "#ce93d8", bg: "rgba(30,5,50,0.8)" }
+  ],
+  Rogue: [
+    { name: "Hollow-Shadow Wrap", slot: "Full Armor", rarity: "Rare", defense: "+1 DEF", effect: "In Hollow locations, visually blend with surroundings. Detection rolls against you have -2.", location: "The Hollow’s Edge", lore: "The wrap absorbs light slightly wrong. In the Hollow, it absorbs it completely right.", image: "🌑", color: "#4fc3f7", bg: "rgba(5,30,50,0.8)" }
+  ]
+};
+
+const ARSENAL_ENCHANTMENTS = [
+  { name: "Hollow Whisper", slot: "Weapon", rarity: "Uncommon", effect: "Alerts carrier when ambush or hidden threat is within 30 feet.", location: "Hollow’s Edge enchanters", lore: "The Hollow whispers constantly. This enchantment just makes one specific warning audible.", image: "👂", color: "#66bb6a", bg: "rgba(10,40,15,0.8)" },
+  { name: "Void Edge", slot: "Weapon", rarity: "Legendary", effect: "Strikes ignore all DEF bonuses from armor. The blade finds the gap that isn't there.", location: "The Hollow’s Edge", lore: "The Hollow doesn't distinguish between armor and absence. Neither does this.", image: "🌑", color: "#ffd54f", bg: "rgba(40,30,5,0.8)" },
+  { name: "Glass Cannon Curse", slot: "Any", rarity: "Cursed", effect: "All damage dealt is doubled. All damage received is tripled.", location: "The Hollow’s Offering", lore: "Victory is certain. Survival is not.", image: "🍷", color: "#ef5350", bg: "rgba(50,5,5,0.8)" }
+];
+
+const ARSENAL_CHESTS = [
+  { name: "Sunken Library Vault", type: "Sealed Repository", location: "Sunken Library — flooded lower levels", spawnChance: "Rare", locked: true, lockDifficulty: "INT 16+ check to decipher the elemental ward.", lore: "The librarians sealed this not to keep thieves out, but to keep the book inside from escaping.", loot: [ { item: "Mythic Grimoire", chance: "15%" }, { item: "Ruined, waterlogged pages (Useless)", chance: "45%" }, { item: "A trapped memory that attacks the opener", chance: "40%" } ], image: "🏛", color: "#4fc3f7" }
+];
+
+const ARSENAL_LOOT_BINS = [
+  { name: "Collapsed Barracks Pile", type: "Debris Loot", location: "Crumbling Kingdom", roll: "d20 roll to search", note: "The rubble has been searched before. Not everything was found.", image: "🏚️", color: "#ffd54f", loot: [ { item: "Garrison weapon (random tier)", chance: "40%" }, { item: "Coin pouch (d6 × 10)", chance: "35%" }, { item: "Trap — something left intentionally", chance: "10%" } ] },
+  { name: "Hollow Rift Deposit", type: "Anomalous Loot", location: "The Hollow’s Edge", roll: "Automatic — roll d20 for tier.", note: "The Hollow deposits things near its edge. Whether this is intentional is a question nobody has answered.", image: "🌀", color: "#ce93d8", loot: [ { item: "Item from a dead player’s inventory", chance: "20%" }, { item: "Something that belongs to the current arc's villain", chance: "15%" }, { item: "Nothing — but the rift noticed you", chance: "10%" } ] }
+];
+
+// Helper functions
+function getRep(cls, roll) { return (REP[cls]||[]).find(r => roll >= r.r[0] && roll <= r.r[1]); }
+function getWeapon(cls, roll) { return (WEAPONS[cls]||[]).find(r => roll >= r.r[0] && roll <= r.r[1]); }
+function getTrait(roll) { return TRAIT_TIERS.find(t => roll >= t.range[0] && roll <= t.range[1]); }
+function getSkill(cls, roll) { return (SIGNATURE_SKILLS[cls]||[]).find(r => roll >= r.r[0] && roll <= r.r[1]); }
+function getShadow(cls, roll) { return (SHADOW_TRAITS[cls]||[]).find(r => roll >= r.r[0] && roll <= r.r[1]); }
+function getEnchant(cls, roll) { return (ENCHANTMENTS[cls]||[]).find(r => roll >= r.r[0] && roll <= r.r[1]); }
+function getDestiny(cls, roll) { return (DESTINY_THREADS[cls]||[]).find(r => roll >= r.r[0] && roll <= r.r[1]); }
+function d20() { return Math.floor(Math.random() * 20) + 1; }
+function getDiceDisplay(r) {
+if (!r) return null;
+if (r === 1) return {label:"💀 FUMBLE",desc:"Catastrophic backfire.",bg:"#b71c1c",glow:"#ef5350"};
+if (r <= 4) return {label:"✗ FAIL",desc:"Action fails entirely.",bg:"#c62828",glow:"#ef5350"};
+if (r <= 9) return {label:"⚠ WEAK HIT",desc:"Partial — something goes wrong.",bg:"rgba(100,40,5,0.95)",glow:"#ff9800"};
+if (r <= 14) return {label:"✓ SUCCESS",desc:"Clean success.",bg:"rgba(10,50,20,0.95)",glow:"#4caf50"};
+if (r <= 19) return {label:"★ STRONG HIT",desc:"Success + bonus effect.",bg:"rgba(5,30,80,0.95)",glow:"#4fc3f7"};
+return {label:"⚡ CRITICAL!",desc:"LEGENDARY. ANNOUNCE IT.",bg:"rgba(60,10,100,0.95)",glow:"#ce93d8"};
+}
+function getPlayerStats(p) {
+const base = CLASS_BASE_STATS[p.cls] || {STR:5,DEF:5,INT:5,WIS:5,SPD:5,CHA:5,LCK:5};
+const trait = TRAIT_TIERS.find(t => t.level === p.traitLevel);
+const bonus = trait ? trait.bonus : 0;
+const primary = PRIMARY_STAT[p.cls] || "STR";
+return Object.fromEntries(Object.entries(base).map(([k,v]) => [k, k === primary ? v + bonus : v]));
+}
+function rangeLabel(r) { return r[0] === r[1] ? String(r[0]) : r[0]+'-'+r[1]; }
+
+// ═══════════════════════════════════════════════════
+// STATE + STORAGE
+// ═══════════════════════════════════════════════════
+const STORAGE_PREFIX = 'hr_';
+function save(key, val) { try { localStorage.setItem(STORAGE_PREFIX+key, JSON.stringify(val)); } catch(e){} }
+function load(key, def) { try { const v = localStorage.getItem(STORAGE_PREFIX+key); return v ? JSON.parse(v) : def; } catch(e){ return def; } }
+
+const STATE = {
+tab: 'players',
+players: load('players', []),
+sessionLog: load('session_log', []),
+sessionActive: load('session_active', false),
+sessionNumber: load('session_number', 1),
+sessionStartTime: load('session_start_time', null),
+mapPins: load('map_pins', []),
+mapEvents: load('map_events', {}),
+mapDanger: load('map_danger', {}),
+raidHistory: load('raid_history', []),
+baseRooms: load('base_rooms', {vault:1,barracks:0,forge:0,infirmary:0,watchtower:0}),
+baseResidents: load('base_residents', []),
+baseDefense: load('base_defense', 3),
+vaults: load('vaults', {}),
+packs: load('packs', {}),
+villainsLive: load('villains_live', []),
+// UI only (not persisted)
+search: '',
+selectedPlayer: null,
+creation: {username:'',charname:'',cls:'',origin:'',payment:'tiktok',notes:'',
+repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null},
+diceRoll: null,
+diceSpinning: false,
+diceHistory: [],
+diceContext: {player:'',purpose:'',target:'',custom:''},
+battleP1:'',battleP2:'',battleCoins1:'',battleCoins2:'',
+battleTime:180,battleRunning:false,battleInterval:null,
+mapLocation: null,
+showAddPin: false,
+addPinForm: {name:'',type:'player',note:''},
+activeRaid: null,
+raidLog: [],
+raidPhase: 0,
+raidParty: [],
+raidLocation: '',
+raidTier: 'skirmish',
+logSearch: '',
+logFilter: 'all',
+manualEntry: {who:'',what:'',type:null},
+selectedInventoryPlayer: null,
+inventoryTab: 'pack',
+addItemForm: {name:'',type:'weapon',rarity:'Common',condition:'Pristine',enchantment:'',provenance:'',obtainedBy:'found',note:''},
+showAddItem: false,
+showAddResident: false,
+residentForm: {name:'',role:'guard',note:''},
+baseAttack: null,
+classTab: 'Warrior',
+classSec: 'overview',
+villainTab: null,
+villainSec: 'lore',
+rulesTab: 'overview',
+faqSearch: '',
+faqOpen: null,
+arsenalTab: 'weapons',
+arsenalTarget: ''
+};
+
+function saveAll() {
+save('players', STATE.players);
+save('session_log', STATE.sessionLog);
+save('session_active', STATE.sessionActive);
+save('session_number', STATE.sessionNumber);
+save('session_start_time', STATE.sessionStartTime);
+save('map_pins', STATE.mapPins);
+save('map_events', STATE.mapEvents);
+save('map_danger', STATE.mapDanger);
+save('raid_history', STATE.raidHistory);
+save('base_rooms', STATE.baseRooms);
+save('base_residents', STATE.baseResidents);
+save('base_defense', STATE.baseDefense);
+save('vaults', STATE.vaults);
+save('packs', STATE.packs);
+save('villains_live', STATE.villainsLive);
+}
+
+function addLog(entry) {
+if (!STATE.sessionActive) return;
+const now = new Date();
+const e = {
+id: Date.now() + Math.random(),
+time: now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}),
+session: STATE.sessionNumber,
+...entry
+};
+STATE.sessionLog.push(e);
+save('session_log', STATE.sessionLog);
+}
+
+function updatePlayer(id, updates) {
+const idx = STATE.players.findIndex(p => p.id === id);
+if (idx > -1) {
+STATE.players[idx] = {...STATE.players[idx], ...updates};
+save('players', STATE.players);
+}
+}
+
+function adjHP(id, delta) {
+const p = STATE.players.find(x => x.id === id);
+if (!p) return;
+const nh = Math.max(0, Math.min(p.maxHp, p.hp + delta));
+updatePlayer(id, {hp: nh});
+addLog({type:'hp', who:p.charname, what:`HP ${delta>0?'+':''}${delta} → ${nh}/${p.maxHp}`});
+if (nh === 0) addLog({type:'death', who:p.charname, what:`${p.charname} DOWNED at 0 HP`});
+}
+
+const TABS=[
+  {id:'players',label:'👥 Players'},
+  {id:'create',label:'🪆 Create'},
+  {id:'npcs',label:'🏠 NPCs'},
+  {id:'villains',label:'🎭 Villains'},
+  {id:'dice',label:'🎲 Dice'},
+  {id:'battle',label:'⚔️ Battle'},
+  {id:'log',label:'⏱ Log'},
+  {id:'map',label:'🌍 Map'},
+  {id:'raids',label:'⚔️ Raids'},
+  {id:'base',label:'🏠 Base'},
+  {id:'arsenal',label:'🛡️ Arsenal'},
+  {id:'classes',label:'🧙 Classes'},
+  {id:'rules',label:'📜 Rules'}
+];
+
+function render(){
+  const tb=document.getElementById('tab-bar');
+  const pn=document.getElementById('panel');
+  if(!tb||!pn) return;
+
+  // This builds the navigation buttons
+  tb.innerHTML = TABS.map(t => `<div class="tab${STATE.tab === t.id ? ' active' : ''}" onclick="STATE.tab='${t.id}';render()">${t.label}</div>`).join('');
+
+  pn.className = 'panel fade-in';
+
+  switch(STATE.tab){
+    case 'players':  pn.innerHTML=renderPlayers();break;
+    case 'create':   pn.innerHTML=renderCreate();break;
+    case 'npcs':     pn.innerHTML=renderNPCs();break;
+    case 'villains': pn.innerHTML=renderVillains();break;
+    case 'dice':     pn.innerHTML=renderDice();break;
+    case 'battle':   pn.innerHTML=renderBattle();break;
+    case 'log':      pn.innerHTML=renderLog();break;
+    case 'map':      pn.innerHTML=renderMap();break;
+    case 'raids':    pn.innerHTML=renderRaids();break;
+    case 'base':     pn.innerHTML=renderBase();break;
+    case 'arsenal':  pn.innerHTML=renderArsenal();break;
+    case 'classes':  pn.innerHTML=renderClasses();break;
+    case 'rules':    pn.innerHTML=renderRules();break;
+    default:         pn.innerHTML=renderPlayers();
+  }
+
+  const pm=document.getElementById('player-modal');
+  const im=document.getElementById('inventory-modal');
+  if(pm){pm.innerHTML=STATE.selectedPlayer?renderPlayerModal():'';pm.className='modal-overlay'+(STATE.selectedPlayer?' active':'');}
+  if(im){im.innerHTML=STATE.selectedInventoryPlayer?renderInventoryModal():'';im.className='modal-overlay'+(STATE.selectedInventoryPlayer?' active':'');}
+}
+
+function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+function hpColor(pct){return pct>60?'var(--green)':pct>30?'#ff9800':'var(--red)';}
+
+function statBars(p){
+const stats=getPlayerStats(p);
+return '<div class="stat-grid">'+Object.entries(stats).map(([s,v])=>{
+const c=STAT_COLORS[s];const pct=Math.min(100,(v/12)*100);
+return`<div><div class="stat-label"><span style="color:${c};font-weight:bold">${s}</span><span style="color:${c}">${v}</span></div><div class="stat-bar-wrap"><div class="stat-bar" style="width:${pct}%;background:${c};box-shadow:0 0 4px ${c}80"></div></div></div>`;
+}).join('')+'</div>';
+}
+
+// PLAYERS TAB
+function renderPlayers(){
+const live=STATE.players.filter(p=>!p.isDead&&(p.charname||'').toLowerCase().includes((STATE.search||'').toLowerCase()));
+const dead=STATE.players.filter(p=>p.isDead&&(p.charname||'').toLowerCase().includes((STATE.search||'').toLowerCase()));
+return`<div style="display:flex;gap:8px;margin-bottom:12px"> <div style="position:relative;flex:1"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--dim)">🔍</span> <input class="input" style="padding-left:30px" placeholder="Search players..." value="${esc(STATE.search||'')}" oninput="STATE.search=this.value;render()"></div> <button class="btn btn-purple" onclick="STATE.tab='create';render()">+ New</button></div> ${live.length+dead.length===0?`<div class="empty-state"><div class="empty-icon">🌑</div><div>The Hollow awaits its first adventurers.</div></div>`:''} ${live.map(p=>playerCard(p)).join('')} ${dead.length?`<div class="section-title" style="margin-top:16px">☠ Fallen</div>${dead.map(p=>playerCard(p)).join('')}`:''}`;
+}
+
+function playerCard(p){
+const pct=Math.max(0,(p.hp/p.maxHp)*100);const hc=hpColor(pct);
+return`<div class="player-card${p.protectionBalance>0?' protected':''}${p.isDead?' dead':''}" onclick="STATE.selectedPlayer=${p.id};render()"> <div style="display:flex;justify-content:space-between;align-items:flex-start"> <div> <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)}${p.isDead?' ☠':''}</div> <div style="font-size:0.62rem;color:var(--purple-light);font-family:Arial,sans-serif">${CLASS_ICON[p.cls]||''} ${p.cls} · @${esc(p.username)}</div> <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">📍 ${esc(p.origin||'')}</div> ${p.title?`<div style="font-size:0.62rem;color:var(--gold);font-style:italic">✦ ${esc(p.title)}</div>`:''} </div> <span style="font-size:0.6rem;color:var(--dim);font-family:Arial,sans-serif">Tap →</span> </div> <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:${hc};margin-top:9px;margin-bottom:2px;font-family:Arial,sans-serif"><span style="font-weight:bold">HP</span><span>${p.hp}/${p.maxHp}</span></div> <div class="hp-bar-wrap"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 6px ${hc}"></div></div> ${statBars(p)} ${p.traitLevel?`<div style="font-size:0.6rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'#bbb'};margin-top:5px;font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:6px"> ${p.isDead?'<span class="tag pill-wanted">☠ DEAD</span>':''} ${p.protectionBalance>0?`<span class="tag" style="background:rgba(60,50,10,0.8);color:var(--gold)">🛡 ${p.protectionBalance.toLocaleString()}</span>`:''} ${(p.consequences||[]).map(c=>`<span class="tag pill-${c.type||'curse'}">${c.label}</span>`).join('')}
+</div>
+
+  </div>`;
+}
+
+function renderPlayerModal(){
+const p=STATE.players.find(x=>x.id===STATE.selectedPlayer);if(!p)return'';
+const pct=Math.max(0,(p.hp/p.maxHp)*100);const hc=hpColor(pct);
+const stats=getPlayerStats(p);
+const FULL={STR:'Strength',DEF:'Defense',INT:'Intelligence',WIS:'Wisdom',SPD:'Speed',CHA:'Charisma',LCK:'Luck'};
+return`<div class="modal-box"> <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"> <div> <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)} — ${CLASS_ICON[p.cls]||''} ${p.cls}</div> <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">@${esc(p.username)} · ${esc(p.origin||'')} · ${p.joined||''}</div> ${p.title?`<div style="font-size:0.7rem;color:var(--gold);font-style:italic;margin-top:2px">✦ ${esc(p.title)}</div>`:''} </div> <button style="background:none;border:none;color:var(--dim);font-size:1.3rem;cursor:pointer" onclick="STATE.selectedPlayer=null;render()">✕</button> </div> <div class="card" style="margin-bottom:12px"> <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"> <span style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;font-family:Arial,sans-serif">Hit Points</span> <span style="font-size:1.1rem;font-weight:bold;color:${hc};font-family:Arial,sans-serif">${p.hp}<span style="font-size:0.7rem;color:var(--dim)"> / ${p.maxHp}</span></span> </div> <div class="hp-bar-wrap" style="height:10px;margin-bottom:8px"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 10px ${hc}"></div></div> <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"> ${[-5,-3,-2,-1].map(d=>`<button class="btn btn-sm btn-red" onclick="adjHP(${p.id},${d});render()">${d}</button>`).join('')} <div style="flex:1"></div> ${[1,2,3,5].map(d=>`<button class="btn btn-sm btn-green" onclick="adjHP(${p.id},${d});render()">+${d}</button>`).join('')} <button class="btn btn-sm" onclick="updatePlayer(${p.id},{hp:${p.maxHp}});render()">Full</button> </div> <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin-bottom:10px"></div> <div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-family:Arial,sans-serif">Character Stats</div> <div class="stat-grid"> ${Object.entries(stats).map(([s,v])=>{const c=STAT_COLORS[s];const pct2=Math.min(100,(v/12)*100);return`<div><div class="stat-label"><span style="color:${c};font-weight:bold">${FULL[s]||s}</span><span style="font-size:0.85rem;font-weight:bold;color:${c}">${v}</span></div><div class="stat-bar-wrap" style="height:5px"><div class="stat-bar" style="width:${pct2}%;background:${c};box-shadow:0 0 5px ${c}60"></div></div></div>`;}).join('')} </div> ${p.traitLevel?`<div style="margin-top:10px;padding:5px 10px;background:rgba(138,90,220,0.1);border-radius:6px;font-size:0.68rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'var(--purple-light)'};font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} </div> ${p.repPassive?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✦ Rep: </span>${esc(p.repPassive)}</div>`:''} ${p.signatureSkill?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--blue);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--blue);font-weight:bold">⚡ ${esc(p.signatureSkill)}: </span>${esc(p.signatureSkillDesc||'')}</div>`:''} ${p.shadowTrait?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--red);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--red);font-weight:bold">🌑 ${esc(p.shadowTrait)}: </span>${esc(p.shadowTraitDesc||'')}</div>`:''} ${p.enchantment?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✨ ${esc(p.enchantment)}: </span>${esc(p.enchantmentDesc||'')}</div>`:''} ${p.destinyThread?`<div style="background:rgba(30,10,50,0.8);border-left:2px solid #ce93d8;padding:6px 10px;font-size:0.68rem;color:#ce93d8;margin-bottom:14px;border-radius:0 6px 6px 0;font-style:italic;font-family:Arial,sans-serif">🔮 “${esc(p.destinyThread)}”</div>`:''} <div class="section-title">Position</div> <input class="input" style="margin-bottom:12px" value="${esc(p.position||'')}" onblur="updatePlayer(${p.id},{position:this.value})"> <div class="section-title">Inventory (${(p.inventory||[]).length})</div> ${(p.inventory||[]).map((item,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.74rem;color:#bbb;font-family:Arial,sans-serif"><span>${esc(item)}</span><button onclick="rmInvItem(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer">✕</button></div>`).join('')} <div style="display:flex;gap:6px;margin-top:6px;margin-bottom:12px"> <input class="input" style="flex:1" id="inv-add-${p.id}" placeholder="Add item..."> <button class="btn btn-sm btn-green" onclick="addInvItem(${p.id})">Add</button> </div> <div class="section-title">Consequences</div> <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px"> ${[{type:'curse',label:'⚗ Cursed'},{type:'wanted',label:'🎯 Wanted'},{type:'exile',label:'🚫 Exiled'},{type:'servant',label:'⛓ Servant'}].map(c=>`<button class="btn btn-sm" style="background:rgba(30,20,50,0.8)" onclick="addConsequence(${p.id},'${c.type}','${c.label}')">+ ${c.label}</button>`).join('')} </div> ${(p.consequences||[]).map((c,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 8px;background:rgba(10,8,25,0.8);border-radius:5px;margin-bottom:5px;font-size:0.72rem;font-family:Arial,sans-serif"><span>${c.label}</span><button onclick="rmConsequence(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:0.68rem">✕ Lift</button></div>`).join('')} <div class="section-title" style="margin-top:12px">Gift Power</div> <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"> <span style="font-size:0.72rem;color:${p.giftPowerUsed?'var(--dim)':'var(--green)'};font-family:Arial,sans-serif">${p.giftPowerUsed?'✕ Used':'✓ Available'}</span> <button class="btn btn-sm" onclick="updatePlayer(${p.id},{giftPowerUsed:${!p.giftPowerUsed}});render()">${p.giftPowerUsed?'Reset':'Mark Used'}</button> </div> <div style="display:flex;gap:8px;flex-wrap:wrap"> ${p.isDead?`<button class="btn" style="background:var(--gold);color:#000" onclick="resurrect(${p.id})">⚗ Resurrect</button>`:`<button class="btn btn-red" onclick="markDead(${p.id})">☠ Mark Dead</button>`}
+<button class="btn" style="background:rgba(20,16,50,0.9);color:var(--dim);border:1px solid var(--border)" onclick="STATE.selectedPlayer=null;render()">Close</button>
+</div>
+
+  </div>`;
+}
+
+// CREATE TAB
+function renderCreate(){
+const c=STATE.creation;
+const trait=c.traitRoll?getTrait(c.traitRoll):null;
+const base=c.cls?CLASS_BASE_STATS[c.cls]:null;
+return`<div class="card"> <div class="section-title">New Character — 7-Roll Creation</div> <div style="margin-bottom:8px"><label class="label">TikTok Username</label><input class="input" value="${esc(c.username)}" oninput="STATE.creation.username=this.value" placeholder="@username"></div> <div style="margin-bottom:8px"><label class="label">Character Name</label> <select class="select" onchange="STATE.creation.charname=this.value"> <option value="">— Select Name —</option> ${NAMES.filter(n=>!STATE.players.find(p=>p.charname===n&&!p.isDead)).map(n=>`<option${c.charname===n?' selected':''}>${n}</option>`).join('')} </select></div> <div style="margin-bottom:8px"><label class="label">Class</label> <select class="select" onchange="STATE.creation={...STATE.creation,cls:this.value,repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null};render()"> <option value="">— Select Class —</option> ${CLASSES.map(cl=>`<option value="${cl}"${c.cls===cl?' selected':''}>${CLASS_ICON[cl]} ${cl} — HP ${CLASS_HP[cl]}</option>`).join('')} </select></div> ${base?`<div class="roll-box" style="margin-bottom:8px">
+<div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;font-family:Arial,sans-serif">Base Stats</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+${Object.entries(base).map(([s,v])=>{const col=STAT_COLORS[s];const bonus=trait&&PRIMARY_STAT[c.cls]===s?trait.bonus:0;return`<div style="text-align:center"><div style="font-size:0.56rem;color:var(--dim);font-family:Arial,sans-serif">${s}</div><div style="font-size:0.9rem;font-weight:bold;color:${col}">${v+bonus}${bonus?`<span style="font-size:0.5rem;color:var(--green)"> +${bonus}</span>`:''}</div></div>`;}).join('')}
+</div></div>`:'' } <div style="margin-bottom:8px"><label class="label">Origin</label> <select class="select" onchange="STATE.creation.origin=this.value"> <option value="">— Select Origin —</option> ${ORIGINS.map(o=>`<option${c.origin===o?' selected':''}>${o}</option>`).join('')} </select></div> <div style="margin-bottom:12px"><label class="label">Notes</label><textarea class="textarea" oninput="STATE.creation.notes=this.value" placeholder="Player notes...">${esc(c.notes)}</textarea></div> ${c.cls?`<div class="roll-box"><div class="section-title">Creation Rolls — ${c.cls}</div>${renderCreationRolls(c)}</div>`:''}
+<button class="btn btn-purple btn-full" style="margin-top:12px" onclick="addPlayer()">✦ Add to The Hollow Realm</button>
+
+  </div>`;
+}
+
+function renderCreationRolls(c){
+const rolls=[
+{key:'repRoll',label:'Roll 1 — Reputation Title',fn:r=>getRep(c.cls,r),nameKey:'title',descKey:'passive',col:'#ffb300',
+opts:(REP[c.cls]||[]).map(r=>`<option value="${r.r[0]}">${rangeLabel(r.r)} — ${r.title}</option>`).join('')},
+{key:'traitRoll',label:'Roll 2 — Trait Effectiveness',fn:r=>getTrait(r),nameKey:'level',descKey:null,col:'#ce93d8',
+opts:TRAIT_TIERS.map((t,i)=>{const rr=[[1,4],[5,9],[10,14],[15,19],[20,20]][i];return`<option value="${rr[0]}">${rangeLabel(rr)} — ${t.level}</option>`;}).join('')},
+{key:'weaponRoll',label:'Roll 3 — Starting Weapon',fn:r=>getWeapon(c.cls,r),nameKey:'name',descKey:'special',
+col:r=>{const w=getWeapon(c.cls,r);return RARITY_COLOR[w?.rarity]||'#bbb';},
+opts:(WEAPONS[c.cls]||[]).map(w=>`<option value="${w.r[0]}">${rangeLabel(w.r)} — ${w.name} [${w.rarity}]</option>`).join('')},
+{key:'skillRoll',label:'Roll 4 — Signature Skill',fn:r=>getSkill(c.cls,r),nameKey:'name',descKey:'desc',col:'#4fc3f7',
+opts:(SIGNATURE_SKILLS[c.cls]||[]).map(s=>`<option value="${s.r[0]}">${rangeLabel(s.r)} — ${s.name}</option>`).join('')},
+{key:'shadowRoll',label:'Roll 5 — Shadow Trait',fn:r=>getShadow(c.cls,r),nameKey:'name',descKey:'desc',col:'#ef5350',
+opts:(SHADOW_TRAITS[c.cls]||[]).map(s=>`<option value="${s.r[0]}">${rangeLabel(s.r)} — ${s.name}</option>`).join('')},
+{key:'enchantRoll',label:'Roll 6 — Enchantment',fn:r=>getEnchant(c.cls,r),nameKey:'name',descKey:'desc',col:'#ffd54f',
+opts:(ENCHANTMENTS[c.cls]||[]).map(e=>`<option value="${e.r[0]}">${rangeLabel(e.r)} — ${e.name}</option>`).join('')},
+{key:'destinyRoll',label:'Roll 7 — Destiny Thread',fn:r=>getDestiny(c.cls,r),nameKey:'thread',descKey:null,col:'#ce93d8',
+opts:(DESTINY_THREADS[c.cls]||[]).map(d=>`<option value="${d.r[0]}">${rangeLabel(d.r)} — ${d.thread.slice(0,50)}...</option>`).join('')},
+];
+return rolls.map(({key,label,fn,nameKey,descKey,col,opts})=>{
+const roll=c[key];const result=roll?fn(roll):null;
+const color=typeof col==='function'?(roll?col(roll):'#bbb'):col;
+return`<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.04)"> <div style="font-size:0.66rem;color:var(--dim);margin-bottom:6px;font-family:Arial,sans-serif;font-weight:bold">${label}</div> <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap"> <button class="btn btn-sm" style="flex-shrink:0" onclick="STATE.creation['${key}']=d20();render()">🎲 Roll</button> <input type="number" min="1" max="20" class="input" style="width:56px;flex-shrink:0" value="${roll||''}" oninput="STATE.creation['${key}']=parseInt(this.value)||null;render()" placeholder="1-20"> <select class="select" style="flex:1;font-size:0.65rem" onchange="STATE.creation['${key}']=parseInt(this.value)||null;render()"> <option value="">— or pick —</option>${opts} </select> </div> ${result?`<div style="background:rgba(10,8,30,0.9);border:1px solid ${color}40;border-radius:6px;padding:8px 12px">
+<div style="color:${color};font-weight:bold;font-size:0.76rem;margin-bottom:3px">${esc(result[nameKey]||'')}</div>
+${descKey&&result[descKey]?`<div style="font-size:0.66rem;color:#888;font-family:Arial,sans-serif">${esc(result[descKey])}</div>`:''}
+${nameKey==='thread'?`<div style="font-size:0.68rem;color:#888;font-style:italic;font-family:Arial,sans-serif">${esc(result.thread||'')}</div>`:''}
+</div>`:''} </div>`;
+}).join('')+creationPreview(c);
+}
+
+function creationPreview(c){
+if(!c.repRoll&&!c.weaponRoll)return'';
+const rep=c.repRoll?getRep(c.cls,c.repRoll):null;
+const wpn=c.weaponRoll?getWeapon(c.cls,c.weaponRoll):null;
+const skl=c.skillRoll?getSkill(c.cls,c.skillRoll):null;
+const shd=c.shadowRoll?getShadow(c.cls,c.shadowRoll):null;
+const dest=c.destinyRoll?getDestiny(c.cls,c.destinyRoll):null;
+return`<div style="background:rgba(138,90,220,0.05);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:8px"> <div style="font-size:0.58rem;color:var(--purple-light);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-family:Arial,sans-serif">Character Preview</div> <div style="font-weight:bold;font-size:0.8rem;color:#fff;margin-bottom:4px">${esc(c.charname||'—')} · ${CLASS_ICON[c.cls]||''} ${c.cls}</div> ${rep?`<div style="font-size:0.66rem;color:var(--gold);font-style:italic;margin-bottom:2px">✦ ${esc(rep.title)}</div>`:''} ${wpn?`<div style="font-size:0.66rem;color:${RARITY_COLOR[wpn.rarity]||'#bbb'};margin-bottom:2px">⚔️ ${esc(wpn.name)}</div>`:''} ${skl?`<div style="font-size:0.66rem;color:var(--blue);margin-bottom:2px">⚡ ${esc(skl.name)}</div>`:''} ${shd?`<div style="font-size:0.66rem;color:var(--red);margin-bottom:2px">🌑 ${esc(shd.name)}</div>`:''} ${dest?`<div style="font-size:0.65rem;color:#ce93d8;font-style:italic">🔮 “${esc(dest.thread.slice(0,80))}…”</div>`:''}
+
+  </div>`;
+}
+
+// 🏠 NPC TAB (Base Residents)
+function renderNPCs() {
+  return `
+    <div class="card-glow">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
+        <div class="section-title" style="margin-bottom:0">🏠 Moon Squad HQ Residents</div>
+        <button class="btn btn-sm btn-green" onclick="STATE.showAddResident=!STATE.showAddResident;render()">
+          ${STATE.showAddResident ? '✕ Cancel' : '+ Add NPC'}
+        </button>
+      </div>
+      
+      ${STATE.showAddResident ? `
+        <div class="roll-box" style="margin-bottom:12px">
+          <label class="label">NPC Name</label>
+          <input class="input" id="res-name" placeholder="Enter name..." style="margin-bottom:8px">
+          <label class="label">Role</label>
+          <select class="select" id="res-role" style="margin-bottom:10px">
+            ${Object.entries(RESIDENT_ROLES).map(([k, r]) => `<option value="${k}">${r.icon} ${r.label}</option>`).join('')}
+          </select>
+          <button class="btn btn-purple btn-full" onclick="addResident()">Confirm Resident</button>
+        </div>
+      ` : ''}
+
+      ${STATE.baseResidents.length === 0 ? '<div class="empty-state">No residents currently at HQ.</div>' : 
+        STATE.baseResidents.map((r, i) => `
+          <div class="room-card card" style="margin-bottom:8px; padding:10px">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <div>
+                <div style="font-weight:bold; font-size:0.85rem; color:${RESIDENT_ROLES[r.role].color}">${RESIDENT_ROLES[r.role].icon} ${r.name}</div>
+                <div style="font-size:0.65rem; color:var(--dim)">Role: ${RESIDENT_ROLES[r.role].label}</div>
+                <div style="font-size:0.6rem; color:var(--purple-light); margin-top:2px">✦ ${RESIDENT_ROLES[r.role].bonus}</div>
+              </div>
+              <button class="btn btn-sm btn-red" onclick="rmResident(${i})">✕</button>
+            </div>
+          </div>
+        `).join('')}
+    </div>
+  `;
+}
+
+// 🎭 VILLAINS TAB (Freeze-Proof Version)
+function renderVillains() {
+  const allVillains = [...(VILLAIN_LORE || []), ...(STATE.customVillains || [])];
+  const activeVillains = allVillains.filter(v => (STATE.villainsLive || []).includes(v.id));
+  const inactiveVillains = allVillains.filter(v => !(STATE.villainsLive || []).includes(v.id));
+
+  return `
+    <div class="card-glow">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
+        <div class="section-title" style="margin-bottom:0; color:var(--red)">🎭 ACTIVE BOSSES</div>
+        <button class="btn btn-sm" style="border-color:var(--red); color:var(--red)" onclick="STATE.showAddVillain=!STATE.showAddVillain;render()">
+          ${STATE.showAddVillain ? '✕' : '＋ New Villain'}
+        </button>
+      </div>
+
+      ${STATE.showAddVillain ? `
+        <div class="roll-box" style="border-color:var(--red); margin-bottom:15px">
+          <label class="label">Villain Name</label><input class="input" id="v-name" style="margin-bottom:8px">
+          <label class="label">Title</label><input class="input" id="v-title" style="margin-bottom:8px">
+          <label class="label">Icon</label><input class="input" id="v-icon" placeholder="💀" style="margin-bottom:8px">
+          <label class="label">Max HP</label><input class="input" id="v-hp" type="number" value="100" style="margin-bottom:10px">
+          <button class="btn btn-red btn-full" onclick="addCustomVillain()">✦ Forge Boss</button>
+        </div>
+      ` : ''}
+
+      ${activeVillains.length === 0 ? '<div class="empty-state">No villains are currently active.</div>' : 
+        activeVillains.map(v => `
+          <div class="card" style="border-color:${v.color}60; background:rgba(20,10,30,0.8)">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <div style="display:flex; gap:10px; align-items:center">
+                <span style="font-size:1.5rem">${v.icon}</span>
+                <div>
+                  <div style="font-weight:bold; color:#fff">${v.name}</div>
+                  <div style="font-size:0.6rem; color:${v.color}">${v.title}</div>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-red" onclick="toggleVillain('${v.id}')">Retire</button>
+            </div>
+            
+            <div class="lore-tab-bar" style="margin-top:12px">
+              ${['lore', 'combat', 'phases', 'loot'].map(sec => `
+                <div class="lore-tab ${STATE.villainTab === v.id && STATE.villainSec === sec ? 'active' : ''}" 
+                     onclick="STATE.villainTab='${v.id}'; STATE.villainSec='${sec}'; render()">
+                  ${sec.charAt(0).toUpperCase() + sec.slice(1)}
+                </div>
+              `).join('')}
+            </div>
+
+            <div style="margin-top:10px; font-size:0.7rem; min-height:80px; color:var(--text); line-height:1.4">
+              ${renderVillainSubSection(v)}
+            </div>
+          </div>
+        `).join('')}
+    </div>
+
+    <div class="card">
+      <div class="section-title">Villain Dossier (Inactive)</div>
+      <div style="display:grid; grid-template-columns:1fr; gap:6px">
+        ${inactiveVillains.map(v => `
+          <div style="display:flex; gap:5px; align-items:center">
+            <button class="btn btn-sm" style="flex:1; justify-content:flex-start; text-align:left; background:rgba(10,8,30,0.6)" onclick="toggleVillain('${v.id}')">
+              ${v.icon} Activate ${v.name}
+            </button>
+            ${v.id.startsWith('custom_') ? `<button class="btn btn-sm btn-red" onclick="deleteCustomVillain('${v.id}')">🗑</button>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// Separate helper function with a UNIQUE name to prevent recursion
+function renderVillainSubSection(v) {
+  const sec = (STATE.villainTab === v.id) ? STATE.villainSec : 'lore';
+  switch(sec) {
+    case 'lore': return `<div><b>Motivation:</b> ${v.motivation}</div><div style="margin-top:8px; font-style:italic; color:var(--dim)">"${v.lore}"</div>`;
+    case 'combat': return `
+      <div class="section-title">Combat Strengths</div>
+      ${(v.strengths || []).map(s => `<div style="color:var(--green); margin-bottom:2px">✦ ${s}</div>`).join('')}
+      <div class="section-title" style="margin-top:8px">Weaknesses</div>
+      ${(v.weaknesses || []).map(w => `<div style="color:var(--red); margin-bottom:2px">⚔️ ${w}</div>`).join('')}
+    `;
+    case 'phases': return (v.phases || []).map(p => `
+      <div class="phase-card" style="background:${p.color}15; border:1px solid ${p.color}40; margin-bottom:5px; padding:8px; border-radius:6px">
+        <div style="display:flex; justify-content:space-between; font-weight:bold; color:${p.color}">
+          <span>P${p.phase}: ${p.name}</span>
+          <span>${p.hp}</span>
+        </div>
+        <div style="font-size:0.6rem; color:#ccc; margin-top:2px">${p.desc}</div>
+      </div>
+    `).join('');
+    case 'loot': return (v.loot || []).map(l => `
+      <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border)">
+        <span>${l.item}</span>
+        <span style="color:var(--gold)">${l.chance}</span>
+      </div>
+    `).join('');
+    default: return 'Select a section above.';
+  }
+}
+
+// DICE TAB
+function renderDice(){
+const display=getDiceDisplay(STATE.diceRoll);
+const spin=STATE.diceSpinning;
+const glow=spin?'#b388ff':display?display.glow:'rgba(138,90,220,0.4)';
+const fc=spin?'#3d2b6b':!STATE.diceRoll?'#2a1f5e':STATE.diceRoll===1?'#5d0a0a':STATE.diceRoll<=4?'#4a1010':STATE.diceRoll<=9?'#4a2a08':STATE.diceRoll<=14?'#0a3d1a':STATE.diceRoll<=19?'#0a2550':'#3d0a6b';
+const num=spin?'?':STATE.diceRoll||'d20';
+const dc=STATE.diceContext;
+return`<div class="card-glow"> <div style="text-align:center;padding:10px 0 20px"> <svg viewBox="0 0 120 120" width="160" height="160" style="display:block;margin:0 auto;filter:drop-shadow(0 0 ${spin?12:display?16:8}px ${glow});${spin?'animation:spin 0.15s linear infinite;transform-origin:60px 60px':''}"> <defs><radialGradient id="fg2" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="${fc}"/><stop offset="100%" stop-color="#050510"/></radialGradient></defs> <circle cx="60" cy="60" r="56" fill="none" stroke="${glow}" stroke-width="0.5" opacity="0.4"/> <polygon points="60,8 106,37 91,88 29,88 14,37" fill="url(#fg2)" stroke="${glow}" stroke-width="1.2"/> <polygon points="60,8 80,42 40,42" fill="none" stroke="${glow}60" stroke-width="0.6"/> <polygon points="14,37 40,42 29,88" fill="none" stroke="${glow}40" stroke-width="0.6"/> <polygon points="106,37 80,42 91,88" fill="none" stroke="${glow}40" stroke-width="0.6"/> <polygon points="29,88 60,72 91,88" fill="none" stroke="${glow}40" stroke-width="0.6"/> <line x1="60" y1="8" x2="60" y2="72" stroke="${glow}20" stroke-width="0.4"/> <line x1="14" y1="37" x2="91" y2="88" stroke="${glow}20" stroke-width="0.4"/> <line x1="106" y1="37" x2="29" y2="88" stroke="${glow}20" stroke-width="0.4"/> <line x1="40" y1="42" x2="80" y2="42" stroke="${glow}30" stroke-width="0.4"/> <line x1="40" y1="42" x2="60" y2="72" stroke="${glow}30" stroke-width="0.4"/> <line x1="80" y1="42" x2="60" y2="72" stroke="${glow}30" stroke-width="0.4"/> <text x="60" y="60" text-anchor="middle" dominant-baseline="middle" font-size="${STATE.diceRoll>=10?22:28}" font-weight="bold" fill="${spin?'#b388ff80':display?display.glow:'#4a3f7a'}" font-family="Georgia,serif" style="user-select:none">${num}</text> ${STATE.diceRoll===20&&!spin?'<line x1="46" y1="66" x2="74" y2="66" stroke="#ce93d8" stroke-width="1.2" opacity="0.8"/>':''} </svg> ${display&&!spin?`<div style="padding:12px 20px;background:${display.bg};border:1px solid ${display.glow};border-radius:10px;box-shadow:0 0 30px ${display.glow}40;margin:8px 0 16px">
+<div style="font-size:1.25rem;font-weight:bold;color:#fff;letter-spacing:2px;font-family:Georgia,serif">${display.label}</div>
+<div style="font-size:0.74rem;color:rgba(255,255,255,0.7);margin-top:4px;font-family:Arial,sans-serif">${display.desc}</div>
+${dc.player?`<div style="font-size:0.65rem;color:rgba(255,255,255,0.5);margin-top:4px;font-family:Arial,sans-serif">${esc(dc.player)} · ${esc(dc.custom||dc.target||ROLL_PURPOSES[dc.purpose]?.label||'')}</div>`:''}
+</div>`:''}
+<button class="btn btn-purple" style="font-size:1rem;padding:12px 40px;letter-spacing:1px;${spin?'opacity:0.6;cursor:not-allowed':''}" onclick="rollDice()" ${spin?'disabled':''}>
+${spin?'Rolling...':'ROLL THE DICE'}
+</button>
+</div>
+
+  </div>
+  <div class="card">
+    <div class="section-title">Roll Context</div>
+    <div style="margin-bottom:10px"><label class="label">For which player?</label>
+      <select class="select" onchange="STATE.diceContext.player=this.value">
+        <option value="">DM / General Roll</option>
+        ${STATE.players.filter(p=>!p.isDead).map(p=>`<option value="${esc(p.charname)}"${dc.player===p.charname?' selected':''}>${CLASS_ICON[p.cls]||''} ${esc(p.charname)} (${p.cls})</option>`).join('')}
+      </select></div>
+    <div style="margin-bottom:10px"><label class="label">Category</label>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px">
+        ${Object.entries(ROLL_PURPOSES).map(([k,cat])=>`<button class="btn btn-sm" style="font-size:0.6rem;padding:6px 4px;background:${dc.purpose===k?cat.color+'25':'rgba(10,8,30,0.8)'};color:${dc.purpose===k?cat.color:'var(--dim)'};border:1px solid ${dc.purpose===k?cat.color:'var(--border)'}" onclick="STATE.diceContext={...STATE.diceContext,purpose:'${k}',target:'',custom:''};render()">${cat.label}</button>`).join('')}
+      </div></div>
+    ${dc.purpose&&dc.purpose!=='custom'?`<div style="margin-bottom:10px"><label class="label">Specific Action</label>
+      <select class="select" onchange="STATE.diceContext.target=this.value;STATE.diceContext.custom=''">
+        <option value="">— Select —</option>
+        ${(ROLL_PURPOSES[dc.purpose]?.options||[]).map(o=>`<option value="${esc(o)}"${dc.target===o?' selected':''}>${o}</option>`).join('')}
+        <option value="custom">✏️ Custom...</option>
+      </select></div>`:''}
+    ${dc.purpose==='custom'||dc.target==='custom'?`<div style="margin-bottom:10px"><label class="label">Describe</label><input class="input" value="${esc(dc.custom)}" oninput="STATE.diceContext.custom=this.value" placeholder="What is this roll for..."></div>`:''}
+    ${dc.player||dc.purpose?`<div class="info-bar" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="color:var(--purple-light)">Logging as:</span>
+      ${dc.player?`<span style="color:var(--gold)">${esc(dc.player)}</span>`:''}
+      <span style="color:#fff">${dc.custom?'— '+esc(dc.custom):dc.target&&dc.target!=='custom'?'— '+esc(dc.target):dc.purpose?'— '+(ROLL_PURPOSES[dc.purpose]?.label||''):''}</span>
+      <button class="btn btn-sm" style="margin-left:auto;background:rgba(60,10,10,0.5);color:#888" onclick="STATE.diceContext={player:'',purpose:'',target:'',custom:''};render()">Clear</button>
+    </div>`:''}
+  </div>
+  <div class="card">
+    <div class="section-title">Roll Reference</div>
+    ${[{r:'1',l:'💀 FUMBLE',c:'var(--red)',d:'Catastrophic backfire'},{r:'2-4',l:'✗ FAIL',c:'var(--red)',d:'Fails entirely'},{r:'5-9',l:'⚠ WEAK HIT',c:'#ff9800',d:'Partial success'},{r:'10-14',l:'✓ SUCCESS',c:'var(--green)',d:'Clean success'},{r:'15-19',l:'★ STRONG HIT',c:'var(--blue)',d:'Success + bonus'},{r:'20',l:'⚡ CRITICAL',c:'#ce93d8',d:'Legendary — announce it'}].map(({r,l,c,d})=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="color:${c};font-weight:bold;min-width:36px;font-size:0.7rem;font-family:Arial,sans-serif">${r}</span><span style="color:${c};font-weight:bold;font-size:0.7rem;min-width:110px;font-family:Arial,sans-serif">${l}</span><span style="color:var(--dim);font-size:0.66rem;font-family:Arial,sans-serif">${d}</span></div>`).join('')}
+  </div>
+  ${STATE.diceHistory.length?`<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div class="section-title" style="margin-bottom:0">Recent Rolls</div><button class="btn btn-sm" onclick="STATE.diceHistory=[];render()">Clear</button></div>
+    ${STATE.diceHistory.slice(0,10).map((e,i)=>{const d=getDiceDisplay(e.result);return`<div style="display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <div style="min-width:36px;height:36px;border-radius:6px;background:${d?.bg||'rgba(30,25,60,0.8)'};border:1px solid ${d?.glow||'var(--border)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-weight:bold;color:${d?.glow||'#fff'};font-size:0.88rem;font-family:Georgia,serif">${e.result}</span>
+      </div>
+      <div style="flex:1">
+        <div style="display:flex;gap:5px;align-items:baseline">${e.player&&e.player!=='DM'?`<span style="font-size:0.68rem;font-weight:bold;color:var(--purple-light);font-family:Arial,sans-serif">${esc(e.player)}</span>`:''}<span style="font-size:0.65rem;color:${d?.glow||'var(--dim)'};font-weight:bold;font-family:Arial,sans-serif">${d?.label||''}</span></div>
+        <div style="font-size:0.63rem;color:var(--dim);font-family:Arial,sans-serif">${esc(e.purpose||'General roll')}</div>
+      </div>
+      <div style="font-size:0.58rem;color:var(--dimmer);font-family:Arial,sans-serif">${e.time}</div>
+    </div>`;}).join('')}
+  </div>`:''}`;
+}
+
+// BATTLE TAB
+function renderBattle(){
+const mins=Math.floor(STATE.battleTime/60);const secs=(STATE.battleTime%60).toString().padStart(2,'0');
+const pct=(STATE.battleTime/180)*100;
+const TIERS=[{min:0,max:4999,tier:'⚠ MINOR',cons:'Lose title OR stat debuff',color:'#4caf50'},{min:5000,max:9999,tier:'⚔ MODERATE',cons:'Cursed 2 sessions OR item stolen',color:'#ff9800'},{min:10000,max:19999,tier:'💀 MAJOR',cons:'Exile OR servant',color:'#ef5350'},{min:20000,max:44999,tier:'☠ SEVERE',cons:'Killed OR curse+exile+theft',color:'#b71c1c'},{min:45000,max:Infinity,tier:'👁 OP CONTROL',cons:'Winner narrates anything — one session',color:'#ce93d8'}];
+const c1=parseInt(STATE.battleCoins1)||0,c2=parseInt(STATE.battleCoins2)||0;
+const diff=Math.abs(c1-c2);const tier=TIERS.find(t=>diff>=t.min&&diff<=t.max)||TIERS[0];
+return`<div class="card-glow"> <div class="section-title">⚔️ Box Battle</div> <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px"> <div><label class="label">Player 1</label> <input class="input" value="${esc(STATE.battleP1)}" oninput="STATE.battleP1=this.value" placeholder="@username" list="p1l"> <datalist id="p1l">${STATE.players.filter(p=>!p.isDead).map(p=>`<option>${esc(p.charname)}</option>`).join('')}</datalist> <input class="input" style="margin-top:6px" type="number" value="${STATE.battleCoins1}" oninput="STATE.battleCoins1=this.value" placeholder="Coins"></div> <div><label class="label">Player 2</label> <input class="input" value="${esc(STATE.battleP2)}" oninput="STATE.battleP2=this.value" placeholder="@username" list="p2l"> <datalist id="p2l">${STATE.players.filter(p=>!p.isDead).map(p=>`<option>${esc(p.charname)}</option>`).join('')}</datalist> <input class="input" style="margin-top:6px" type="number" value="${STATE.battleCoins2}" oninput="STATE.battleCoins2=this.value" placeholder="Coins"></div> </div> <div style="text-align:center;margin-bottom:12px"> <div style="font-size:2.5rem;font-weight:bold;color:#fff;font-family:Georgia,serif;letter-spacing:3px">${mins}:${secs}</div> <div class="hp-bar-wrap" style="height:8px;margin:8px 0"><div class="hp-bar" style="width:${pct}%;background:${pct>60?'var(--green)':pct>30?'#ff9800':'var(--red)'}"></div></div> <div style="display:flex;gap:8px;justify-content:center"> <button class="btn btn-purple" onclick="toggleBattle()">${STATE.battleRunning?'⏸ Pause':'▶ Start'}</button> <button class="btn btn-sm" onclick="resetBattle()">↺ Reset</button> </div> </div> ${c1+c2>0?`<div style="background:${tier.color}20;border:1px solid ${tier.color}60;border-radius:8px;padding:12px;text-align:center">
+<div style="font-weight:bold;color:${tier.color};font-size:1rem;margin-bottom:4px">${tier.tier}</div>
+<div style="font-size:0.74rem;color:#ccc;font-family:Arial,sans-serif">${tier.cons}</div>
+${c1!==c2?`<div style="font-size:0.7rem;color:var(--gold);margin-top:4px;font-family:Arial,sans-serif">Winner: ${esc(c1>c2?STATE.battleP1||'P1':STATE.battleP2||'P2')} · Gap: ${diff.toLocaleString()} coins</div>`:''}
+</div>`:''}
+
+  </div>
+  <div class="card"><div class="section-title">Consequence Ladder</div>
+    ${TIERS.map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <div style="min-width:12px;height:12px;border-radius:50%;background:${t.color};box-shadow:0 0 5px ${t.color};flex-shrink:0"></div>
+      <div style="flex:1"><div style="font-weight:bold;font-size:0.74rem;color:${t.color}">${t.tier}</div><div style="font-size:0.63rem;color:var(--dim);font-family:Arial,sans-serif">${t.cons}</div></div>
+      <div style="font-size:0.6rem;color:var(--dimmer);font-family:Arial,sans-serif">${t.max===Infinity?'45k+':t.min.toLocaleString()+'–'+t.max.toLocaleString()}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+// LOG TAB
+function renderLog(){
+const elapsed=STATE.sessionActive&&STATE.sessionStartTime?Math.floor((Date.now()-STATE.sessionStartTime)/60000):0;
+const filtered=STATE.sessionLog.filter(e=>(STATE.logFilter==='all'||e.type===STATE.logFilter)&&(!STATE.logSearch||(e.who||'').toLowerCase().includes(STATE.logSearch.toLowerCase())||(e.what||'').toLowerCase().includes(STATE.logSearch.toLowerCase())));
+const sessions=[...new Set(filtered.map(e=>e.session))].sort((a,b)=>b-a);
+return`<div class="card" style="border-color:${STATE.sessionActive?'rgba(102,187,106,0.5)':'var(--border)'};background:${STATE.sessionActive?'rgba(10,40,15,0.9)':'var(--card)'}"> <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${STATE.sessionActive?'10px':'0'}"> <div><div style="font-weight:bold;font-size:0.86rem;color:#fff">${STATE.sessionActive?'<span class="session-live"></span>':''}Session ${STATE.sessionNumber} — ${STATE.sessionActive?'Live':'Standby'}</div> ${STATE.sessionActive?`<div style="font-size:0.62rem;color:var(--green);margin-top:2px;font-family:Arial,sans-serif">Started ${STATE.sessionStartTime?new Date(STATE.sessionStartTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''} · ${elapsed} min</div>`:''} </div> ${!STATE.sessionActive?`<button class="btn btn-green" onclick="beginSession()">▶ Begin</button>`:`<button class="btn btn-red" onclick="endSession()">⏹ End Session</button>`} </div> ${STATE.sessionActive?`<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(102,187,106,0.3),transparent);margin-bottom:10px"></div>
+<div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-family:Arial,sans-serif">Quick Log</div>
+<div style="display:flex;gap:5px;flex-wrap:wrap">
+${Object.entries(LOG_TYPES).map(([k,t])=>`<button class="btn btn-sm" style="font-size:0.6rem;background:rgba(10,8,30,0.8);color:${t.color};border:1px solid ${t.color}30" onclick="STATE.manualEntry={who:'',what:'',type:'${k}'};render()">${t.icon} ${t.label}</button>`).join('')}
+</div>`:''}
+
+  </div>
+  ${STATE.manualEntry.type&&STATE.sessionActive?`<div class="card" style="border-color:${LOG_TYPES[STATE.manualEntry.type]?.color}40">
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:0.7rem;color:${LOG_TYPES[STATE.manualEntry.type]?.color};font-weight:bold;font-family:Arial,sans-serif">${LOG_TYPES[STATE.manualEntry.type]?.icon} Log ${LOG_TYPES[STATE.manualEntry.type]?.label}</div>
+      <button style="background:none;border:none;color:var(--dim);cursor:pointer" onclick="STATE.manualEntry.type=null;render()">✕</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <div style="flex:0 0 130px"><label class="label">Who</label>
+        <input class="input" id="log-who" value="${esc(STATE.manualEntry.who)}" oninput="STATE.manualEntry.who=this.value" placeholder="@player or DM" list="whl">
+        <datalist id="whl"><option value="DM">${STATE.players.filter(p=>!p.isDead).map(p=>`<option>${esc(p.charname)}</option>`).join('')}</datalist>
+      </div>
+      <div style="flex:1"><label class="label">What happened</label>
+        <input class="input" id="log-what" value="${esc(STATE.manualEntry.what)}" oninput="STATE.manualEntry.what=this.value" placeholder="Describe..." onkeydown="if(event.key==='Enter')submitLogEntry()">
+      </div>
+    </div>
+    <button class="btn btn-purple" onclick="submitLogEntry()">+ Add to Log</button>
+  </div>`:''}
+  ${STATE.sessionLog.length?`<div>
+    <input class="input" style="margin-bottom:8px" placeholder="🔍 Search..." value="${esc(STATE.logSearch)}" oninput="STATE.logSearch=this.value;render()">
+    <div style="display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;margin-bottom:10px">
+      <button class="btn btn-sm" style="${STATE.logFilter==='all'?'background:rgba(138,90,220,0.2);color:var(--purple-light);border-color:var(--purple)':''}" onclick="STATE.logFilter='all';render()">All (${STATE.sessionLog.length})</button>
+      ${Object.entries(LOG_TYPES).map(([k,t])=>{const cnt=STATE.sessionLog.filter(e=>e.type===k).length;if(!cnt)return'';return`<button class="btn btn-sm" style="flex-shrink:0;${STATE.logFilter===k?'background:rgba(10,8,30,0.9);color:'+t.color+';border-color:'+t.color:''}" onclick="STATE.logFilter='${k}';render()">${t.icon} ${cnt}</button>`;}).join('')}
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">${filtered.length} entries</span>
+      <button class="btn btn-sm" style="background:rgba(60,10,10,0.6);color:#888" onclick="if(STATE.sessionLog.length){STATE.sessionLog.splice(STATE.sessionLog.length-1,1);save('session_log',STATE.sessionLog);render()}">↩ Undo</button>
+    </div>
+    ${sessions.map(sNum=>{
+      const entries=[...filtered.filter(e=>e.session===sNum)].reverse();if(!entries.length)return'';
+      const allS=STATE.sessionLog.filter(e=>e.session===sNum);
+      const startE=allS.find(e=>e.type==='session'&&(e.what||'').includes('began'));
+      const endE=allS.find(e=>e.type==='session'&&(e.what||'').includes('ended'));
+      return`<div style="margin-bottom:16px">
+        <div style="background:rgba(138,90,220,0.08);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-weight:bold;font-size:0.76rem;color:var(--purple-light)">Session ${sNum}</span>
+          <div style="font-size:0.6rem;color:var(--dim);font-family:Arial,sans-serif;text-align:right">${startE?`<div>Started ${startE.time}</div>`:''}${endE?`<div>Ended ${endE.time}</div>`:''}${allS.length} entries</div>
+        </div>
+        ${entries.map(e=>{const t=LOG_TYPES[e.type]||LOG_TYPES.note;return`<div class="log-entry">
+          <div class="log-time">${e.time||''}</div>
+          <div class="log-icon">${t.icon}</div>
+          <div class="log-body">
+            <div class="log-who" style="color:${e.who==='DM'?'var(--gold)':'var(--purple-light)'}">${esc(e.who||'')} <span style="font-size:0.58rem;padding:1px 5px;border-radius:5px;background:rgba(10,8,30,0.8);color:${t.color};font-family:Arial,sans-serif">${t.label}</span></div>
+            <div class="log-what">${esc(e.what||'')}</div>
+            ${e.result?`<div style="display:inline-block;margin-top:3px;padding:2px 8px;border-radius:5px;background:${getDiceDisplay(e.result)?.bg||'rgba(30,25,60,0.8)'};border:1px solid ${getDiceDisplay(e.result)?.glow||'var(--border)'};font-size:0.63rem;font-weight:bold;color:#fff;font-family:Arial,sans-serif">${e.result} — ${e.label||''}</div>`:''}
+          </div>
+        </div>`;}).join('')}
+      </div>`;
+    }).join('')}
+    <div style="text-align:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--dimmer)">
+      <button class="btn btn-sm" style="background:rgba(40,10,10,0.8);color:#888" onclick="if(confirm('Clear all logs?')){STATE.sessionLog=[];STATE.sessionNumber=1;STATE.sessionActive=false;STATE.sessionStartTime=null;saveAll();render()}">🗑 Clear All</button>
+    </div>
+  </div>`:`<div class="empty-state"><div class="empty-icon">⏱</div><div>No session started yet.</div></div>`}`;
+}
+
+// MAP TAB
+function renderMap(){
+if(STATE.mapLocation)return renderMapLocation();
+return`<div class="card" style="margin-bottom:10px"> <div class="section-title">Map Legend</div> <div style="display:flex;gap:8px;flex-wrap:wrap">${Object.entries(PIN_TYPES).map(([k,pt])=>`<div style="display:flex;align-items:center;gap:4px"><div style="width:9px;height:9px;border-radius:50%;background:${pt.color};box-shadow:0 0 5px ${pt.color}"></div><span style="font-size:0.6rem;color:var(--dim);font-family:Arial,sans-serif">${pt.label}</span></div>`).join('')}</div>
+
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <svg id="map-svg" viewBox="0 0 100 100" style="width:100%;display:block;cursor:pointer">
+      <defs>
+        <radialGradient id="mbg" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="#0a0825"/><stop offset="100%" stop-color="#050510"/></radialGradient>
+        <filter id="glo2"><feGaussianBlur stdDeviation="0.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect width="100" height="100" fill="url(#mbg)"/>
+      ${[[8,12],[22,55],[35,8],[55,18],[65,85],[78,62],[88,28],[92,72],[5,90],[48,95],[15,75],[70,45]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="0.3" fill="white" opacity="0.25"/>`).join('')}
+      ${WORLD_LOCATIONS.map(loc=>loc.connectedTo.map(toId=>{const to=WORLD_LOCATIONS.find(l=>l.id===toId);if(!to||to.id<=loc.id)return'';return`<line x1="${loc.x}" y1="${loc.y}" x2="${to.x}" y2="${to.y}" stroke="rgba(138,90,220,0.2)" stroke-width="0.4" stroke-dasharray="1.5,1.5"/>`;}).join('')).join('')}
+      ${WORLD_LOCATIONS.map(loc=>{
+        const danger=STATE.mapDanger[loc.id]??loc.danger;const dc=DANGER_COLORS[danger]||'#888';
+        const pins=STATE.mapPins.filter(p=>p.location===loc.id);
+        return`<g onclick="STATE.mapLocation='${loc.id}';render()" style="cursor:pointer">
+          <circle cx="${loc.x}" cy="${loc.y}" r="5.5" fill="none" stroke="${dc}" stroke-width="0.4" opacity="0.5" filter="url(#glo2)"/>
+          <circle cx="${loc.x}" cy="${loc.y}" r="4.2" fill="${loc.color}25" stroke="${loc.color}" stroke-width="0.6" filter="url(#glo2)"/>
+          <text x="${loc.x}" y="${loc.y+1.2}" text-anchor="middle" font-size="3.5" style="user-select:none">${loc.icon}</text>
+          <text x="${loc.x}" y="${loc.y+7.5}" text-anchor="middle" font-size="2.2" fill="white" opacity="0.9" font-family="Arial" style="user-select:none">${loc.short.replace('The ','')}</text>
+          ${pins.length?`<circle cx="${loc.x-3.5}" cy="${loc.y-3.5}" r="2.2" fill="rgba(138,90,220,0.9)" stroke="#b388ff" stroke-width="0.3"/><text x="${loc.x-3.5}" y="${loc.y-2.7}" text-anchor="middle" font-size="2" fill="white" font-family="Arial" style="user-select:none">${pins.length}</text>`:''}
+          ${'!'.repeat(Math.max(0,danger-2))?`<text x="${loc.x+3.5}" y="${loc.y-3}" text-anchor="middle" font-size="1.8" fill="${dc}" style="user-select:none">${'!'.repeat(Math.max(0,danger-2))}</text>`:''}
+        </g>`;
+      }).join('')}
+    </svg>
+    <div style="text-align:center;padding:8px;font-size:0.6rem;color:var(--dim);font-family:Arial,sans-serif">Tap any location to view</div>
+  </div>
+  ${WORLD_LOCATIONS.map(loc=>{
+    const danger=STATE.mapDanger[loc.id]??loc.danger;
+    const pins=STATE.mapPins.filter(p=>p.location===loc.id);
+    return`<div class="card" style="cursor:pointer;border-color:${loc.color}40;margin-bottom:8px" onclick="STATE.mapLocation='${loc.id}';render()">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;gap:10px;align-items:center"><span style="font-size:1.5rem">${loc.icon}</span>
+          <div><div style="font-weight:bold;font-size:0.84rem;color:#fff">${loc.name}</div>
+          <div style="font-size:0.6rem;color:${loc.color};font-family:Arial,sans-serif">Danger: <span style="color:${DANGER_COLORS[danger]};font-weight:bold">${DANGER_LABELS[danger]}</span></div></div>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">
+          ${Object.entries(PIN_TYPES).map(([k,pt])=>{const cnt=pins.filter(p=>p.type===k).length;return cnt?`<span style="font-size:0.6rem;padding:2px 6px;border-radius:8px;background:rgba(10,8,30,0.8);color:${pt.color};font-family:Arial,sans-serif">${pt.icon} ${cnt}</span>`:''}).join('')}
+        </div>
+      </div>
+    </div>`;
+  }).join('')}`;
+}
+
+function renderMapLocation(){
+const loc=WORLD_LOCATIONS.find(l=>l.id===STATE.mapLocation);if(!loc)return'';
+const danger=STATE.mapDanger[loc.id]??loc.danger;
+const pins=STATE.mapPins.filter(p=>p.location===loc.id);
+const event=STATE.mapEvents[loc.id]||'';
+return`<button class="btn btn-sm" style="margin-bottom:14px" onclick="STATE.mapLocation=null;STATE.showAddPin=false;render()">← Back</button>
+
+  <div class="card-glow" style="border-color:${loc.color}60;background:linear-gradient(135deg,${loc.color}12,rgba(5,4,18,0.98))">
+    <div style="font-size:2.5rem;margin-bottom:6px">${loc.icon}</div>
+    <div style="font-weight:bold;font-size:1rem;color:#fff">${loc.name}</div>
+    <div style="font-size:0.7rem;color:${loc.color};margin-top:4px;line-height:1.5;font-family:Arial,sans-serif">${loc.desc}</div>
+    <div style="margin-top:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:1.5px;font-family:Arial,sans-serif">Danger</span><span style="font-size:0.76rem;font-weight:bold;color:${DANGER_COLORS[danger]};font-family:Arial,sans-serif">${danger}/5 — ${DANGER_LABELS[danger]}</span></div>
+      <div style="display:flex;gap:4px">${[1,2,3,4,5].map(d=>`<div style="flex:1;height:8px;border-radius:4px;cursor:pointer;background:${d<=danger?DANGER_COLORS[d]:'rgba(255,255,255,0.06)'}" onclick="STATE.mapDanger['${loc.id}']=${d};save('map_danger',STATE.mapDanger);render()"></div>`).join('')}</div>
+    </div>
+  </div>
+  <div class="card"><div class="section-title">📡 Active Event</div>
+    <textarea class="textarea" style="min-height:55px" oninput="STATE.mapEvents['${loc.id}']=this.value;save('map_events',STATE.mapEvents)" placeholder="What's happening here...">${esc(event)}</textarea>
+  </div>
+  <div class="card"><div class="section-title">Features</div>
+    ${loc.features.map(f=>`<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.72rem;color:var(--dim);font-family:Arial,sans-serif"><span style="color:${loc.color};flex-shrink:0">✦</span>${f}</div>`).join('')}
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="section-title" style="margin-bottom:0">📍 Pins (${pins.length})</div>
+      <button class="btn btn-sm" onclick="STATE.showAddPin=!STATE.showAddPin;render()">${STATE.showAddPin?'✕':'+ Add Pin'}</button>
+    </div>
+    ${STATE.showAddPin?`<div style="background:rgba(8,6,25,0.9);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px">
+      <label class="label">Name</label><input class="input" id="pin-name" style="margin-bottom:8px" placeholder="Who or what..." list="pnl">
+      <datalist id="pnl">${STATE.players.filter(p=>!p.isDead).map(p=>`<option>${esc(p.charname)}</option>`).join('')}</datalist>
+      <label class="label">Type</label>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px">
+        ${Object.entries(PIN_TYPES).map(([k,pt])=>`<button class="btn btn-sm" style="font-size:0.58rem;padding:5px 3px;border-color:${STATE.addPinForm.type===k?pt.color:'var(--border)'};background:${STATE.addPinForm.type===k?pt.color+'30':'rgba(10,8,30,0.8)'};color:${STATE.addPinForm.type===k?pt.color:'var(--dim)'}" onclick="STATE.addPinForm.type='${k}';render()">${pt.icon} ${pt.label}</button>`).join('')}
+      </div>
+      <label class="label">Note</label><input class="input" id="pin-note" style="margin-bottom:10px" placeholder="Context...">
+      <button class="btn btn-purple" onclick="addPin('${loc.id}')">📍 Place Pin</button>
+    </div>`:''}
+    ${pins.length===0?`<div style="color:var(--dimmer);font-size:0.72rem;text-align:center;padding:12px 0;font-family:Arial,sans-serif">No pins yet.</div>`
+    :Object.
+entries(PIN_TYPES).map(([k,pt])=>{
+      const typePins = pins.filter(p=>p.type===k);
+      if(!typePins.length) return '';
+      return `<div style="margin-bottom:10px">
+        <div style="font-size:0.6rem;color:${pt.color};font-weight:bold;margin-bottom:4px;font-family:Arial,sans-serif">${pt.icon} ${pt.label}</div>
+        ${typePins.map(p=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.72rem;color:var(--dim);font-family:Arial,sans-serif">
+          <span><span style="color:#fff">${esc(p.name)}</span>${p.note?' — '+esc(p.note):''}</span>
+          <button onclick="rmPin('${p.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:0.8rem">✕</button>
+        </div>`).join('')}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════
+// REMAINING UI TAB RENDERERS
+// ═══════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════
+// NEW COMPLETED TAB RENDERERS
+// ═══════════════════════════════════════════════════
+
+function renderRaids() {
+  const locs = Object.entries(RAID_LOCATIONS);
+  return `
+    <div class="card-glow">
+      <div class="section-title">Active Raid Launcher</div>
+      <div style="margin-bottom:12px">
+        <label class="label">Target Location</label>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px">
+          ${locs.map(([id, data]) => `
+            <button class="btn btn-sm" style="border-color:${STATE.raidLocation === id ? 'var(--purple)' : 'var(--border)'}; background:${STATE.raidLocation === id ? 'var(--purple-dim)' : 'transparent'}" onclick="STATE.raidLocation='${id}';render()">
+              ${data.icon} ${data.name.split(' ').pop()}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <label class="label">Raid Tier</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+          ${Object.entries(RAID_TIERS).map(([id, t]) => `
+            <button class="btn btn-sm" style="border-color:${STATE.raidTier === id ? t.color : 'var(--border)'}; color:${STATE.raidTier === id ? '#fff' : 'var(--dim)'}; background:${STATE.raidTier === id ? t.color + '40' : 'transparent'}" onclick="STATE.raidTier='${id}';render()">
+              ${t.label}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+      <button class="btn btn-purple btn-full" onclick="startRaid()">⚔️ DEPLOY RAID SQUAD</button>
+    </div>
+    <div class="card">
+      <div class="section-title">Raid History</div>
+      ${STATE.raidHistory.length === 0 ? '<div style="font-size:0.65rem; color:var(--dim)">No raids recorded this arc.</div>' : 
+        STATE.raidHistory.slice(0,5).map(r => `
+          <div style="font-size:0.7rem; padding:6px 0; border-bottom:1px solid var(--border)">
+            <span style="color:var(--gold)">${r.location}</span> — ${r.tier} (${r.status})
+          </div>
+        `).join('')}
+    </div>
+  `;
+}
+
+function renderArsenal() {
+  const categories = ['Warrior', 'Wizard', 'Rogue', 'Healer', 'Merchant', 'Bard'];
+  const items = ARSENAL_WEAPONS[STATE.arsenalTab] || [];
+  
+  return `
+    <div class="arsenal-nav">
+      ${categories.map(c => `
+        <div class="arsenal-tab ${STATE.arsenalTab === c ? 'active' : ''}" onclick="STATE.arsenalTab='${c}';render()">
+          ${CLASS_ICON[c]} ${c}
+        </div>
+      `).join('')}
+    </div>
+    <div class="section-title">${STATE.arsenalTab} Armory</div>
+    ${items.map(item => `
+      <div class="item-card card" style="border-left: 4px solid ${item.color}">
+        <div style="display:flex; justify-content:space-between; align-items:center">
+          <div style="font-size:1.2rem">${item.image}</div>
+          <div style="flex:1; margin-left:12px">
+            <div style="font-weight:bold; font-size:0.8rem; color:#fff">${item.name}</div>
+            <div style="font-size:0.6rem; color:${item.color}">${item.rarity} · ${item.damage}</div>
+          </div>
+          <button class="btn btn-sm" onclick="copyToClipboard('${esc(item.name)}')">📋</button>
+        </div>
+        <div style="font-size:0.65rem; color:var(--dim); margin-top:8px; font-style:italic">"${item.lore}"</div>
+        <div style="font-size:0.65rem; color:var(--purple-light); margin-top:4px">✨ ${item.effect}</div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function renderBase() {
+  return `
+    <div class="card-glow">
+      <div class="section-title">🏠 Moon Squad HQ — Defense: ${STATE.baseDefense}</div>
+      <div class="info-bar">Upgrade rooms to unlock player bonuses and protect the vault from NPC raids.</div>
+      ${Object.entries(BASE_ROOMS).map(([id, room]) => {
+        const level = STATE.baseRooms[id] || 0;
+        const current = room.tiers[level - 1] || { bonus: 'Not Constructed' };
+        const next = room.tiers[level];
+        return `
+          <div class="room-card" style="padding:10px 0; border-bottom:1px solid var(--border)">
+            <div style="flex:1">
+              <div style="font-weight:bold; font-size:0.8rem">${room.icon} ${room.name} <span style="color:var(--purple-light)">Lv.${level}</span></div>
+              <div style="font-size:0.65rem; color:var(--dim)">${current.bonus}</div>
+            </div>
+            ${next ? `<button class="btn btn-sm" style="color:var(--gold)" onclick="upgradeRoom('${id}', ${next.cost})">Upgrade (${next.cost})</button>` : '<span style="font-size:0.6rem; color:var(--green)">MAXED</span>'}
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <div class="card">
+      <div class="section-title">Base Residents (${STATE.baseResidents.length})</div>
+      ${STATE.baseResidents.map(r => `
+        <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-bottom:5px">
+          <span>${RESIDENT_ROLES[r.role].icon} <b>${r.name}</b> (${RESIDENT_ROLES[r.role].label})</span>
+          <span style="color:var(--dim)">${RESIDENT_ROLES[r.role].bonus}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderClasses() {
+  const c = CLASS_LORE[STATE.classTab];
+  const stats = CLASS_BASE_STATS[STATE.classTab];
+  const primary = PRIMARY_STAT[STATE.classTab];
+
+  return `
+    <div class="arsenal-nav">
+      ${CLASSES.map(cls => `
+        <div class="arsenal-tab ${STATE.classTab === cls ? 'active' : ''}" style="border-color:${STATE.classTab === cls ? STAT_COLORS[PRIMARY_STAT[cls]] : 'var(--border)'}" onclick="STATE.classTab='${cls}';render()">
+          ${CLASS_ICON[cls]} ${cls}
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="card-glow" style="border-color:${STAT_COLORS[primary]}60">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start">
+        <div>
+          <div style="font-size:1.2rem; font-weight:bold; color:#fff">${CLASS_ICON[STATE.classTab]} ${STATE.classTab.toUpperCase()}</div>
+          <div style="font-size:0.65rem; color:var(--dim); font-style:italic; margin-top:2px; font-family:Arial,sans-serif">"${c.tagline}"</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:0.55rem; color:var(--dim); text-transform:uppercase; letter-spacing:1px">Base HP</div>
+          <div style="font-size:1.1rem; font-weight:bold; color:var(--green)">${CLASS_HP[STATE.classTab]}</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="lore-tab-bar">
+        ${['overview', 'mechanics', 'gift', 'lore'].map(sec => `
+          <div class="lore-tab ${STATE.classSec === sec ? 'active' : ''}" onclick="STATE.classSec='${sec}';render()">
+            ${sec.charAt(0).toUpperCase() + sec.slice(1)}
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="fade-in" style="min-height:180px">
+        ${renderClassSection(c, stats, primary)}
+      </div>
+    </div>
+  `;
+}
+
+function renderClassSection(c, stats, primary) {
+  switch(STATE.classSec) {
+    case 'overview':
+      return `
+        <div style="font-size:0.72rem; color:var(--text); line-height:1.6; font-family:Arial,sans-serif">
+          ${c.overview}
+          <div class="section-title" style="margin-top:15px">Best Suited For</div>
+          <div style="color:var(--purple-light); font-style:italic">"${c.playstyle}"</div>
+        </div>
+      `;
+    case 'mechanics':
+      return `
+        <div class="stat-grid" style="margin-bottom:15px">
+          ${Object.entries(stats).map(([s, v]) => `
+            <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:6px; text-align:center; border:1px solid ${s === primary ? STAT_COLORS[s] + '60' : 'transparent'}">
+              <div style="font-size:0.55rem; color:var(--dim)">${s}</div>
+              <div style="font-size:0.9rem; font-weight:bold; color:${STAT_COLORS[s]}">${v}${s === primary ? '★' : ''}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="section-title">Strengths</div>
+        ${c.strengths.map(s => `<div style="font-size:0.68rem; margin-bottom:4px; color:var(--green)">✓ ${s}</div>`).join('')}
+        <div class="section-title" style="margin-top:10px">Weaknesses</div>
+        ${c.weaknesses.map(w => `<div style="font-size:0.68rem; margin-bottom:4px; color:var(--red)">✗ ${w}</div>`).join('')}
+      `;
+    case 'gift':
+      return `
+        <div style="background:rgba(102,187,106,0.1); border:1px solid var(--green); border-radius:10px; padding:15px; text-align:center">
+          <div style="font-size:0.6rem; color:var(--green); text-transform:uppercase; letter-spacing:2px; margin-bottom:5px">Unique Gift Power</div>
+          <div style="font-size:1rem; font-weight:bold; color:#fff; margin-bottom:8px">✨ ${c.giftPower.split('—')[0]}</div>
+          <div style="font-size:0.7rem; color:#ccc; line-height:1.4; font-family:Arial,sans-serif">${c.giftPower.split('—')[1]}</div>
+        </div>
+        <div class="info-bar" style="margin-top:12px">Available once per session. Mark as "Used" in the Player Profile to track.</div>
+      `;
+    case 'lore':
+      return `
+        <div style="font-size:0.72rem; color:var(--dim); line-height:1.7; font-style:italic; font-family:Georgia,serif">
+          “${c.lore}”
+        </div>
+      `;
+    default: return '';
+  }
+}
+
+function renderRules() {
+  return `
+    <div class="lore-tab-bar">
+      ${RULES_SECTIONS.map(s => `
+        <div class="lore-tab ${STATE.rulesTab === s.id ? 'active' : ''}" onclick="STATE.rulesTab='${s.id}';render()">
+          ${s.title.split(' ').pop()}
+        </div>
+      `).join('')}
+      <div class="lore-tab ${STATE.rulesTab === 'faq' ? 'active' : ''}" onclick="STATE.rulesTab='faq';render()">FAQ</div>
+    </div>
+
+    <div class="card">
+      ${STATE.rulesTab === 'faq' ? `
+        <div class="section-title">Frequently Asked Questions</div>
+        ${FAQ.map((f, i) => `
+          <div style="margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:10px">
+            <div style="font-size:0.75rem; font-weight:bold; color:var(--purple-light); margin-bottom:4px; cursor:pointer" onclick="STATE.faqOpen = STATE.faqOpen === ${i} ? null : ${i}; render()">
+              Q: ${f.q} ${STATE.faqOpen === i ? '▴' : '▾'}
+            </div>
+            ${STATE.faqOpen === i ? `<div class="fade-in" style="font-size:0.7rem; color:var(--text); line-height:1.4">${f.a}</div>` : ''}
+          </div>
+        `).join('')}
+      ` : `
+        <div class="section-title">${RULES_SECTIONS.find(s => s.id === STATE.rulesTab).title}</div>
+        <div style="font-size:0.72rem; color:var(--text); white-space:pre-wrap; line-height:1.6; font-family:Arial,sans-serif">
+          ${RULES_SECTIONS.find(s => s.id === STATE.rulesTab).content}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════
+// ACTION HANDLERS
+// ═══════════════════════════════════════════════════
+
+function addPin(locId) {
+  const nameInput = document.getElementById('pin-name');
+  const noteInput = document.getElementById('pin-note');
+  if(!nameInput || !nameInput.value) return;
+  
+  STATE.mapPins.push({ 
+    id: Date.now().toString(), 
+    location: locId, 
+    name: nameInput.value, 
+    note: noteInput ? noteInput.value : '', 
+    type: STATE.addPinForm.type 
+  });
+  
+  STATE.showAddPin = false;
+  STATE.addPinForm = {name:'', type:'player', note:''};
+  saveAll();
+  render();
+}
+
+function rmPin(id) {
+  STATE.mapPins = STATE.mapPins.filter(p => p.id !== id);
+  saveAll();
+  render();
+}
+
+function addPlayer() {
+  const c = STATE.creation;
+  if(!c.charname || !c.cls) {
+    alert("Character Name and Class are required.");
+    return;
+  }
+  
+  const newPlayer = {
+    id: Date.now(),
+    joined: new Date().toLocaleDateString(),
+    hp: CLASS_HP[c.cls],
+    maxHp: CLASS_HP[c.cls],
+    protectionBalance: 0,
+    inventory: [],
+    consequences: [],
+    isDead: false,
+    giftPowerUsed: false,
+    ...c
+  };
+
+  // Assign generated traits to the final player object
+  if(c.repRoll) { 
+    newPlayer.title = getRep(c.cls, c.repRoll)?.title; 
+    newPlayer.repPassive = getRep(c.cls, c.repRoll)?.passive; 
+  }
+  if(c.traitRoll) newPlayer.traitLevel = getTrait(c.traitRoll)?.level;
+  if(c.weaponRoll) { 
+    newPlayer.inventory.push(getWeapon(c.cls, c.weaponRoll)?.name); 
+  }
+  if(c.skillRoll) { 
+    newPlayer.signatureSkill = getSkill(c.cls, c.skillRoll)?.name; 
+    newPlayer.signatureSkillDesc = getSkill(c.cls, c.skillRoll)?.desc; 
+  }
+  if(c.shadowRoll) { 
+    newPlayer.shadowTrait = getShadow(c.cls, c.shadowRoll)?.name; 
+    newPlayer.shadowTraitDesc = getShadow(c.cls, c.shadowRoll)?.desc; 
+  }
+  if(c.enchantRoll) { 
+    newPlayer.enchantment = getEnchant(c.cls, c.enchantRoll)?.name; 
+    newPlayer.enchantmentDesc = getEnchant(c.cls, c.enchantRoll)?.desc; 
+  }
+  if(c.destinyRoll) newPlayer.destinyThread = getDestiny(c.cls, c.destinyRoll)?.thread;
+  
+  STATE.players.unshift(newPlayer);
+  STATE.tab = 'players';
+  STATE.creation = {username:'',charname:'',cls:'',origin:'',payment:'tiktok',notes:'',repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null};
+  saveAll();
+  render();
+}
+
+function rollDice() {
+  if(STATE.diceSpinning) return;
+  STATE.diceSpinning = true;
+  render();
+  
+  setTimeout(() => {
+    STATE.diceRoll = d20();
+    STATE.diceSpinning = false;
+    const purposeLabel = STATE.diceContext.custom || STATE.diceContext.target || ROLL_PURPOSES[STATE.diceContext.purpose]?.label || 'General Action';
+    
+    STATE.diceHistory.unshift({
+      result: STATE.diceRoll,
+      player: STATE.diceContext.player || 'DM',
+      purpose: purposeLabel,
+      time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+    });
+    
+    if(STATE.sessionActive) {
+       addLog({ 
+         type: 'dice', 
+         who: STATE.diceContext.player || 'DM', 
+         what: `Rolled a d20 for ${purposeLabel}`, 
+         result: STATE.diceRoll, 
+         label: purposeLabel 
+       });
+    }
+    saveAll();
+    render();
+  }, 600);
+}
+
+function toggleBattle() {
+  STATE.battleRunning = !STATE.battleRunning;
+  if(STATE.battleRunning) {
+     STATE.battleInterval = setInterval(() => {
+        if(STATE.battleTime > 0) { 
+          STATE.battleTime--; 
+          render(); 
+        } else { 
+          toggleBattle(); // Auto-pause when hitting 0
+        }
+     }, 1000);
+  } else {
+     clearInterval(STATE.battleInterval);
+  }
+  render();
+}
+
+function resetBattle() {
+  STATE.battleRunning = false;
+  clearInterval(STATE.battleInterval);
+  STATE.battleTime = 180;
+  STATE.battleCoins1 = '';
+  STATE.battleCoins2 = '';
+  render();
+  }
+
+function beginSession() {
+  STATE.sessionActive = true;
+  STATE.sessionStartTime = Date.now();
+  addLog({type: 'session', who: 'System', what: `Session ${STATE.sessionNumber} began.`});
+  saveAll();
+  render();
+}
+
+function endSession() {
+  if(!confirm("Are you sure you want to end the current session?")) return;
+  addLog({type: 'session', who: 'System', what: `Session ${STATE.sessionNumber} ended.`});
+  STATE.sessionActive = false;
+  STATE.sessionNumber++;
+  STATE.sessionStartTime = null;
+  saveAll();
+  render();
+}
+
+function submitLogEntry() {
+  if(!STATE.manualEntry.who || !STATE.manualEntry.what) return;
+  addLog({type: STATE.manualEntry.type || 'note', who: STATE.manualEntry.who, what: STATE.manualEntry.what});
+  STATE.manualEntry = {who:'', what:'', type: null};
+  saveAll();
+  render();
+}
+
+function addInvItem(playerId) {
+  const input = document.getElementById(`inv-add-${playerId}`);
+  if(!input || !input.value.trim()) return;
+  const p = STATE.players.find(x => x.id === playerId);
+  if(p) { 
+    if(!p.inventory) p.inventory = [];
+    p.inventory.push(input.value.trim()); 
+    input.value = '';
+    saveAll(); 
+    render(); 
+  }
+}
+
+function rmInvItem(playerId, index) {
+  const p = STATE.players.find(x => x.id === playerId);
+  if(p && p.inventory) { 
+    p.inventory.splice(index, 1); 
+    saveAll(); 
+    render(); 
+  }
+}
+
+function addConsequence(playerId, type, label) {
+  const p = STATE.players.find(x => x.id === playerId);
+  if(p) { 
+    if(!p.consequences) p.consequences = [];
+    p.consequences.push({type, label}); 
+    saveAll(); 
+    render(); 
+  }
+}
+
+function rmConsequence(playerId, index) {
+  const p = STATE.players.find(x => x.id === playerId);
+  if(p && p.consequences) { 
+    p.consequences.splice(index, 1); 
+    saveAll(); 
+    render(); 
+  }
+}
+
+function markDead(playerId) {
+  if(!confirm("Mark this player as permanently DEAD?")) return;
+  const p = STATE.players.find(x => x.id === playerId);
+  if(p) { 
+    p.isDead = true; 
+    p.hp = 0; 
+    addLog({type:'death', who:p.charname, what:'Character died.'}); 
+    saveAll(); 
+    render(); 
+  }
+}
+
+function resurrect(playerId) {
+  if(!confirm("Resurrect this player?")) return;
+  const p = STATE.players.find(x => x.id === playerId);
+  if(p) { 
+    p.isDead = false; 
+    p.hp = p.maxHp; 
+    addLog({type:'heal', who:p.charname, what:'Character was resurrected!'}); 
+    saveAll(); 
+    render(); 
+  }
+}
+
+function deleteCustomVillain(id) {
+  if (!confirm("Permanently erase this custom villain?")) return;
+  STATE.customVillains = STATE.customVillains.filter(v => v.id !== id);
+  STATE.villainsLive = STATE.villainsLive.filter(vId => vId !== id);
+  saveAll();
+  render();
+}
+
+function addResident() {
+  const name = document.getElementById('res-name').value;
+  const role = document.getElementById('res-role').value;
+  if (!name) return;
+  STATE.baseResidents.push({ name, role, note: '' });
+  STATE.showAddResident = false;
+  addLog({ type: 'note', who: 'Moon Squad', what: `${name} (${role}) has joined the HQ.` });
+  saveAll();
+  render();
+}
+
+function rmResident(index) {
+  if (!confirm("Remove this resident?")) return;
+  STATE.baseResidents.splice(index, 1);
+  saveAll();
+  render();
+}
+
+
+// ═══════════════════════════════════════════════════
+// INITIALIZATION
+// ═══════════════════════════════════════════════════
+render();
+
+</script>
+</body>
+</html>
