@@ -1309,16 +1309,101 @@ return`<div style="display:flex;gap:8px;margin-bottom:12px"> <div style="positio
 
 function playerCard(p){
 const pct=Math.max(0,(p.hp/p.maxHp)*100);const hc=hpColor(pct);
-return`<div class="player-card${p.protectionBalance>0?' protected':''}${p.isDead?' dead':''}" onclick="STATE.selectedPlayer=${p.id};render()"> <div style="display:flex;justify-content:space-between;align-items:flex-start"> <div> <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)}${p.isDead?' ☠':''}</div> <div style="font-size:0.62rem;color:var(--purple-light);font-family:Arial,sans-serif">${CLASS_ICON[p.cls]||''} ${p.cls} · @${esc(p.username)}</div> <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">📍 ${esc(p.origin||'')}</div> ${p.title?`<div style="font-size:0.62rem;color:var(--gold);font-style:italic">✦ ${esc(p.title)}</div>`:''} </div> <span style="font-size:0.6rem;color:var(--dim);font-family:Arial,sans-serif">Tap →</span> </div> <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:${hc};margin-top:9px;margin-bottom:2px;font-family:Arial,sans-serif"><span style="font-weight:bold">HP</span><span>${p.hp}/${p.maxHp}</span></div> <div class="hp-bar-wrap"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 6px ${hc}"></div></div> ${statBars(p)} ${p.traitLevel?`<div style="font-size:0.6rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'#bbb'};margin-top:5px;font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:6px"> ${p.isDead?'<span class="tag pill-wanted">☠ DEAD</span>':''} ${p.protectionBalance>0?`<span class="tag" style="background:rgba(60,50,10,0.8);color:var(--gold)">🛡 ${p.protectionBalance.toLocaleString()}</span>`:''} ${(p.consequences||[]).map(c=>`<span class="tag pill-${c.type||'curse'}">${c.label}</span>`).join('')}</div></div>`;
+return`<div class="player-card${p.protectionBalance>0?' protected':''}${p.isDead?' dead':''}" onclick="STATE.selectedPlayer=${p.id};render()"> 
+  <div style="display:flex;justify-content:space-between;align-items:flex-start"> 
+    <div style="display:flex;gap:10px;align-items:center">
+      ${p.charImg ? `<img src="${p.charImg}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;border:1px solid var(--border)">` : ''}
+      <div> 
+        <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)}${p.isDead?' ☠':''}</div> 
+        <div style="font-size:0.62rem;color:var(--purple-light);font-family:Arial,sans-serif">${CLASS_ICON[p.cls]||''} ${p.cls} · @${esc(p.username)}</div> 
+        <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">📍 ${esc(p.origin||'')}</div> 
+        ${p.title?`<div style="font-size:0.62rem;color:var(--gold);font-style:italic">✦ ${esc(p.title)}</div>`:''} 
+      </div>
+    </div> 
+    <span style="font-size:0.6rem;color:var(--dim);font-family:Arial,sans-serif">Tap →</span> 
+  </div> 
+  <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:${hc};margin-top:9px;margin-bottom:2px;font-family:Arial,sans-serif"><span style="font-weight:bold">HP</span><span>${p.hp}/${p.maxHp}</span></div> 
+  <div class="hp-bar-wrap"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 6px ${hc}"></div></div> 
+  ${statBars(p)} 
+  ${p.traitLevel?`<div style="font-size:0.6rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'#bbb'};margin-top:5px;font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} 
+  <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:6px"> 
+    ${p.isDead?'<span class="tag pill-wanted">☠ DEAD</span>':''} 
+    ${p.protectionBalance>0?`<span class="tag" style="background:rgba(60,50,10,0.8);color:var(--gold)">🛡 ${p.protectionBalance.toLocaleString()}</span>`:''} 
+    ${(p.consequences||[]).map(c=>`<span class="tag pill-${c.type||'curse'}">${c.label}</span>`).join('')}
+  </div>
+</div>`;
 }
+
 
 function renderPlayerModal(){
 const p=STATE.players.find(x=>x.id===STATE.selectedPlayer);if(!p)return'';
 const pct=Math.max(0,(p.hp/p.maxHp)*100);const hc=hpColor(pct);
 const stats=getPlayerStats(p);
 const FULL={STR:'Strength',DEF:'Defense',INT:'Intelligence',WIS:'Wisdom',SPD:'Speed',CHA:'Charisma',LCK:'Luck'};
-return`<div class="modal-box"> <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"> <div> <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)} — ${CLASS_ICON[p.cls]||''} ${p.cls}</div> <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">@${esc(p.username)} · ${esc(p.origin||'')} · ${p.joined||''}</div> ${p.title?`<div style="font-size:0.7rem;color:var(--gold);font-style:italic;margin-top:2px">✦ ${esc(p.title)}</div>`:''} </div> <button style="background:none;border:none;color:var(--dim);font-size:1.3rem;cursor:pointer" onclick="STATE.selectedPlayer=null;render()">✕</button> </div> <div class="card" style="margin-bottom:12px"> <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"> <span style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;font-family:Arial,sans-serif">Hit Points</span> <span style="font-size:1.1rem;font-weight:bold;color:${hc};font-family:Arial,sans-serif">${p.hp}<span style="font-size:0.7rem;color:var(--dim)"> / ${p.maxHp}</span></span> </div> <div class="hp-bar-wrap" style="height:10px;margin-bottom:8px"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 10px ${hc}"></div></div> <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"> ${[-5,-3,-2,-1].map(d=>`<button class="btn btn-sm btn-red" onclick="adjHP(${p.id},${d});render()">${d}</button>`).join('')} <div style="flex:1"></div> ${[1,2,3,5].map(d=>`<button class="btn btn-sm btn-green" onclick="adjHP(${p.id},${d});render()">+${d}</button>`).join('')} <button class="btn btn-sm" onclick="updatePlayer(${p.id},{hp:${p.maxHp}});render()">Full</button> </div> <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin-bottom:10px"></div> <div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-family:Arial,sans-serif">Character Stats</div> <div class="stat-grid"> ${Object.entries(stats).map(([s,v])=>{const c=STAT_COLORS[s];const pct2=Math.min(100,(v/12)*100);return`<div><div class="stat-label"><span style="color:${c};font-weight:bold">${FULL[s]||s}</span><span style="font-size:0.85rem;font-weight:bold;color:${c}">${v}</span></div><div class="stat-bar-wrap" style="height:5px"><div class="stat-bar" style="width:${pct2}%;background:${c};box-shadow:0 0 5px ${c}60"></div></div></div>`;}).join('')} </div> ${p.traitLevel?`<div style="margin-top:10px;padding:5px 10px;background:rgba(138,90,220,0.1);border-radius:6px;font-size:0.68rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'var(--purple-light)'};font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} </div> ${p.repPassive?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✦ Rep: </span>${esc(p.repPassive)}</div>`:''} ${p.signatureSkill?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--blue);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--blue);font-weight:bold">⚡ ${esc(p.signatureSkill)}: </span>${esc(p.signatureSkillDesc||'')}</div>`:''} ${p.shadowTrait?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--red);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--red);font-weight:bold">🌑 ${esc(p.shadowTrait)}: </span>${esc(p.shadowTraitDesc||'')}</div>`:''} ${p.enchantment?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✨ ${esc(p.enchantment)}: </span>${esc(p.enchantmentDesc||'')}</div>`:''} ${p.destinyThread?`<div style="background:rgba(30,10,50,0.8);border-left:2px solid #ce93d8;padding:6px 10px;font-size:0.68rem;color:#ce93d8;margin-bottom:14px;border-radius:0 6px 6px 0;font-style:italic;font-family:Arial,sans-serif">🔮 “${esc(p.destinyThread)}”</div>`:''} <div class="section-title">Position</div> <input class="input" style="margin-bottom:12px" value="${esc(p.position||'')}" onblur="updatePlayer(${p.id},{position:this.value})"> <div class="section-title">Inventory (${(p.inventory||[]).length})</div> ${(p.inventory||[]).map((item,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.74rem;color:#bbb;font-family:Arial,sans-serif"><span>${esc(item)}</span><button onclick="rmInvItem(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer">✕</button></div>`).join('')} <div style="display:flex;gap:6px;margin-top:6px;margin-bottom:12px"> <input class="input" style="flex:1" id="inv-add-${p.id}" placeholder="Add item..."> <button class="btn btn-sm btn-green" onclick="addInvItem(${p.id})">Add</button> </div> <div class="section-title">Consequences</div> <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px"> ${[{type:'curse',label:'⚗ Cursed'},{type:'wanted',label:'🎯 Wanted'},{type:'exile',label:'🚫 Exiled'},{type:'servant',label:'⛓ Servant'}].map(c=>`<button class="btn btn-sm" style="background:rgba(30,20,50,0.8)" onclick="addConsequence(${p.id},'${c.type}','${c.label}')">+ ${c.label}</button>`).join('')} </div> ${(p.consequences||[]).map((c,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 8px;background:rgba(10,8,25,0.8);border-radius:5px;margin-bottom:5px;font-size:0.72rem;font-family:Arial,sans-serif"><span>${c.label}</span><button onclick="rmConsequence(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:0.68rem">✕ Lift</button></div>`).join('')} <div class="section-title" style="margin-top:12px">Gift Power</div> <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"> <span style="font-size:0.72rem;color:${p.giftPowerUsed?'var(--dim)':'var(--green)'};font-family:Arial,sans-serif">${p.giftPowerUsed?'✕ Used':'✓ Available'}</span> <button class="btn btn-sm" onclick="updatePlayer(${p.id},{giftPowerUsed:${!p.giftPowerUsed}});render()">${p.giftPowerUsed?'Reset':'Mark Used'}</button> </div> <div style="display:flex;gap:8px;flex-wrap:wrap"> ${p.isDead?`<button class="btn" style="background:var(--gold);color:#000" onclick="resurrect(${p.id})">⚗ Resurrect</button>`:`<button class="btn btn-red" onclick="markDead(${p.id})">☠ Mark Dead</button>`} <button class="btn" style="background:rgba(20,16,50,0.9);color:var(--dim);border:1px solid var(--border)" onclick="STATE.selectedPlayer=null;render()">Close</button> </div></div>`;
+return`<div class="modal-box"> 
+  <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+    <div style="display:flex; gap:10px;">
+      ${p.charImg ? `<img src="${p.charImg}" style="width:50px; height:50px; object-fit:cover; border-radius:8px; border:1px solid var(--border)">` : ''}
+      ${p.playerImg ? `<img src="${p.playerImg}" style="width:50px; height:50px; object-fit:cover; border-radius:50%; border:1px solid var(--purple)">` : ''}
+    </div>
+    <button style="background:none;border:none;color:var(--dim);font-size:1.3rem;cursor:pointer;height:fit-content" onclick="STATE.selectedPlayer=null;render()">✕</button>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"> 
+    <div> 
+      <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)} — ${CLASS_ICON[p.cls]||''} ${p.cls}</div> 
+      <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">@${esc(p.username)} · ${esc(p.origin||'')} · ${p.joined||''}</div> 
+      ${p.title?`<div style="font-size:0.7rem;color:var(--gold);font-style:italic;margin-top:2px">✦ ${esc(p.title)}</div>`:''} 
+    </div> 
+  </div> 
+  <div class="card" style="margin-bottom:12px"> 
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"> 
+      <span style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;font-family:Arial,sans-serif">Hit Points</span> 
+      <span style="font-size:1.1rem;font-weight:bold;color:${hc};font-family:Arial,sans-serif">${p.hp}<span style="font-size:0.7rem;color:var(--dim)"> / ${p.maxHp}</span></span> 
+    </div> 
+    <div class="hp-bar-wrap" style="height:10px;margin-bottom:8px"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 10px ${hc}"></div></div> 
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"> 
+      ${[-5,-3,-2,-1].map(d=>`<button class="btn btn-sm btn-red" onclick="adjHP(${p.id},${d});render()">${d}</button>`).join('')} 
+      <div style="flex:1"></div> 
+      ${[1,2,3,5].map(d=>`<button class="btn btn-sm btn-green" onclick="adjHP(${p.id},${d});render()">+${d}</button>`).join('')} 
+      <button class="btn btn-sm" onclick="updatePlayer(${p.id},{hp:${p.maxHp}});render()">Full</button> 
+    </div> 
+    <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin-bottom:10px"></div> 
+    <div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-family:Arial,sans-serif">Character Stats</div> 
+    <div class="stat-grid"> 
+      ${Object.entries(stats).map(([s,v])=>{const c=STAT_COLORS[s];const pct2=Math.min(100,(v/12)*100);return`<div><div class="stat-label"><span style="color:${c};font-weight:bold">${FULL[s]||s}</span><span style="font-size:0.85rem;font-weight:bold;color:${c}">${v}</span></div><div class="stat-bar-wrap" style="height:5px"><div class="stat-bar" style="width:${pct2}%;background:${c};box-shadow:0 0 5px ${c}60"></div></div></div>`;}).join('')} 
+    </div> 
+    ${p.traitLevel?`<div style="margin-top:10px;padding:5px 10px;background:rgba(138,90,220,0.1);border-radius:6px;font-size:0.68rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'var(--purple-light)'};font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} 
+  </div> 
+  ${p.repPassive?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✦ Rep: </span>${esc(p.repPassive)}</div>`:''} 
+  ${p.signatureSkill?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--blue);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--blue);font-weight:bold">⚡ ${esc(p.signatureSkill)}: </span>${esc(p.signatureSkillDesc||'')}</div>`:''} 
+  ${p.shadowTrait?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--red);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--red);font-weight:bold">🌑 ${esc(p.shadowTrait)}: </span>${esc(p.shadowTraitDesc||'')}</div>`:''} 
+  ${p.enchantment?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✨ ${esc(p.enchantment)}: </span>${esc(p.enchantmentDesc||'')}</div>`:''} 
+  ${p.destinyThread?`<div style="background:rgba(30,10,50,0.8);border-left:2px solid #ce93d8;padding:6px 10px;font-size:0.68rem;color:#ce93d8;margin-bottom:14px;border-radius:0 6px 6px 0;font-style:italic;font-family:Arial,sans-serif">🔮 “${esc(p.destinyThread)}”</div>`:''} 
+  <div class="section-title">Position</div> 
+  <input class="input" style="margin-bottom:12px" value="${esc(p.position||'')}" onblur="updatePlayer(${p.id},{position:this.value})"> 
+  <div class="section-title">Inventory (${(p.inventory||[]).length})</div> 
+  ${(p.inventory||[]).map((item,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.74rem;color:#bbb;font-family:Arial,sans-serif"><span>${esc(item)}</span><button onclick="rmInvItem(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer">✕</button></div>`).join('')} 
+  <div style="display:flex;gap:6px;margin-top:6px;margin-bottom:12px"> 
+    <input class="input" style="flex:1" id="inv-add-${p.id}" placeholder="Add item..."> 
+    <button class="btn btn-sm btn-green" onclick="addInvItem(${p.id})">Add</button> 
+  </div> 
+  <div class="section-title">Consequences</div> 
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px"> 
+    ${[{type:'curse',label:'⚗ Cursed'},{type:'wanted',label:'🎯 Wanted'},{type:'exile',label:'🚫 Exiled'},{type:'servant',label:'⛓ Servant'}].map(c=>`<button class="btn btn-sm" style="background:rgba(30,20,50,0.8)" onclick="addConsequence(${p.id},'${c.type}','${c.label}')">+ ${c.label}</button>`).join('')} 
+  </div> 
+  ${(p.consequences||[]).map((c,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 8px;background:rgba(10,8,25,0.8);border-radius:5px;margin-bottom:5px;font-size:0.72rem;font-family:Arial,sans-serif"><span>${c.label}</span><button onclick="rmConsequence(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:0.68rem">✕ Lift</button></div>`).join('')} 
+  <div class="section-title" style="margin-top:12px">Gift Power</div> 
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"> 
+    <span style="font-size:0.72rem;color:${p.giftPowerUsed?'var(--dim)':'var(--green)'};font-family:Arial,sans-serif">${p.giftPowerUsed?'✕ Used':'✓ Available'}</span> 
+    <button class="btn btn-sm" onclick="updatePlayer(${p.id},{giftPowerUsed:${!p.giftPowerUsed}});render()">${p.giftPowerUsed?'Reset':'Mark Used'}</button> 
+  </div> 
+  <div style="display:flex;gap:8px;flex-wrap:wrap"> 
+    ${p.isDead?`<button class="btn" style="background:var(--gold);color:#000" onclick="resurrect(${p.id})">⚗ Resurrect</button>`:`<button class="btn btn-red" onclick="markDead(${p.id})">☠ Mark Dead</button>`} 
+    <button class="btn" style="background:rgba(20,16,50,0.9);color:var(--dim);border:1px solid var(--border)" onclick="STATE.selectedPlayer=null;render()">Close</button> 
+  </div>
+</div>`;
 }
+
 
 function renderCreate(){
 const c=STATE.creation;
