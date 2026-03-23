@@ -1156,7 +1156,7 @@ const STATE = {
   // UI only (not persisted)
   search: '',
   selectedPlayer: null,
-  creation: {username:'',charname:'',cls:'',origin:'',payment:'tiktok',notes:'',repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null},
+  creation: {username:'',charname:'',cls:'',origin:'',payment:'tiktok',notes:'',repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null,playerImg:null,charImg:null},
   diceRoll: null,
   diceSpinning: false,
   diceHistory: [],
@@ -1309,29 +1309,7 @@ return`<div style="display:flex;gap:8px;margin-bottom:12px"> <div style="positio
 
 function playerCard(p){
 const pct=Math.max(0,(p.hp/p.maxHp)*100);const hc=hpColor(pct);
-return`<div class="player-card${p.protectionBalance>0?' protected':''}${p.isDead?' dead':''}" onclick="STATE.selectedPlayer=${p.id};render()"> 
-  <div style="display:flex;justify-content:space-between;align-items:flex-start"> 
-    <div style="display:flex; gap:10px; align-items:center">
-      ${p.pfpImage ? `<img src="${p.pfpImage}" style="width:40px; height:40px; border-radius:8px; object-fit:cover; border:1px solid var(--border);">` : `<div style="width:40px; height:40px; border-radius:8px; background:rgba(10,8,30,0.8); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.2rem;">${CLASS_ICON[p.cls]||'👤'}</div>`}
-      <div> 
-        <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)}${p.isDead?' ☠':''}</div> 
-        <div style="font-size:0.62rem;color:var(--purple-light);font-family:Arial,sans-serif">${CLASS_ICON[p.cls]||''} ${p.cls} · @${esc(p.username)}</div> 
-        <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">📍 ${esc(p.origin||'')}</div> 
-        ${p.title?`<div style="font-size:0.62rem;color:var(--gold);font-style:italic">✦ ${esc(p.title)}</div>`:''} 
-      </div> 
-    </div>
-    <span style="font-size:0.6rem;color:var(--dim);font-family:Arial,sans-serif">Tap →</span> 
-  </div> 
-  <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:${hc};margin-top:9px;margin-bottom:2px;font-family:Arial,sans-serif"><span style="font-weight:bold">HP</span><span>${p.hp}/${p.maxHp}</span></div> 
-  <div class="hp-bar-wrap"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 6px ${hc}"></div></div> 
-  ${statBars(p)} 
-  ${p.traitLevel?`<div style="font-size:0.6rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'#bbb'};margin-top:5px;font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} 
-  <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:6px"> 
-    ${p.isDead?'<span class="tag pill-wanted">☠ DEAD</span>':''} 
-    ${p.protectionBalance>0?`<span class="tag" style="background:rgba(60,50,10,0.8);color:var(--gold)">🛡 ${p.protectionBalance.toLocaleString()}</span>`:''} 
-    ${(p.consequences||[]).map(c=>`<span class="tag pill-${c.type||'curse'}">${c.label}</span>`).join('')}
-  </div>
-</div>`;
+return`<div class="player-card${p.protectionBalance>0?' protected':''}${p.isDead?' dead':''}" onclick="STATE.selectedPlayer=${p.id};render()"> <div style="display:flex;justify-content:space-between;align-items:flex-start"> <div> <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)}${p.isDead?' ☠':''}</div> <div style="font-size:0.62rem;color:var(--purple-light);font-family:Arial,sans-serif">${CLASS_ICON[p.cls]||''} ${p.cls} · @${esc(p.username)}</div> <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">📍 ${esc(p.origin||'')}</div> ${p.title?`<div style="font-size:0.62rem;color:var(--gold);font-style:italic">✦ ${esc(p.title)}</div>`:''} </div> <span style="font-size:0.6rem;color:var(--dim);font-family:Arial,sans-serif">Tap →</span> </div> <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:${hc};margin-top:9px;margin-bottom:2px;font-family:Arial,sans-serif"><span style="font-weight:bold">HP</span><span>${p.hp}/${p.maxHp}</span></div> <div class="hp-bar-wrap"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 6px ${hc}"></div></div> ${statBars(p)} ${p.traitLevel?`<div style="font-size:0.6rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'#bbb'};margin-top:5px;font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:6px"> ${p.isDead?'<span class="tag pill-wanted">☠ DEAD</span>':''} ${p.protectionBalance>0?`<span class="tag" style="background:rgba(60,50,10,0.8);color:var(--gold)">🛡 ${p.protectionBalance.toLocaleString()}</span>`:''} ${(p.consequences||[]).map(c=>`<span class="tag pill-${c.type||'curse'}">${c.label}</span>`).join('')}</div></div>`;
 }
 
 function renderPlayerModal(){
@@ -1339,100 +1317,20 @@ const p=STATE.players.find(x=>x.id===STATE.selectedPlayer);if(!p)return'';
 const pct=Math.max(0,(p.hp/p.maxHp)*100);const hc=hpColor(pct);
 const stats=getPlayerStats(p);
 const FULL={STR:'Strength',DEF:'Defense',INT:'Intelligence',WIS:'Wisdom',SPD:'Speed',CHA:'Charisma',LCK:'Luck'};
-return`<div class="modal-box"> 
-  ${p.charImage ? `<div style="width:100%; height:160px; border-radius:8px; margin-bottom:14px; background-image:url('${p.charImage}'); background-size:cover; background-position:center; border:1px solid var(--border-glow); box-shadow:0 0 20px rgba(138,90,220,0.2);"></div>` : ''}
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"> 
-    <div style="display:flex; gap:12px; align-items:center">
-      ${p.pfpImage ? `<img src="${p.pfpImage}" style="width:50px; height:50px; border-radius:10px; object-fit:cover; border:1px solid var(--purple-light);">` : ''}
-      <div> 
-        <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)} — ${CLASS_ICON[p.cls]||''} ${p.cls}</div> 
-        <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">@${esc(p.username)} · ${esc(p.origin||'')} · ${p.joined||''}</div> 
-        ${p.title?`<div style="font-size:0.7rem;color:var(--gold);font-style:italic;margin-top:2px">✦ ${esc(p.title)}</div>`:''} 
-      </div> 
-    </div>
-    <button style="background:none;border:none;color:var(--dim);font-size:1.3rem;cursor:pointer" onclick="STATE.selectedPlayer=null;render()">✕</button> 
-  </div> 
-  <div class="card" style="margin-bottom:12px"> 
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"> <span style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;font-family:Arial,sans-serif">Hit Points</span> <span style="font-size:1.1rem;font-weight:bold;color:${hc};font-family:Arial,sans-serif">${p.hp}<span style="font-size:0.7rem;color:var(--dim)"> / ${p.maxHp}</span></span> </div> 
-    <div class="hp-bar-wrap" style="height:10px;margin-bottom:8px"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 10px ${hc}"></div></div> 
-    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"> ${[-5,-3,-2,-1].map(d=>`<button class="btn btn-sm btn-red" onclick="adjHP(${p.id},${d});render()">${d}</button>`).join('')} <div style="flex:1"></div> ${[1,2,3,5].map(d=>`<button class="btn btn-sm btn-green" onclick="adjHP(${p.id},${d});render()">+${d}</button>`).join('')} <button class="btn btn-sm" onclick="updatePlayer(${p.id},{hp:${p.maxHp}});render()">Full</button> </div> 
-    <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin-bottom:10px"></div> 
-    <div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-family:Arial,sans-serif">Character Stats</div> 
-    <div class="stat-grid"> ${Object.entries(stats).map(([s,v])=>{const c=STAT_COLORS[s];const pct2=Math.min(100,(v/12)*100);return`<div><div class="stat-label"><span style="color:${c};font-weight:bold">${FULL[s]||s}</span><span style="font-size:0.85rem;font-weight:bold;color:${c}">${v}</span></div><div class="stat-bar-wrap" style="height:5px"><div class="stat-bar" style="width:${pct2}%;background:${c};box-shadow:0 0 5px ${c}60"></div></div></div>`;}).join('')} </div> 
-    ${p.traitLevel?`<div style="margin-top:10px;padding:5px 10px;background:rgba(138,90,220,0.1);border-radius:6px;font-size:0.68rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'var(--purple-light)'};font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} 
-  </div> 
-  ${p.repPassive?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✦ Rep: </span>${esc(p.repPassive)}</div>`:''} 
-  ${p.signatureSkill?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--blue);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--blue);font-weight:bold">⚡ ${esc(p.signatureSkill)}: </span>${esc(p.signatureSkillDesc||'')}</div>`:''} 
-  ${p.shadowTrait?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--red);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--red);font-weight:bold">🌑 ${esc(p.shadowTrait)}: </span>${esc(p.shadowTraitDesc||'')}</div>`:''} 
-  ${p.enchantment?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✨ ${esc(p.enchantment)}: </span>${esc(p.enchantmentDesc||'')}</div>`:''} 
-  ${p.destinyThread?`<div style="background:rgba(30,10,50,0.8);border-left:2px solid #ce93d8;padding:6px 10px;font-size:0.68rem;color:#ce93d8;margin-bottom:14px;border-radius:0 6px 6px 0;font-style:italic;font-family:Arial,sans-serif">🔮 “${esc(p.destinyThread)}”</div>`:''} 
-  <div class="section-title">Position</div> <input class="input" style="margin-bottom:12px" value="${esc(p.position||'')}" onblur="updatePlayer(${p.id},{position:this.value})"> 
-  <div class="section-title">Inventory (${(p.inventory||[]).length})</div> ${(p.inventory||[]).map((item,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.74rem;color:#bbb;font-family:Arial,sans-serif"><span>${esc(item)}</span><button onclick="rmInvItem(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer">✕</button></div>`).join('')} 
-  <div style="display:flex;gap:6px;margin-top:6px;margin-bottom:12px"> <input class="input" style="flex:1" id="inv-add-${p.id}" placeholder="Add item..."> <button class="btn btn-sm btn-green" onclick="addInvItem(${p.id})">Add</button> </div> 
-  <div class="section-title">Consequences</div> <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px"> ${[{type:'curse',label:'⚗ Cursed'},{type:'wanted',label:'🎯 Wanted'},{type:'exile',label:'🚫 Exiled'},{type:'servant',label:'⛓ Servant'}].map(c=>`<button class="btn btn-sm" style="background:rgba(30,20,50,0.8)" onclick="addConsequence(${p.id},'${c.type}','${c.label}')">+ ${c.label}</button>`).join('')} </div> 
-  ${(p.consequences||[]).map((c,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 8px;background:rgba(10,8,25,0.8);border-radius:5px;margin-bottom:5px;font-size:0.72rem;font-family:Arial,sans-serif"><span>${c.label}</span><button onclick="rmConsequence(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:0.68rem">✕ Lift</button></div>`).join('')} 
-  <div class="section-title" style="margin-top:12px">Gift Power</div> <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"> <span style="font-size:0.72rem;color:${p.giftPowerUsed?'var(--dim)':'var(--green)'};font-family:Arial,sans-serif">${p.giftPowerUsed?'✕ Used':'✓ Available'}</span> <button class="btn btn-sm" onclick="updatePlayer(${p.id},{giftPowerUsed:${!p.giftPowerUsed}});render()">${p.giftPowerUsed?'Reset':'Mark Used'}</button> </div> 
-  <div style="display:flex;gap:8px;flex-wrap:wrap"> ${p.isDead?`<button class="btn" style="background:var(--gold);color:#000" onclick="resurrect(${p.id})">⚗ Resurrect</button>`:`<button class="btn btn-red" onclick="markDead(${p.id})">☠ Mark Dead</button>`}
-  <button class="btn" style="background:rgba(20,16,50,0.9);color:var(--dim);border:1px solid var(--border)" onclick="STATE.selectedPlayer=null;render()">Close</button>
-  </div>
-</div>`;
+return`<div class="modal-box"> <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"> <div> <div style="font-weight:bold;font-size:0.95rem;color:#fff">${esc(p.charname)} — ${CLASS_ICON[p.cls]||''} ${p.cls}</div> <div style="font-size:0.62rem;color:var(--dim);font-family:Arial,sans-serif">@${esc(p.username)} · ${esc(p.origin||'')} · ${p.joined||''}</div> ${p.title?`<div style="font-size:0.7rem;color:var(--gold);font-style:italic;margin-top:2px">✦ ${esc(p.title)}</div>`:''} </div> <button style="background:none;border:none;color:var(--dim);font-size:1.3rem;cursor:pointer" onclick="STATE.selectedPlayer=null;render()">✕</button> </div> <div class="card" style="margin-bottom:12px"> <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"> <span style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;font-family:Arial,sans-serif">Hit Points</span> <span style="font-size:1.1rem;font-weight:bold;color:${hc};font-family:Arial,sans-serif">${p.hp}<span style="font-size:0.7rem;color:var(--dim)"> / ${p.maxHp}</span></span> </div> <div class="hp-bar-wrap" style="height:10px;margin-bottom:8px"><div class="hp-bar" style="width:${pct}%;background:${hc};box-shadow:0 0 10px ${hc}"></div></div> <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"> ${[-5,-3,-2,-1].map(d=>`<button class="btn btn-sm btn-red" onclick="adjHP(${p.id},${d});render()">${d}</button>`).join('')} <div style="flex:1"></div> ${[1,2,3,5].map(d=>`<button class="btn btn-sm btn-green" onclick="adjHP(${p.id},${d});render()">+${d}</button>`).join('')} <button class="btn btn-sm" onclick="updatePlayer(${p.id},{hp:${p.maxHp}});render()">Full</button> </div> <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin-bottom:10px"></div> <div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-family:Arial,sans-serif">Character Stats</div> <div class="stat-grid"> ${Object.entries(stats).map(([s,v])=>{const c=STAT_COLORS[s];const pct2=Math.min(100,(v/12)*100);return`<div><div class="stat-label"><span style="color:${c};font-weight:bold">${FULL[s]||s}</span><span style="font-size:0.85rem;font-weight:bold;color:${c}">${v}</span></div><div class="stat-bar-wrap" style="height:5px"><div class="stat-bar" style="width:${pct2}%;background:${c};box-shadow:0 0 5px ${c}60"></div></div></div>`;}).join('')} </div> ${p.traitLevel?`<div style="margin-top:10px;padding:5px 10px;background:rgba(138,90,220,0.1);border-radius:6px;font-size:0.68rem;color:${TRAIT_TIERS.find(t=>t.level===p.traitLevel)?.color||'var(--purple-light)'};font-family:Arial,sans-serif">Trait: ${p.traitLevel}</div>`:''} </div> ${p.repPassive?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✦ Rep: </span>${esc(p.repPassive)}</div>`:''} ${p.signatureSkill?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--blue);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--blue);font-weight:bold">⚡ ${esc(p.signatureSkill)}: </span>${esc(p.signatureSkillDesc||'')}</div>`:''} ${p.shadowTrait?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--red);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--red);font-weight:bold">🌑 ${esc(p.shadowTrait)}: </span>${esc(p.shadowTraitDesc||'')}</div>`:''} ${p.enchantment?`<div style="background:rgba(10,8,30,0.8);border-left:2px solid var(--gold);padding:6px 10px;font-size:0.66rem;color:#bbb;margin-bottom:6px;border-radius:0 6px 6px 0;font-family:Arial,sans-serif"><span style="color:var(--gold);font-weight:bold">✨ ${esc(p.enchantment)}: </span>${esc(p.enchantmentDesc||'')}</div>`:''} ${p.destinyThread?`<div style="background:rgba(30,10,50,0.8);border-left:2px solid #ce93d8;padding:6px 10px;font-size:0.68rem;color:#ce93d8;margin-bottom:14px;border-radius:0 6px 6px 0;font-style:italic;font-family:Arial,sans-serif">🔮 “${esc(p.destinyThread)}”</div>`:''} <div class="section-title">Position</div> <input class="input" style="margin-bottom:12px" value="${esc(p.position||'')}" onblur="updatePlayer(${p.id},{position:this.value})"> <div class="section-title">Inventory (${(p.inventory||[]).length})</div> ${(p.inventory||[]).map((item,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.74rem;color:#bbb;font-family:Arial,sans-serif"><span>${esc(item)}</span><button onclick="rmInvItem(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer">✕</button></div>`).join('')} <div style="display:flex;gap:6px;margin-top:6px;margin-bottom:12px"> <input class="input" style="flex:1" id="inv-add-${p.id}" placeholder="Add item..."> <button class="btn btn-sm btn-green" onclick="addInvItem(${p.id})">Add</button> </div> <div class="section-title">Consequences</div> <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px"> ${[{type:'curse',label:'⚗ Cursed'},{type:'wanted',label:'🎯 Wanted'},{type:'exile',label:'🚫 Exiled'},{type:'servant',label:'⛓ Servant'}].map(c=>`<button class="btn btn-sm" style="background:rgba(30,20,50,0.8)" onclick="addConsequence(${p.id},'${c.type}','${c.label}')">+ ${c.label}</button>`).join('')} </div> ${(p.consequences||[]).map((c,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 8px;background:rgba(10,8,25,0.8);border-radius:5px;margin-bottom:5px;font-size:0.72rem;font-family:Arial,sans-serif"><span>${c.label}</span><button onclick="rmConsequence(${p.id},${i})" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:0.68rem">✕ Lift</button></div>`).join('')} <div class="section-title" style="margin-top:12px">Gift Power</div> <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"> <span style="font-size:0.72rem;color:${p.giftPowerUsed?'var(--dim)':'var(--green)'};font-family:Arial,sans-serif">${p.giftPowerUsed?'✕ Used':'✓ Available'}</span> <button class="btn btn-sm" onclick="updatePlayer(${p.id},{giftPowerUsed:${!p.giftPowerUsed}});render()">${p.giftPowerUsed?'Reset':'Mark Used'}</button> </div> <div style="display:flex;gap:8px;flex-wrap:wrap"> ${p.isDead?`<button class="btn" style="background:var(--gold);color:#000" onclick="resurrect(${p.id})">⚗ Resurrect</button>`:`<button class="btn btn-red" onclick="markDead(${p.id})">☠ Mark Dead</button>`} <button class="btn" style="background:rgba(20,16,50,0.9);color:var(--dim);border:1px solid var(--border)" onclick="STATE.selectedPlayer=null;render()">Close</button> </div></div>`;
 }
 
-
-// CREATE TAB
 function renderCreate(){
 const c=STATE.creation;
 const trait=c.traitRoll?getTrait(c.traitRoll):null;
 const base=c.cls?CLASS_BASE_STATS[c.cls]:null;
-
-return `<div class="card"> 
-  <div class="section-title">New Character — 7-Roll Creation</div> 
-
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px">
-    <div>
-      <label class="label">Player PFP</label>
-      <div style="display:flex; gap:8px; align-items:center">
-        <div class="avatar-preview">
-          ${c.pfpImage ? `<img src="${c.pfpImage}">` : `<span style="font-size:1.2rem">👤</span>`}
-        </div>
-        <label class="btn btn-sm" style="flex:1; text-align:center; padding:10px 0">
-          Upload
-          <input type="file" accept="image/*" style="display:none" onchange="handleImageUpload(this, 'pfpImage')">
-        </label>
-      </div>
-    </div>
-    <div>
-      <label class="label">Character Art</label>
-      <div style="display:flex; gap:8px; align-items:center">
-        <div class="avatar-preview">
-          ${c.charImage ? `<img src="${c.charImage}">` : `<span style="font-size:1.2rem">🪆</span>`}
-        </div>
-        <label class="btn btn-sm" style="flex:1; text-align:center; padding:10px 0">
-          Upload
-          <input type="file" accept="image/*" style="display:none" onchange="handleImageUpload(this, 'charImage')">
-        </label>
-      </div>
-    </div>
-  </div>
-  <div style="margin-bottom:8px"><label class="label">TikTok Username</label><input class="input" value="${esc(c.username)}" oninput="STATE.creation.username=this.value" placeholder="@username"></div> 
-  <div style="margin-bottom:8px"><label class="label">Character Name</label> <select class="select" onchange="STATE.creation.charname=this.value"> <option value="">— Select Name —</option> ${NAMES.filter(n=>!STATE.players.find(p=>p.charname===n&&!p.isDead)).map(n=>`<option${c.charname===n?' selected':''}>${n}</option>`).join('')} </select></div> 
-  <div style="margin-bottom:8px"><label class="label">Class</label> <select class="select" onchange="STATE.creation={...STATE.creation,cls:this.value,repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null};render()"> <option value="">— Select Class —</option> ${CLASSES.map(cl=>`<option value="${cl}"${c.cls===cl?' selected':''}>${CLASS_ICON[cl]} ${cl} — HP ${CLASS_HP[cl]}</option>`).join('')} </select></div> 
-  
-  ${base?`<div class="roll-box" style="margin-bottom:8px">
-  <div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;font-family:Arial,sans-serif">Base Stats</div>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
-  ${Object.entries(base).map(([s,v])=>{const col=STAT_COLORS[s];const bonus=trait&&PRIMARY_STAT[c.cls]===s?trait.bonus:0;return`<div style="text-align:center"><div style="font-size:0.56rem;color:var(--dim);font-family:Arial,sans-serif">${s}</div><div style="font-size:0.9rem;font-weight:bold;color:${col}">${v+bonus}${bonus?`<span style="font-size:0.5rem;color:var(--green)"> +${bonus}</span>`:''}</div></div>`;}).join('')}
-  </div></div>`:'' } 
-  
-  <div style="margin-bottom:8px"><label class="label">Origin</label> <select class="select" onchange="STATE.creation.origin=this.value"> <option value="">— Select Origin —</option> ${ORIGINS.map(o=>`<option${c.origin===o?' selected':''}>${o}</option>`).join('')} </select></div> 
-  <div style="margin-bottom:12px"><label class="label">Notes</label><textarea class="textarea" oninput="STATE.creation.notes=this.value" placeholder="Player notes...">${esc(c.notes)}</textarea></div> 
-  
-  ${c.cls?`<div class="roll-box"><div class="section-title">Creation Rolls — ${c.cls}</div>${renderCreationRolls(c)}</div>`:''}
-  
-  <button class="btn btn-purple btn-full" style="margin-top:12px" onclick="addPlayer()">✦ Add to The Hollow Realm</button>
-</div>`;
+return`<div class="card"> <div class="section-title">New Character — 7-Roll Creation</div> <div style="margin-bottom:8px"><label class="label">TikTok Username</label><input class="input" value="${esc(c.username)}" oninput="STATE.creation.username=this.value" placeholder="@username"></div> <div style="margin-bottom:8px"><label class="label">Character Name</label> <select class="select" onchange="STATE.creation.charname=this.value"> <option value="">— Select Name —</option> ${NAMES.filter(n=>!STATE.players.find(p=>p.charname===n&&!p.isDead)).map(n=>`<option${c.charname===n?' selected':''}>${n}</option>`).join('')} </select></div> <div style="margin-bottom:8px"><label class="label">Class</label> <select class="select" onchange="STATE.creation={...STATE.creation,cls:this.value,repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null};render()"> <option value="">— Select Class —</option> ${CLASSES.map(cl=>`<option value="${cl}"${c.cls===cl?' selected':''}>${CLASS_ICON[cl]} ${cl} — HP ${CLASS_HP[cl]}</option>`).join('')} </select></div> ${base?`<div class="roll-box" style="margin-bottom:8px">
+<div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;font-family:Arial,sans-serif">Base Stats</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+${Object.entries(base).map(([s,v])=>{const col=STAT_COLORS[s];const bonus=trait&&PRIMARY_STAT[c.cls]===s?trait.bonus:0;return`<div style="text-align:center"><div style="font-size:0.56rem;color:var(--dim);font-family:Arial,sans-serif">${s}</div><div style="font-size:0.9rem;font-weight:bold;color:${col}">${v+bonus}${bonus?`<span style="font-size:0.5rem;color:var(--green)"> +${bonus}</span>`:''}</div></div>`;}).join('')}
+</div></div>`:'' } <div style="margin-bottom:8px"><label class="label">Origin</label> <select class="select" onchange="STATE.creation.origin=this.value"> <option value="">— Select Origin —</option> ${ORIGINS.map(o=>`<option${c.origin===o?' selected':''}>${o}</option>`).join('')} </select></div> <div style="margin-bottom:12px"><label class="label">Notes</label><textarea class="textarea" oninput="STATE.creation.notes=this.value" placeholder="Player notes...">${esc(c.notes)}</textarea></div> ${c.cls?`<div class="roll-box"><div class="section-title">Creation Rolls — ${c.cls}</div>${renderCreationRolls(c)}</div>`:''}
+<button class="btn btn-purple btn-full" style="margin-top:12px" onclick="addPlayer()">✦ Add to The Hollow Realm</button> </div>`;
 }
-
 
 function renderCreationRolls(c){
 const rolls=[
@@ -2159,8 +2057,7 @@ function addPlayer() {
   
   STATE.players.unshift(newPlayer);
   STATE.tab = 'players';
-  STATE.creation = {username:'',charname:'',cls:'',origin:'',payment:'tiktok',notes:'',repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null, pfpImage:null, charImage:null};
-
+  STATE.creation = {username:'',charname:'',cls:'',origin:'',payment:'tiktok',notes:'',repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null};
   saveAll();
   render();
 }
@@ -2241,23 +2138,44 @@ function addInvItem(playerId) {
   const input = document.getElementById(`inv-add-${playerId}`);
   if(!input || !input.value.trim()) return;
   const p = STATE.players.find(x => x.id === playerId);
-  if(p) { if(!p.inventory) p.inventory = []; p.inventory.push(input.value.trim()); input.value = ''; saveAll(); render(); }
+  if(p) { 
+    if(!p.inventory) p.inventory = []; 
+    p.inventory.push(input.value.trim()); 
+    if(STATE.sessionActive) addLog({type:'item', who:p.charname, what:`Obtained item: ${input.value.trim()}`});
+    input.value = ''; saveAll(); render(); 
+  }
 }
 
 function rmInvItem(playerId, index) {
   const p = STATE.players.find(x => x.id === playerId);
-  if(p && p.inventory) { p.inventory.splice(index, 1); saveAll(); render(); }
+  if(p && p.inventory) { 
+    const removed = p.inventory[index];
+    p.inventory.splice(index, 1); 
+    if(STATE.sessionActive) addLog({type:'item', who:p.charname, what:`Lost/Used item: ${removed}`});
+    saveAll(); render(); 
+  }
 }
 
 function addConsequence(playerId, type, label) {
   const p = STATE.players.find(x => x.id === playerId);
-  if(p) { if(!p.consequences) p.consequences = []; p.consequences.push({type, label}); saveAll(); render(); }
+  if(p) { 
+    if(!p.consequences) p.consequences = []; 
+    p.consequences.push({type, label}); 
+    if(STATE.sessionActive) addLog({type:'consequence', who:p.charname, what:`Gained condition: ${label}`});
+    saveAll(); render(); 
+  }
 }
 
 function rmConsequence(playerId, index) {
   const p = STATE.players.find(x => x.id === playerId);
-  if(p && p.consequences) { p.consequences.splice(index, 1); saveAll(); render(); }
+  if(p && p.consequences) { 
+    const removed = p.consequences[index].label;
+    p.consequences.splice(index, 1); 
+    if(STATE.sessionActive) addLog({type:'consequence', who:p.charname, what:`Cleared condition: ${removed}`});
+    saveAll(); render(); 
+  }
 }
+
 
 function markDead(playerId) {
   if(!confirm("Mark this player as permanently DEAD?")) return;
@@ -2366,37 +2284,60 @@ function generateEncounter(locId) {
   }
 }
 
-function copyToClipboard(txt) {
-  navigator.clipboard.writeText(txt).then(() => {
-    alert("Copied to clipboard: " + txt);
-  }).catch(err => {
-    console.error('Failed to copy: ', err);
-  });
+  function startRaid() {
+  if (!STATE.raidLocation || !STATE.raidTier) {
+    alert("Please select both a target location and a raid tier.");
+    return;
+  }
+  
+  const locData = RAID_LOCATIONS[STATE.raidLocation];
+  const tierData = RAID_TIERS[STATE.raidTier];
+  
+  const newRaid = {
+    id: Date.now(),
+    location: locData.name,
+    tier: tierData.label,
+    status: 'In Progress',
+    time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+  };
+  
+  STATE.raidHistory.unshift(newRaid);
+  
+  if (STATE.sessionActive) {
+    addLog({
+      type: 'raid', 
+      who: 'Moon Squad', 
+      what: `Deployed ${tierData.label} to ${locData.name}`
+    });
+  }
+  
+  // Optional: Switch to the log tab automatically to watch the action
+  STATE.tab = 'log'; 
+  saveAll();
+  render();
 }
 
-  // --- Image Compressor & Uploader ---
-function handleImageUpload(input, type) {
+  function handleImageUpload(input, targetProperty) {
   const file = input.files[0];
-  if(!file) return;
+  if (!file) return;
   
   const reader = new FileReader();
   reader.onload = function(e) {
     const img = new Image();
     img.onload = function() {
-      // Create a canvas to shrink the image
       const canvas = document.createElement('canvas');
-      const MAX_SIZE = 150; // Keeps file size tiny for LocalStorage
+      const MAX_SIZE = 150; // Critical for keeping local storage under 5MB
       let w = img.width; let h = img.height;
       
-      if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } }
+      if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } } 
       else { if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; } }
       
       canvas.width = w; canvas.height = h;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, w, h);
       
-      // Save the tiny compressed image to the creation state
-      STATE.creation[type] = canvas.toDataURL('image/jpeg', 0.7);
+      // Save compressed base64 string
+      STATE.creation[targetProperty] = canvas.toDataURL('image/jpeg', 0.8);
       render();
     };
     img.src = e.target.result;
@@ -2404,17 +2345,15 @@ function handleImageUpload(input, type) {
   reader.readAsDataURL(file);
 }
 
-// --- Global Ripple Listener ---
-document.addEventListener('click', function(e) {
-  const ripple = document.createElement('div');
-  ripple.className = 'ripple';
-  ripple.style.left = e.clientX + 'px';
-  ripple.style.top = e.clientY + 'px';
-  document.body.appendChild(ripple);
-  
-  // Clean up the ripple element after the animation finishes
-  setTimeout(() => ripple.remove(), 500);
-});
+
+
+function copyToClipboard(txt) {
+  navigator.clipboard.writeText(txt).then(() => {
+    alert("Copied to clipboard: " + txt);
+  }).catch(err => {
+    console.error('Failed to copy: ', err);
+  });
+}
 
 // ═══════════════════════════════════════════════════
 // INITIALIZATION
