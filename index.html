@@ -1328,7 +1328,19 @@ return`<div class="card"> <div class="section-title">New Character — 7-Roll Cr
 <div style="font-size:0.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;font-family:Arial,sans-serif">Base Stats</div>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
 ${Object.entries(base).map(([s,v])=>{const col=STAT_COLORS[s];const bonus=trait&&PRIMARY_STAT[c.cls]===s?trait.bonus:0;return`<div style="text-align:center"><div style="font-size:0.56rem;color:var(--dim);font-family:Arial,sans-serif">${s}</div><div style="font-size:0.9rem;font-weight:bold;color:${col}">${v+bonus}${bonus?`<span style="font-size:0.5rem;color:var(--green)"> +${bonus}</span>`:''}</div></div>`;}).join('')}
-</div></div>`:'' } <div style="margin-bottom:8px"><label class="label">Origin</label> <select class="select" onchange="STATE.creation.origin=this.value"> <option value="">— Select Origin —</option> ${ORIGINS.map(o=>`<option${c.origin===o?' selected':''}>${o}</option>`).join('')} </select></div> <div style="margin-bottom:12px"><label class="label">Notes</label><textarea class="textarea" oninput="STATE.creation.notes=this.value" placeholder="Player notes...">${esc(c.notes)}</textarea></div> ${c.cls?`<div class="roll-box"><div class="section-title">Creation Rolls — ${c.cls}</div>${renderCreationRolls(c)}</div>`:''}
+</div></div>`:'' } <div style="margin-bottom:8px"><label class="label">Origin</label> <select class="select" onchange="STATE.creation.origin=this.value"> <option value="">— Select Origin —</option> ${ORIGINS.map(o=>`<option${c.origin===o?' selected':''}>${o}</option>`).join('')} </select></div><div style="display:flex; gap:10px; margin-bottom:12px">
+  <div style="flex:1">
+    <label class="label">Player Photo</label>
+    ${c.playerImg ? `<img src="${c.playerImg}" style="width:100%; height:60px; object-fit:cover; border-radius:6px; margin-bottom:4px; border:1px solid var(--border)">` : ''}
+    <input type="file" accept="image/*" class="input" style="font-size:0.6rem; padding:4px" onchange="handleImageUpload(this, 'playerImg')">
+  </div>
+  <div style="flex:1">
+    <label class="label">Character Avatar</label>
+    ${c.charImg ? `<img src="${c.charImg}" style="width:100%; height:60px; object-fit:cover; border-radius:6px; margin-bottom:4px; border:1px solid var(--border)">` : ''}
+    <input type="file" accept="image/*" class="input" style="font-size:0.6rem; padding:4px" onchange="handleImageUpload(this, 'charImg')">
+  </div>
+</div>
+ <div style="margin-bottom:12px"><label class="label">Notes</label><textarea class="textarea" oninput="STATE.creation.notes=this.value" placeholder="Player notes...">${esc(c.notes)}</textarea></div> ${c.cls?`<div class="roll-box"><div class="section-title">Creation Rolls — ${c.cls}</div>${renderCreationRolls(c)}</div>`:''}
 <button class="btn btn-purple btn-full" style="margin-top:12px" onclick="addPlayer()">✦ Add to The Hollow Realm</button> </div>`;
 }
 
@@ -1810,34 +1822,94 @@ function renderRaids() {
 }
 
 function renderArsenal() {
-  const categories = ['Warrior', 'Wizard', 'Rogue', 'Healer', 'Merchant', 'Bard'];
-  const items = ARSENAL_WEAPONS[STATE.arsenalTab] || [];
+  const classes = ['Warrior', 'Wizard', 'Rogue', 'Healer', 'Merchant', 'Bard'];
+  const categories = ['Weapons', 'Armor', 'Enchantments', 'World Loot'];
   
-  return `
-    <div class="arsenal-nav">
+  if (!STATE.arsenalCategory) STATE.arsenalCategory = 'Weapons';
+
+  const catNav = `
+    <div class="arsenal-nav" style="margin-bottom:8px">
       ${categories.map(c => `
-        <div class="arsenal-tab ${STATE.arsenalTab === c ? 'active' : ''}" onclick="STATE.arsenalTab='${c}';render()">
-          ${CLASS_ICON[c]} ${c}
+        <div class="arsenal-tab ${STATE.arsenalCategory === c ? 'active' : ''}" onclick="STATE.arsenalCategory='${c}';render()">
+          ${c}
         </div>
       `).join('')}
     </div>
-    <div class="section-title">${STATE.arsenalTab} Armory</div>
-    ${items.map(item => `
-      <div class="item-card card" style="border-left: 4px solid ${item.color}">
+  `;
+
+  let content = '';
+
+  if (STATE.arsenalCategory === 'Weapons' || STATE.arsenalCategory === 'Armor') {
+    const dataSource = STATE.arsenalCategory === 'Weapons' ? ARSENAL_WEAPONS : ARSENAL_ARMOR;
+    content += `
+      <div class="arsenal-nav">
+        ${classes.map(c => `
+          <div class="arsenal-tab ${STATE.arsenalTab === c ? 'active' : ''}" onclick="STATE.arsenalTab='${c}';render()">
+            ${CLASS_ICON[c]} ${c}
+          </div>
+        `).join('')}
+      </div>
+      <div class="section-title">${STATE.arsenalTab} ${STATE.arsenalCategory}</div>
+    `;
+    
+    const items = dataSource[STATE.arsenalTab] || [];
+    if(items.length === 0) content += '<div class="empty-state">No items recorded yet.</div>';
+    
+    content += items.map(item => `
+      <div class="item-card card" style="border-left: 4px solid ${item.color}; background:${item.bg || 'rgba(8,6,25,0.8)'}">
         <div style="display:flex; justify-content:space-between; align-items:center">
-          <div style="font-size:1.2rem">${item.image}</div>
+          <div style="font-size:1.2rem">${item.image || '🛡️'}</div>
           <div style="flex:1; margin-left:12px">
             <div style="font-weight:bold; font-size:0.8rem; color:#fff">${item.name}</div>
-            <div style="font-size:0.6rem; color:${item.color}">${item.rarity} · ${item.damage}</div>
+            <div style="font-size:0.6rem; color:${item.color}">${item.rarity} · ${item.damage || item.defense || item.slot}</div>
           </div>
           <button class="btn btn-sm" onclick="copyToClipboard('${esc(item.name)}')">📋</button>
         </div>
         <div style="font-size:0.65rem; color:var(--dim); margin-top:8px; font-style:italic">"${item.lore}"</div>
-        <div style="font-size:0.65rem; color:var(--purple-light); margin-top:4px">✨ ${item.effect}</div>
+        <div style="font-size:0.65rem; color:var(--purple-light); margin-top:4px; font-weight:bold">✨ Mechanic: ${item.effect}</div>
       </div>
-    `).join('')}
-  `;
+    `).join('');
+  } 
+  else if (STATE.arsenalCategory === 'Enchantments') {
+    content += `<div class="section-title">Global Enchantments</div>`;
+    content += ARSENAL_ENCHANTMENTS.map(item => `
+      <div class="item-card card" style="border-left: 4px solid ${item.color}; background:${item.bg || 'rgba(8,6,25,0.8)'}">
+        <div style="display:flex; justify-content:space-between; align-items:center">
+          <div style="font-size:1.2rem">${item.image}</div>
+          <div style="flex:1; margin-left:12px">
+            <div style="font-weight:bold; font-size:0.8rem; color:#fff">${item.name}</div>
+            <div style="font-size:0.6rem; color:${item.color}">${item.rarity} · Fits: ${item.slot}</div>
+          </div>
+        </div>
+        <div style="font-size:0.65rem; color:var(--dim); margin-top:8px; font-style:italic">"${item.lore}"</div>
+        <div style="font-size:0.65rem; color:var(--purple-light); margin-top:4px; font-weight:bold">✨ Mechanic: ${item.effect}</div>
+      </div>
+    `).join('');
+  }
+  else if (STATE.arsenalCategory === 'World Loot') {
+    content += `<div class="section-title">Chests & Anomalies</div>`;
+    const lootSources = [...ARSENAL_CHESTS, ...ARSENAL_LOOT_BINS];
+    content += lootSources.map(item => `
+      <div class="item-card card" style="border-left: 4px solid ${item.color};">
+        <div style="display:flex; justify-content:space-between; align-items:center">
+          <div style="font-size:1.2rem">${item.image}</div>
+          <div style="flex:1; margin-left:12px">
+            <div style="font-weight:bold; font-size:0.8rem; color:#fff">${item.name}</div>
+            <div style="font-size:0.6rem; color:var(--dim)">${item.location} · ${item.type}</div>
+          </div>
+        </div>
+        <div style="font-size:0.65rem; color:var(--dim); margin-top:8px; font-style:italic">${item.lore || item.note}</div>
+        <div style="margin-top:8px; padding-top:6px; border-top:1px solid rgba(255,255,255,0.05)">
+          <div style="font-size:0.6rem; color:var(--gold); text-transform:uppercase; margin-bottom:4px">Loot Table</div>
+          ${item.loot.map(l => `<div style="display:flex; justify-content:space-between; font-size:0.65rem; color:#ccc"><span>${l.item}</span><span>${l.chance}</span></div>`).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  return catNav + content;
 }
+
 
 function renderBase() {
   return `
@@ -2044,6 +2116,8 @@ function addPlayer() {
     consequences: [],
     isDead: false,
     giftPowerUsed: false,
+    playerImg: c.playerImg,
+    charImg: c.charImg,
     ...c
   };
 
@@ -2057,10 +2131,11 @@ function addPlayer() {
   
   STATE.players.unshift(newPlayer);
   STATE.tab = 'players';
-  STATE.creation = {username:'',charname:'',cls:'',origin:'',payment:'tiktok',notes:'',repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null};
+  STATE.creation = {username:'',charname:'',cls:'',origin:'',payment:'tiktok',notes:'',repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null,playerImg:null,charImg:null};
   saveAll();
   render();
 }
+
 
 function rollDice() {
   if(STATE.diceSpinning) return;
