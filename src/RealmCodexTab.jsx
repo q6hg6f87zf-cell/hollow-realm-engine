@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, Users, Coins, ShieldAlert, Sparkles } from 'lucide-react';
+import { BookOpen, Users, Coins, ShieldAlert} from 'lucide-react';
 
 export default function RealmCodexTab() {
   const [activeChapter, setActiveChapter] = useState('bloodlines');
