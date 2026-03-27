@@ -20,7 +20,7 @@ export default function CalamityAndBossTab() {
   return (
     <div className="space-y-8 animate-fadeIn">
       <section>
-        [span_37](start_span)<h2 className="text-2xl font-bold text-amber-500 border-b border-zinc-800 pb-2 mb-4">Global Calamity System[span_37](end_span)</h2>
+        <h2 className="text-2xl font-bold text-amber-500 border-b border-zinc-800 pb-2 mb-4">Global Calamity System[span_37](end_span)</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {calamities.map((cal, i) => (
             <div key={i} className="bg-zinc-950 border-l-4 border-red-800 p-4 rounded shadow">
@@ -33,7 +33,7 @@ export default function CalamityAndBossTab() {
       </section>
 
       <section>
-        [span_38](start_span)<h2 className="text-2xl font-bold text-amber-500 border-b border-zinc-800 pb-2 mb-4">Apex Boss Mechanics[span_38](end_span)</h2>
+        <h2 className="text-2xl font-bold text-amber-500 border-b border-zinc-800 pb-2 mb-4">Apex Boss Mechanics[span_38](end_span)</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {bosses.map((boss, i) => (
             <div key={i} className="bg-zinc-900 border border-zinc-800 p-4 rounded">
