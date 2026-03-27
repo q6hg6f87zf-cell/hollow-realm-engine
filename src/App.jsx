@@ -5,18 +5,17 @@ import { OrbitControls, Sparkles, Stars, Sphere, Trail } from '@react-three/drei
 // --- THE NERVOUS SYSTEM ---
 import { HollowRealmProvider } from './HollowRealmContext';
 
-// --- MOON SQUAD TAB MODULES ---
+// --- ACTIVE MODULES (Names must match your GitHub files exactly) ---
 import LiveCombatHUD from './LiveCombatHUD';
-import PlayerBankUI from './PlayerBankUI'; // Fixed: Matches your file name
+import PlayerBankUI from './PlayerBankUI';
 import ForgeSocketingUI from './ForgeSocketingUI';
-import CharacterForgeUI from './CharacterForgeUI'; // Added: Vital for the Character tab
+import CharacterForgeUI from './CharacterForgeUI';
 import CalamityAndBossTab from './CalamityAndBossTab';
-
-// --- OPTIONAL ADDITIONS (If you want them active) ---
-import HQUpgradesTab from './HQUpgradesTab';
- import ExpandedArsenalUI from './ExpandedArsenalUI';
+import PlayerSystemsHUD from './PlayerSystemsHUD';
 import LootModeUI from './LootModeUI';
-
+import HQUpgradesTab from './HQUpgradesTab';
+import FieldKitsTab from './FieldKitsTab';
+import ExpandedArsenalUI from './ExpandedArsenalUI';
 
 // --- 1. MOON SQUAD HAPTIC ENGINE ---
 export const triggerHaptic = (type = 'click') => {
