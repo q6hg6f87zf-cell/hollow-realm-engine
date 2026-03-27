@@ -1,3 +1,5 @@
+import { HollowRealmProvider } from './HollowRealmContext';
+
 import React, { useState, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sparkles, Stars, Sphere, Trail } from '@react-three/drei';
