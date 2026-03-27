@@ -1,14 +1,22 @@
-import { HollowRealmProvider } from './HollowRealmContext';
-
 import React, { useState, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sparkles, Stars, Sphere, Trail } from '@react-three/drei';
 
-// --- IMPORTS FOR LATER (Commented out until we build the files) ---
- import CalamityAndBossTab from './CalamityAndBossTab';
- import LiveCombatHUD from './LiveCombatHUD';
- import ForgeSocketingUI from './ForgeSocketingUI';
- import BankTab from './BankTab';
+// --- THE NERVOUS SYSTEM ---
+import { HollowRealmProvider } from './HollowRealmContext';
+
+// --- MOON SQUAD TAB MODULES ---
+import LiveCombatHUD from './LiveCombatHUD';
+import PlayerBankUI from './PlayerBankUI'; // Fixed: Matches your file name
+import ForgeSocketingUI from './ForgeSocketingUI';
+import CharacterForgeUI from './CharacterForgeUI'; // Added: Vital for the Character tab
+import CalamityAndBossTab from './CalamityAndBossTab';
+
+// --- OPTIONAL ADDITIONS (If you want them active) ---
+import HQUpgradesTab from './HQUpgradesTab';
+ import ExpandedArsenalUI from './ExpandedArsenalUI';
+import LootModeUI from './LootModeUI';
+
 
 // --- 1. MOON SQUAD HAPTIC ENGINE ---
 export const triggerHaptic = (type = 'click') => {
