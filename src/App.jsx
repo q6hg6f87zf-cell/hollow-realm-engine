@@ -16,7 +16,7 @@ import LootModeUI from './LootModeUI';
 import HQUpgradesTab from './HQUpgradesTab';
 import FieldKitsTab from './FieldKitsTab';
 import ExpandedArsenalUI from './ExpandedArsenalUI';
-
+import { HollowRealmProvider } from './HollowRealmContext';
 // --- 1. MOON SQUAD HAPTIC ENGINE ---
 export const triggerHaptic = (type = 'click') => {
   if (typeof navigator !== 'undefined' && navigator.vibrate) {
