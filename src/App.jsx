@@ -1,8 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sparkles, Stars, Sphere, Trail } from '@react-three/drei';
-
-// --- THE NERVOUS SYSTEM ---
 import { HollowRealmProvider } from './HollowRealmContext';
 
 // --- ACTIVE MODULES (Names must match your GitHub files exactly) ---
@@ -16,7 +14,7 @@ import LootModeUI from './LootModeUI';
 import HQUpgradesTab from './HQUpgradesTab';
 import FieldKitsTab from './FieldKitsTab';
 import ExpandedArsenalUI from './ExpandedArsenalUI';
-import { HollowRealmProvider } from './HollowRealmContext';
+
 // --- 1. MOON SQUAD HAPTIC ENGINE ---
 export const triggerHaptic = (type = 'click') => {
   if (typeof navigator !== 'undefined' && navigator.vibrate) {
