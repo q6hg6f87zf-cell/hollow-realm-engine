@@ -1,240 +1,204 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
-export default function CharacterForgeUI({ playerCoins = 1500 }) {
-  const forgeCost = 1000;
-
-  // --- DATABASE ---
-  const classes = [
-    { id: 'warrior', name: "The Warrior", hp: 12, inv: 8,
-      stats: { STR: 8, DEF: 7, SPD: 4, WIS: 4, INT: 3, CHA: 3, LCK: 3 },
-      power: "Shield Block", 
-      shadows: ["The Berserker Flaw"]
-    },
-    { id: 'wizard', name: "The Wizard", hp: 7, inv: 6,
-      stats: { STR: 3, DEF: 2, SPD: 5, WIS: 7, INT: 9, CHA: 4, LCK: 4 },
-      power: "Arcane Surge", 
-      shadows: ["The Dependency", "The Unfinished Experiment"]
-    },
-    { id: 'rogue', name: "The Rogue", hp: 8, inv: 10,
-      stats: { STR: 5, DEF: 3, SPD: 9, WIS: 4, INT: 5, CHA: 6, LCK: 7 },
-      power: "Shadow Step", 
-      shadows: ["The Wanted", "The Ghost That Talks"]
-    },
-    { id: 'healer', name: "The Healer", hp: 9, inv: 8,
-      stats: { STR: 3, DEF: 4, SPD: 4, WIS: 9, INT: 6, CHA: 7, LCK: 5 },
-      power: "Miracle Touch", 
-      shadows: ["The One They Couldn't Save", "The Hollow Debt"]
-    },
-    { id: 'merchant', name: "The Merchant", hp: 8, inv: 12,
-      stats: { STR: 3, DEF: 3, SPD: 5, WIS: 5, INT: 6, CHA: 8, LCK: 8 },
-      power: "Black Market", 
-      shadows: ["The Forged Ledger", "The Undercut"]
-    },
-    { id: 'bard', name: "The Bard", hp: 8, inv: 7,
-      stats: { STR: 3, DEF: 2, SPD: 6, WIS: 6, INT: 5, CHA: 10, LCK: 5 },
-      power: "Encore", 
-      shadows: ["The Stolen Song", "The Inspired Enemy"]
+// --- THE LORE & LOGIC DICTIONARY ---
+// This automates the dropdowns. If a race isn't picked, sub-lineages don't exist.
+const forgeData = {
+  "Human": {
+    subLineages: ["Frontiersman", "Corpo-Rat", "Drifter"],
+    classes: {
+      "Frontiersman": ["Gunslinger", "Tracker", "Brawler"],
+      "Corpo-Rat": ["Hacker", "Negotiator", "Smuggler"],
+      "Drifter": ["Scavenger", "Blade-Dancer"]
     }
-  ];
-
-  const lineages = [
-    { id: 'dustwalker', name: "Dust-Walker", 
-      mods: { WIS: 2, SPD: 1, CHA: -2 },
-      subs: [
-        { name: "Ash-Stalkers", mods: { SPD: 2, CHA: -3 } },
-        { name: "Rift-Gazers", mods: { INT: 2, WIS: -2 } }
-      ]
-    },
-    { id: 'garrison', name: "Garrison-Born", 
-      mods: { STR: 1, DEF: 2, SPD: -1 },
-      subs: [
-        { name: "Iron-Wardens", mods: { DEF: 3, SPD: -3 } },
-        { name: "Sapper-Corps", mods: { STR: 1, INT: 1 } }
-      ]
-    },
-    { id: 'sunken', name: "The Sunken", 
-      mods: { INT: 2, CHA: 2, LCK: 1, STR: -1 },
-      subs: [
-        { name: "Abyssal-Brokers", mods: { LCK: 2, CHA: -1 } },
-        { name: "Salt-Traders", mods: { CHA: 3, STR: -2 } }
-      ]
-    },
-    { id: 'deepclaimed', name: "Deep-Claimed", 
-      mods: { STR: 2, DEF: 1, INT: -1, CHA: -1 },
-      subs: [
-        { name: "Ore-Eaters", mods: { CON: 2, INT: -3 } },
-        { name: "Tunnel-Wights", mods: { SPD: 2, STR: -1 } }
-      ]
-    },
-    { id: 'aetherkith', name: "Aether-Kith", 
-      mods: { INT: 1, WIS: 1, CHA: 1, LCK: 3, STR: -2, DEF: -1 },
-      subs: [
-        { name: "Static-Born", mods: { LCK: 4, DEF: -3 } },
-        { name: "Prism-Shards", mods: { CHA: 2, WIS: 1 } }
-      ]
+  },
+  "Revenant": {
+    subLineages: ["Awakened", "Cursed"],
+    classes: {
+      "Awakened": ["Soul-Reaper", "Blood-Mage"],
+      "Cursed": ["Feral", "Shadow-Walker"]
     }
-  ];
+  }
+};
 
-  const [selectedClass, setSelectedClass] = useState(classes[0]);
-  const [selectedLineage, setSelectedLineage] = useState(lineages[0]);
-  const [selectedSub, setSelectedSub] = useState(lineages[0].subs[0]);
-  const [rolledShadow, setRolledShadow] = useState(null);
-  const [characterName, setCharacterName] = useState("New Recruit");
+export default function CharacterForge({ onCharacterCreate }) {
+  // --- FORGE STATE MANAGEMENT ---
+  const [charName, setCharName] = useState('');
+  const [selectedRace, setSelectedRace] = useState('');
+  const [selectedSub, setSelectedSub] = useState('');
+  const [selectedClass, setSelectedClass] = useState('');
+  const [photoPreview, setPhotoPreview] = useState(null);
+  
+  // Base Stats (Can be edited by the player)
+  const [stats, setStats] = useState({ strength: 10, agility: 10, grit: 10, aura: 10 });
 
-  const calculateFinalStats = () => {
-    const base = { ...selectedClass.stats };
-    const linMods = selectedLineage.mods;
-    const subMods = selectedSub.mods;
+  // --- AUTOMATION TRIGGERS ---
+  // Reset downstream choices if a parent choice changes
+  useEffect(() => {
+    setSelectedSub('');
+    setSelectedClass('');
+  }, [selectedRace]);
 
-    const finalStats = {};
-    Object.keys(base).forEach(stat => {
-      let total = base[stat] + (linMods[stat] || 0) + (subMods[stat] || 0);
-      if (total > 15) total = 15;
-      finalStats[stat] = total;
-    });
-    return finalStats;
+  useEffect(() => {
+    setSelectedClass('');
+  }, [selectedSub]);
+
+  // --- PHOTO UPLOAD HANDLER ---
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Creates a temporary local URL to preview the image immediately
+      const imageUrl = URL.createObjectURL(file);
+      setPhotoPreview(imageUrl);
+    }
   };
 
-  const finalStats = calculateFinalStats();
+  // --- SUBMIT HANDLER ---
+  const handleForge = (e) => {
+    e.preventDefault();
+    if (!charName || !selectedClass) return alert("Incomplete Data. The Forge requires a name and a class.");
 
-  const handleLineageSelect = (lin) => {
-    setSelectedLineage(lin);
-    setSelectedSub(lin.subs[0]);
-  };
+    const newCharacter = {
+      id: Date.now(), // Unique ID for database tracking
+      name: charName,
+      race: selectedRace,
+      subLineage: selectedSub,
+      charClass: selectedClass,
+      photo: photoPreview,
+      stats: stats,
+      status: "Alive", // Hooks into the Graveyard logic later
+      inventory: [] // Hooks into Arsenal later
+    };
 
-  const rollDestiny = () => {
-    const shadows = selectedClass.shadows;
-    const randomShadow = shadows[Math.floor(Math.random() * shadows.length)];
-    setRolledShadow(randomShadow);
-  };
-
-  const handleForge = () => {
-    if (playerCoins < forgeCost) {
-      alert(`Insufficient funds. The Character Forge requires ${forgeCost}c.`);
-      return;
-    }
-    if (!rolledShadow) {
-      alert("You must roll your Destiny (Shadow Trait) before forging.");
-      return;
-    }
-    alert(`Character Forged! Deducting ${forgeCost}c. Welcome to the Hollow Realm, ${characterName}.`);
+    // Sends the data back to MainMenuTab to store in the Squad Roster
+    onCharacterCreate(newCharacter);
+    alert(`${charName} has been forged and added to the roster.`);
   };
 
   return (
-    <div className="bg-zinc-950 p-6 rounded-xl border-2 border-amber-900 shadow-2xl font-sans text-zinc-300 max-w-5xl mx-auto flex flex-col gap-6">
-      <div className="flex justify-between items-center border-b-2 border-amber-600 pb-4">
-        <div>
-          <h1 className="text-3xl font-black text-amber-500 uppercase tracking-widest">The Character Forge</h1>
-          <p className="text-sm text-zinc-400 mt-1">Cost: 1,000c ($13 PayPal) to spawn.</p>
-        </div>
-        <div className="text-right">
-          <p className="text-xs text-zinc-500 uppercase">Player Bank</p>
-          <p className={`text-xl font-black ${playerCoins >= forgeCost ? 'text-green-500' : 'text-red-500'}`}>
-            {playerCoins.toLocaleString()}c
-          </p>
-        </div>
-      </div>
+    <div className="w-full h-full p-8 overflow-y-auto bg-neutral-900/90 text-gray-200">
+      <div className="max-w-5xl mx-auto">
+        
+        <header className="mb-8 border-b border-red-800 pb-4">
+          <h2 className="text-4xl font-black uppercase tracking-widest text-red-600 drop-shadow-sm">
+            The Character Forge
+          </h2>
+          <p className="text-gray-400 font-mono text-sm mt-2">Initialize new operative for The Hollow Realm.</p>
+        </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="col-span-2 space-y-6">
-          <div className="bg-zinc-900 p-4 rounded border border-zinc-800">
-            <label className="block text-xs text-amber-500 font-bold uppercase mb-2">Character Name</label>
-            <input 
-              type="text" 
-              value={characterName} 
-              onChange={(e) => setCharacterName(e.target.value)}
-              className="w-full bg-black border border-zinc-700 rounded p-2 text-white font-bold"
-            />
-          </div>
-
-          <div className="bg-zinc-900 p-4 rounded border border-zinc-800">
-            <h2 className="text-sm font-bold text-amber-500 uppercase border-b border-zinc-800 pb-2 mb-3">1. Select Class</h2>
-            <div className="grid grid-cols-3 gap-2">
-              {classes.map(cls => (
-                <button 
-                  key={cls.id} 
-                  onClick={() => { setSelectedClass(cls); setRolledShadow(null); }}
-                  className={`p-2 text-sm font-bold rounded border transition-colors ${
-                    selectedClass.id === cls.id ? 'bg-amber-600 text-black border-amber-400' : 'bg-black text-zinc-400 border-zinc-700 hover:border-amber-700'
-                  }`}
-                >
-                  {cls.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-zinc-900 p-4 rounded border border-zinc-800">
-            <h2 className="text-sm font-bold text-amber-500 uppercase border-b border-zinc-800 pb-2 mb-3">2. Select Bloodline</h2>
-            <div className="grid grid-cols-3 gap-2 mb-4">
-              {lineages.map(lin => (
-                <button 
-                  key={lin.id} 
-                  onClick={() => handleLineageSelect(lin)}
-                  className={`p-2 text-xs font-bold rounded border transition-colors ${
-                    selectedLineage.id === lin.id ? 'bg-blue-900 text-blue-100 border-blue-500' : 'bg-black text-zinc-400 border-zinc-700 hover:border-blue-700'
-                  }`}
-                >
-                  {lin.name}
-                </button>
-              ))}
-            </div>
-            <div className="bg-black p-3 rounded border border-zinc-800 flex gap-4">
-              {selectedLineage.subs.map((sub, idx) => (
-                <button 
-                  key={idx}
-                  onClick={() => setSelectedSub(sub)}
-                  className={`flex-1 p-2 text-xs font-bold rounded border transition-colors ${
-                    selectedSub.name === sub.name ? 'bg-purple-900 text-purple-100 border-purple-500' : 'bg-zinc-900 text-zinc-500 border-zinc-800 hover:border-purple-700'
-                  }`}
-                >
-                  {sub.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-zinc-900 p-4 rounded border border-zinc-800 flex justify-between items-center">
+        <form onSubmit={handleForge} className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          {/* COLUMN 1: VISUALS & IDENTITY */}
+          <div className="col-span-1 space-y-6 bg-black p-6 border border-neutral-800 rounded-sm shadow-xl">
             <div>
-              <h2 className="text-sm font-bold text-amber-500 uppercase">3. Destiny Roll</h2>
-              <p className="text-xs text-zinc-400">Roll for your Shadow Trait.</p>
+              <label className="block text-xs uppercase text-red-500 font-bold mb-2">Operative Designation</label>
+              <input 
+                type="text" 
+                className="w-full bg-neutral-900 border border-neutral-700 p-3 text-white focus:border-red-500 focus:outline-none"
+                placeholder="Enter Name..."
+                value={charName}
+                onChange={(e) => setCharName(e.target.value)}
+              />
             </div>
-            <button onClick={rollDestiny} className="bg-amber-700 hover:bg-amber-600 text-white font-black px-6 py-2 rounded uppercase tracking-wider">Roll d20</button>
-          </div>
-        </div>
 
-        <div className="col-span-1 bg-black border-2 border-zinc-700 rounded-lg p-4 flex flex-col">
-          <div className="text-center mb-4 border-b border-zinc-800 pb-4">
-            <h2 className="text-xl font-black text-white">{characterName}</h2>
-            <p className="text-sm text-amber-500 font-bold">{selectedClass.name} | {selectedSub.name}</p>
-          </div>
-          <div className="flex justify-between text-center mb-6">
-            <div className="bg-zinc-900 p-2 rounded flex-1 mr-2 border border-zinc-800">
-              <span className="block text-xs text-zinc-500 uppercase">HP</span>
-              <span className="text-2xl font-black text-green-500">{selectedClass.hp}</span>
+            {/* Photo Upload Area */}
+            <div>
+              <label className="block text-xs uppercase text-red-500 font-bold mb-2">Mugshot / Visual ID</label>
+              <div className="relative w-full h-64 bg-neutral-900 border-2 border-dashed border-neutral-700 flex items-center justify-center overflow-hidden hover:border-red-500 transition-colors cursor-pointer group">
+                {photoPreview ? (
+                  <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-neutral-500 text-sm font-mono group-hover:text-red-400">UPLOAD CLASSIFIED PHOTO</span>
+                )}
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  onChange={handlePhotoUpload}
+                />
+              </div>
             </div>
-            <div className="bg-zinc-900 p-2 rounded flex-1 ml-2 border border-zinc-800">
-              <span className="block text-xs text-zinc-500 uppercase">INV</span>
-              <span className="text-2xl font-black text-white">{selectedClass.inv}</span>
-            </div>
           </div>
-          <div className="mb-6 flex-1">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase mb-3">Base Stats</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {Object.keys(finalStats).map(stat => (
-                <div key={stat} className="flex justify-between items-center bg-zinc-900 px-3 py-1.5 rounded border border-zinc-800">
-                  <span className="text-xs font-bold text-zinc-400">{stat}</span>
-                  <span className={`text-sm font-black ${finalStats[stat] >= 10 ? 'text-amber-400' : 'text-white'}`}>{finalStats[stat]}</span>
+
+          {/* COLUMN 2: THE AUTOMATED LINEAGE TREE */}
+          <div className="col-span-1 space-y-6 bg-black p-6 border border-neutral-800 rounded-sm shadow-xl">
+            
+            {/* 1. Race Selection */}
+            <div>
+              <label className="block text-xs uppercase text-red-500 font-bold mb-2">Primary Race</label>
+              <select 
+                className="w-full bg-neutral-900 border border-neutral-700 p-3 text-white focus:border-red-500 focus:outline-none"
+                value={selectedRace}
+                onChange={(e) => setSelectedRace(e.target.value)}
+              >
+                <option value="">-- Select Origin --</option>
+                {Object.keys(forgeData).map(race => (
+                  <option key={race} value={race}>{race}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* 2. Sub-lineage (Only appears if Race is selected) */}
+            {selectedRace && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                <label className="block text-xs uppercase text-red-500 font-bold mb-2 mt-4">Bloodline / Sub-Lineage</label>
+                <select 
+                  className="w-full bg-neutral-900 border border-neutral-700 p-3 text-white focus:border-red-500 focus:outline-none"
+                  value={selectedSub}
+                  onChange={(e) => setSelectedSub(e.target.value)}
+                >
+                  <option value="">-- Select Bloodline --</option>
+                  {forgeData[selectedRace].subLineages.map(sub => (
+                    <option key={sub} value={sub}>{sub}</option>
+                  ))}
+                </select>
+              </motion.div>
+            )}
+
+            {/* 3. Class (Only appears if Sub-lineage is selected) */}
+            {selectedSub && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                <label className="block text-xs uppercase text-red-500 font-bold mb-2 mt-4">Combat Class</label>
+                <select 
+                  className="w-full bg-neutral-900 border border-neutral-700 p-3 text-white focus:border-red-500 focus:outline-none"
+                  value={selectedClass}
+                  onChange={(e) => setSelectedClass(e.target.value)}
+                >
+                  <option value="">-- Select Specialization --</option>
+                  {forgeData[selectedRace].classes[selectedSub].map(cls => (
+                    <option key={cls} value={cls}>{cls}</option>
+                  ))}
+                </select>
+              </motion.div>
+            )}
+          </div>
+
+          {/* COLUMN 3: STAT CALIBRATION & EXECUTION */}
+          <div className="col-span-1 space-y-6 bg-black p-6 border border-neutral-800 rounded-sm shadow-xl flex flex-col justify-between">
+            <div>
+              <label className="block text-xs uppercase text-red-500 font-bold mb-4">Initial Calibration (Stats)</label>
+              {Object.keys(stats).map((stat) => (
+                <div key={stat} className="flex items-center justify-between mb-3">
+                  <span className="text-gray-400 uppercase text-xs font-mono">{stat}</span>
+                  <input 
+                    type="number" 
+                    className="w-20 bg-neutral-900 border border-neutral-700 p-2 text-center text-white focus:border-red-500"
+                    value={stats[stat]}
+                    onChange={(e) => setStats({...stats, [stat]: parseInt(e.target.value) || 0})}
+                  />
                 </div>
               ))}
             </div>
+
+            <button 
+              type="submit"
+              className="w-full bg-red-800 hover:bg-red-700 text-white font-bold uppercase tracking-widest py-4 mt-8 transition-colors border border-red-500 shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_25px_rgba(220,38,38,0.6)]"
+            >
+              Forge Operative
+            </button>
           </div>
-          <div className="bg-red-950/20 border border-red-900/50 p-3 rounded mb-6 min-h-[80px]">
-            <span className="block text-[10px] text-red-500 font-bold uppercase mb-1">Shadow Trait</span>
-            <span className="text-sm text-red-200">{rolledShadow ? rolledShadow : "Waiting..."}</span>
-          </div>
-          <button onClick={handleForge} disabled={!rolledShadow || playerCoins < forgeCost} className="w-full bg-green-700 hover:bg-green-600 disabled:bg-zinc-800 text-white font-black py-4 rounded uppercase tracking-widest">Spawn Character</button>
-        </div>
+
+        </form>
       </div>
     </div>
   );
