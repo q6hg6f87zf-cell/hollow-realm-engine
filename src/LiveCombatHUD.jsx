@@ -5,12 +5,11 @@ export default function LiveCombatHUD() {
   const [intelligentBoss, setIntelligentBoss] = useState(true);
   const { squad } = useHollowRealm();
   const [weaponType, setWeaponType] = useState('Slashing');
-  const [isTargetBleeding, setIsTargetBleeding] = useState(false);
-  const [isStealth, setlsStealth] = useState(false);
-  const [rollResult, setRollResult] = useState(10);
- const [isTargetBleeding] = useState(false);
-  const [isStealth] = useState(false);
-  const [rollResult] = useState(10);
+
+  // --- CORE COMBAT CONSTANTS (Renamed to avoid "Already Declared" errors) ---
+  const IS_BLEEDING_ACTIVE = false;
+  const IS_STEALTH_MODE = false;
+  const CURRENT_ROLL_VAL = 10;
 
   const actionMenu = [
     { name: "Scout Ahead", cost: 100, paypal: "$2", desc: "Reveals next room before squad commits." },
@@ -46,66 +45,72 @@ export default function LiveCombatHUD() {
   const aggroTarget = calculateAggro();
 
   const calculateDamagePhysics = () => {
-    if (weaponType === 'Slashing') return isTargetBleeding ? "Standard Damage + 2 Flat DMG (Target is Bleeding)" : "Standard Slashing Damage";
-    if (weaponType === 'Piercing') return isStealth ? "Ignores 1 pt DEF. Damage is DOUBLED from Stealth!" : "Ignores 1 pt of Enemy DEF.";
-    if (weaponType === 'Blunt') return rollResult >= 15 ? "STRONG HIT: Permanently shatter 1 point of target DEF!" : "Standard Blunt Damage.";
+    if (weaponType === 'Slashing') return IS_BLEEDING_ACTIVE ? "Standard Damage + 2 Flat DMG (Target is Bleeding)" : "Standard Slashing Damage";
+    if (weaponType === 'Piercing') return IS_STEALTH_MODE ? "Ignores 1 pt DEF. Damage is DOUBLED from Stealth!" : "Ignores 1 pt of Enemy DEF.";
+    if (weaponType === 'Blunt') return CURRENT_ROLL_VAL >= 15 ? "STRONG HIT: Permanently shatter 1 point of target DEF!" : "Standard Blunt Damage.";
     return "Select weapon type.";
   };
 
-  const rollDurabilityTax = () => {
-    const d20 = Math.floor(Math.random() * 20) + 1;
-    alert(`Durability Tax Roll: ${d20}. ${d20 <= 5 ? 'Armor drops one condition tier!' : 'Armor holds.'}`);
-  };
-
   return (
-    <div className="bg-zinc-950 p-6 rounded-xl border-2 border-red-900 shadow-2xl font-sans text-zinc-300 w-full flex flex-col gap-6">
+    <div className="bg-zinc-950 p-6 rounded-xl border-2 border-red-900 shadow-2xl font-sans text-zinc-300 w-full flex flex-col gap-6 animate-fadeIn">
       <div className="flex justify-between items-center border-b-2 border-red-600 pb-4">
         <h1 className="text-2xl font-black text-red-500 uppercase tracking-widest">Live Combat Engine</h1>
+        <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-tighter">Moon Squad Battle Protocol</div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* LEFT COLUMN: AGGRO & PHYSICS */}
         <div className="col-span-1 flex flex-col gap-4">
-          <div className="bg-zinc-900 p-4 rounded border border-zinc-800">
+          <div className="bg-zinc-900 p-4 rounded border border-zinc-800 shadow-inner">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-bold text-red-500 uppercase">Aggro Index</h2>
-              <label className="text-xs flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={intelligentBoss} onChange={() => setIntelligentBoss(!intelligentBoss)} /> Intelligent
+              <h2 className="text-lg font-bold text-red-500 uppercase tracking-widest">Aggro Index</h2>
+              <label className="text-[10px] flex items-center gap-2 cursor-pointer uppercase font-black text-zinc-500">
+                <input type="checkbox" checked={intelligentBoss} onChange={() => setIntelligentBoss(!intelligentBoss)} className="accent-red-600" /> Intelligent
               </label>
             </div>
             {aggroTarget ? (
-              <div className="bg-red-950/40 border border-red-500 p-4 rounded text-center animate-pulse mb-4">
-                <p className="text-xs text-red-400 uppercase mb-1">Current Boss Target</p>
-                <h3 className="text-2xl font-black text-white">{aggroTarget.name}</h3>
-                <p className="text-[10px] text-red-300 mt-2 font-bold">{aggroTarget.reasons.join(" | ")}</p>
+              <div className="bg-red-950/40 border border-red-500 p-4 rounded text-center animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+                <p className="text-[10px] text-red-400 uppercase font-black mb-1">Target Priority Alpha</p>
+                <h3 className="text-3xl font-black text-white uppercase tracking-tight">{aggroTarget.name}</h3>
+                <div className="flex flex-wrap justify-center gap-1 mt-3">
+                  {aggroTarget.reasons.map((r, i) => (
+                    <span key={i} className="text-[9px] bg-red-900 text-red-100 px-2 py-0.5 rounded font-bold uppercase">{r}</span>
+                  ))}
+                </div>
               </div>
-            ) : <p className="text-center text-zinc-500 italic">No target.</p>}
+            ) : <p className="text-center text-zinc-600 italic py-8">No Active Threat Detected.</p>}
           </div>
 
-          <div className="bg-zinc-900 p-4 rounded border border-zinc-800 text-sm">
-            <h2 className="text-amber-500 font-bold uppercase mb-4 text-center">Damage Physics</h2>
-            <select className="w-full bg-black border border-zinc-700 p-2 rounded text-white mb-4" value={weaponType} onChange={(e) => setWeaponType(e.target.value)}>
+          <div className="bg-zinc-900 p-4 rounded border border-zinc-800">
+            <h2 className="text-[10px] font-black text-amber-500 uppercase mb-4 text-center tracking-widest">Damage Physics Engine</h2>
+            <select className="w-full bg-black border border-zinc-700 p-3 rounded text-white mb-4 font-bold text-sm outline-none" value={weaponType} onChange={(e) => setWeaponType(e.target.value)}>
               <option value="Slashing">Slashing (Swords/Axes)</option>
               <option value="Piercing">Piercing (Daggers/Lances)</option>
               <option value="Blunt">Blunt (Hammers/Maces)</option>
             </select>
-            <div className="p-3 bg-amber-950/20 border border-amber-900/50 rounded text-amber-500 font-bold text-center mb-4">
+            <div className="p-4 bg-amber-950/20 border border-amber-900/40 rounded text-amber-500 font-black text-center text-xs shadow-inner">
               {calculateDamagePhysics()}
             </div>
-            <button onClick={rollDurabilityTax} className="w-full bg-zinc-800 text-xs font-bold py-2 rounded border border-zinc-600 uppercase tracking-widest">Roll Durability Tax</button>
           </div>
         </div>
 
-        <div className="col-span-2 bg-zinc-900 p-4 rounded border border-zinc-800">
-          <h2 className="text-lg font-bold text-green-500 uppercase border-b border-zinc-800 pb-2 mb-4 text-center">Action Menu</h2>
+        {/* RIGHT COLUMN: ACTION MENU */}
+        <div className="col-span-2 bg-zinc-900 p-5 rounded border border-zinc-800">
+          <h2 className="text-lg font-black text-green-500 uppercase border-b border-zinc-800 pb-3 mb-5 text-center tracking-widest">TikTok Live Action Menu</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto pr-2 scrollbar-hide">
             {actionMenu.map((act, i) => (
-              <div key={i} className="bg-black p-3 rounded border border-zinc-800 flex flex-col justify-between">
-                <div className="flex justify-between items-start mb-1">
-                  <h3 className="font-bold text-white text-xs">{act.name}</h3>
-                  <span className="text-green-500 font-black text-xs">{act.cost}c</span>
+              <div key={i} className="bg-black p-4 rounded border border-zinc-800 flex flex-col justify-between hover:border-green-900 transition-colors group">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-black text-white text-xs uppercase group-hover:text-green-400">{act.name}</h3>
+                  <span className="text-green-500 font-black text-sm">{act.cost}c</span>
                 </div>
-                <p className="text-[10px] text-zinc-500 italic mb-3">{act.desc}</p>
-                <button onClick={() => handleActionCharge(act, "Player")} className="bg-green-900/30 hover:bg-green-600 text-green-400 text-[10px] font-bold py-1.5 rounded uppercase tracking-widest transition-colors w-full">Charge Action</button>
+                <p className="text-[10px] text-zinc-500 italic mb-4 leading-relaxed">{act.desc}</p>
+                <button 
+                  onClick={() => handleActionCharge(act, "Player")} 
+                  className="bg-green-900/20 hover:bg-green-600 text-green-400 hover:text-white text-[10px] font-black py-2 rounded uppercase tracking-widest transition-all active:scale-95"
+                >
+                  Charge Action
+                </button>
               </div>
             ))}
           </div>
@@ -114,4 +119,3 @@ export default function LiveCombatHUD() {
     </div>
   );
 }
-
