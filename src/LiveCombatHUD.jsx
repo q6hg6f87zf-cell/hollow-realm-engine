@@ -1,5 +1,3 @@
-LiveCombatHUD.jsx
-
 import React, { useState } from 'react';
 import { useHollowRealm } from './HollowRealmContext';
 
