@@ -8,6 +8,9 @@ export default function LiveCombatHUD() {
   const [isTargetBleeding, setIsTargetBleeding] = useState(false);
   const [isStealth, setlsStealth] = useState(false);
   const [rollResult, setRollResult] = useState(10);
+ const [isTargetBleeding] = useState(false);
+  const [isStealth] = useState(false);
+  const [rollResult] = useState(10);
 
   const actionMenu = [
     { name: "Scout Ahead", cost: 100, paypal: "$2", desc: "Reveals next room before squad commits." },
