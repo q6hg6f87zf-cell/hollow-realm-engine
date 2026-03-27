@@ -2,10 +2,10 @@ import React from 'react';
 
 export default function CalamityAndBossTab() {
   const calamities = [
-    [cite_start]{ name: "The Blood Moon", trigger: "Ashen Pack gains +10% Territory[span_21](end_span)", fx: "All beasts gain +2 ATK, +5 SPD. [span_22](start_span)No resting heals. [cite: 779-780]" },
-    [cite_start]{ name: "The Rift Tear", trigger: "Wizard rolls Nat 1 on Tier 3 spell[span_22](end_span)", fx: "Spells cost 0c, 50% friendly fire. [span_23](start_span)Random teleportation. [cite: 787-788]" },
-    [cite_start]{ name: "The Void-Frost", trigger: "Null Warden ignored for 3 Arcs[span_23](end_span)", fx: "Lose 1 HP every 10 mins without heat. [span_24](start_span)Armor DEF -2. [cite: 796-797]" },
-    [cite_start]{ name: "Debtor's Eclipse", trigger: "Library/Garrison hits 80% Wealth[span_24](end_span)", fx: "Movement costs 1c. [span_25](start_span)Combat bypassed by bribes. [cite: 803-804]" }
+    { name: "The Blood Moon", trigger: "Ashen Pack gains +10% Territory[span_21](end_span)", fx: "All beasts gain +2 ATK, +5 SPD. [span_22](start_span)No resting heals. [cite: 779-780]" },
+    { name: "The Rift Tear", trigger: "Wizard rolls Nat 1 on Tier 3 spell[span_22](end_span)", fx: "Spells cost 0c, 50% friendly fire. [span_23](start_span)Random teleportation. [cite: 787-788]" },
+    { name: "The Void-Frost", trigger: "Null Warden ignored for 3 Arcs[span_23](end_span)", fx: "Lose 1 HP every 10 mins without heat. [span_24](start_span)Armor DEF -2. [cite: 796-797]" },
+    { name: "Debtor's Eclipse", trigger: "Library/Garrison hits 80% Wealth[span_24](end_span)", fx: "Movement costs 1c. [span_25](start_span)Combat bypassed by bribes. [cite: 803-804]" }
   ];
 
  const bosses = [
