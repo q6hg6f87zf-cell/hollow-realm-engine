@@ -1,11 +1,9 @@
-ExpandedArsenalUI.jsx
-
 import React, { useState } from 'react';
 
 // 1. THE ARSENAL DATA (Loaded once, outside the component)
 export const hollowRealmArsenal = [
   // --- WARRIOR ---
-  [span_0](start_span){ id: "w1", class: "Warrior", type: "Weapon", rarity: "Common", name: "Broken Kingdom Greatsword", description: "Slashing. Deals standard damage but counts as 0 weight due to its shattered state.[span_0](end_span)" },
+  { id: "w1", class: "Warrior", type: "Weapon", rarity: "Common", name: "Broken Kingdom Greatsword", description: "Slashing. Deals standard damage but counts as 0 weight due to its shattered state.[span_0](end_span)" },
   { id: "w2", class: "Warrior", type: "Weapon", rarity: "Common", name: "Soot-Stained Sledge", description: "Blunt. [span_1](start_span)+1 DMG to environmental objects like doors or pillars.[span_1](end_span)" },
   { id: "w3", class: "Warrior", type: "Weapon", rarity: "Uncommon", name: "Ashen Timber-Axe", description: "Slashing. [span_2](start_span)Deals +2 DMG if the target already has the 'Bleeding' status.[span_2](end_span)" },
   { id: "w4", class: "Warrior", type: "Weapon", rarity: "Uncommon", name: "Garrison Trench-Shovel", description: "Blunt. [span_3](start_span)Can be used to clear 'Difficult Terrain' in the Forest or Caverns.[span_3](end_span)" },
@@ -17,8 +15,8 @@ export const hollowRealmArsenal = [
   { id: "w10", class: "Warrior", type: "Gear", rarity: "Rare", name: "Vex's Plated Duster", description: "Armor. [span_9](start_span)Blends into the Forest (Zone 1) for a stealth bonus while providing +1 DEF.[span_9](end_span)" },
   { id: "w11", class: "Warrior", type: "Gear", rarity: "Legendary", name: "The Bastion's Bulwark", description: "Shield. [span_10](start_span)Reduces the 5,000c 'Shield Block' cost to 2,500c for one session.[span_10](end_span)" },
   { id: "w12", class: "Warrior", type: "Gear", rarity: "Mythic", name: "The Golden Fleece", description: "Armor. [span_11](start_span)Drains 100c from the bank for every 1 HP of damage it blocks.[span_11](end_span)" },
-  [span_12](start_span){ id: "w13", class: "Warrior", type: "Artifact", rarity: "Mythic", name: "Titan's Ore-Heart", description: "Increases Max HP ceiling by +5, bypassing 'Resurrection Sickness' penalties.[span_12](end_span)" },
-  [span_13](start_span){ id: "w14", class: "Warrior", type: "Passive", rarity: "Mythic", name: "The Unbreakable Will", description: "Grants permanent immunity to 'Fear' and 'Stun' statuses.[span_13](end_span)" },
+  { id: "w13", class: "Warrior", type: "Artifact", rarity: "Mythic", name: "Titan's Ore-Heart", description: "Increases Max HP ceiling by +5, bypassing 'Resurrection Sickness' penalties.[span_12](end_span)" },
+  { id: "w14", class: "Warrior", type: "Passive", rarity: "Mythic", name: "The Unbreakable Will", description: "Grants permanent immunity to 'Fear' and 'Stun' statuses.[span_13](end_span)" },
 
   // --- WIZARD ---
   { id: "wiz1", class: "Wizard", type: "Weapon", rarity: "Common", name: "Ash-Wood Wand", description: "Focus. [span_14](start_span)Grants +1 to Fire/Burn elemental damage rolls.[span_14](end_span)" },
@@ -32,8 +30,8 @@ export const hollowRealmArsenal = [
   { id: "wiz9", class: "Wizard", type: "Utility", rarity: "Uncommon", name: "Grimoire of the Rift", description: "Book. [span_22](start_span)Adds +1 to Void-based damage rolls.[span_22](end_span)" },
   { id: "wiz10", class: "Wizard", type: "Utility", rarity: "Legendary", name: "Arcane Surge Catalyst", description: "Consumable. [span_23](start_span)Doubles the narrative effect of the next roll for the entire party.[span_23](end_span)" },
   { id: "wiz11", class: "Wizard", type: "Utility", rarity: "Legendary", name: "Valdris's Ledger-Scroll", description: "Quest Item. [span_24](start_span)Forces a Boss to lose 500c if they use a 'Desperation Move'.[span_24](end_span)" },
-  [span_25](start_span){ id: "wiz12", class: "Wizard", type: "Artifact", rarity: "Rare", name: "Eye of the Hollow", description: "Allows the Wizard to see the GM's exact Difficulty Class (DC) in chat.[span_25](end_span)" },
-  [span_26](start_span){ id: "wiz13", class: "Wizard", type: "Artifact", rarity: "Mythic", name: "Chronos-Anchor", description: "Once per session, avoid a 'Reality Glitch' deletion entirely.[span_26](end_span)" },
+  { id: "wiz12", class: "Wizard", type: "Artifact", rarity: "Rare", name: "Eye of the Hollow", description: "Allows the Wizard to see the GM's exact Difficulty Class (DC) in chat.[span_25](end_span)" },
+  { id: "wiz13", class: "Wizard", type: "Artifact", rarity: "Mythic", name: "Chronos-Anchor", description: "Once per session, avoid a 'Reality Glitch' deletion entirely.[span_26](end_span)" },
   { id: "wiz14", class: "Wizard", type: "Passive", rarity: "Mythic", name: "Void-Walker's Essence", description: "+3 LCK. [span_27](start_span)Moving through solid objects no longer provokes attacks.[span_27](end_span)" },
 
   // --- ROGUE ---
@@ -63,10 +61,10 @@ export const hollowRealmArsenal = [
   { id: "h8", class: "Healer", type: "Utility", rarity: "Rare", name: "Miracle Draught", description: "Consumable. [span_49](start_span)Defibrillator: Restores a 0 HP player to 1 HP mid-combat.[span_49](end_span)" },
   { id: "h9", class: "Healer", type: "Utility", rarity: "Rare", name: "Companion Healthcare Kit", description: "Utility. [span_50](start_span)Restores a pet that fled at 0 HP.[span_50](end_span)" },
   { id: "h10", class: "Healer", type: "Utility", rarity: "Legendary", name: "Vex's Resurrector", description: "Utility. [span_51](start_span)Reduces the 6,000c Resurrection fee by 20%.[span_51](end_span)" },
-  [span_52](start_span){ id: "h11", class: "Healer", type: "Artifact", rarity: "Legendary", name: "Catalyst of Rebirth", description: "Cures 'Resurrection Sickness' and restores Max HP ceiling.[span_52](end_span)" },
-  [span_53](start_span){ id: "h12", class: "Healer", type: "Artifact", rarity: "Mythic", name: "The Life-Binder's Soul", description: "'Miracle Touch' now restores a player to Full HP instead of 1 HP.[span_53](end_span)" },
+  { id: "h11", class: "Healer", type: "Artifact", rarity: "Legendary", name: "Catalyst of Rebirth", description: "Cures 'Resurrection Sickness' and restores Max HP ceiling.[span_52](end_span)" },
+  { id: "h12", class: "Healer", type: "Artifact", rarity: "Mythic", name: "The Life-Binder's Soul", description: "'Miracle Touch' now restores a player to Full HP instead of 1 HP.[span_53](end_span)" },
   { id: "h13", class: "Healer", type: "Passive", rarity: "Mythic", name: "Apothecary's Essence", description: "Natural +3 LCK; [span_54](start_span)+1 to all stats next session after a Feast.[span_54](end_span)" },
-  [span_55](start_span){ id: "h14", class: "Healer", type: "Passive", rarity: "Mythic", name: "The Eternal Light", description: "Immunity to 'Void Infection' stacking (Stage 2/3).[span_55](end_span)" },
+  { id: "h14", class: "Healer", type: "Passive", rarity: "Mythic", name: "The Eternal Light", description: "Immunity to 'Void Infection' stacking (Stage 2/3).[span_55](end_span)" },
 
   // --- MERCHANT ---
   { id: "m1", class: "Merchant", type: "Weapon", rarity: "Common", name: "Concealed Cane-Blade", description: "Slashing. [span_56](start_span)+1 to friendly persuasion rolls (CHA).[span_56](end_span)" },
@@ -80,9 +78,9 @@ export const hollowRealmArsenal = [
   { id: "m9", class: "Merchant", type: "Utility", rarity: "Rare", name: "Sealed Waterproof Box", description: "Chest. [span_64](start_span)Contains 500% more coins but carries a Debt Curse.[span_64](end_span)" },
   { id: "m10", class: "Merchant", type: "Utility", rarity: "Legendary", name: "Smuggler's False-Bottom", description: "Tool. [span_65](start_span)Allows selling Cursed items for 75% value to any merchant.[span_65](end_span)" },
   { id: "m11", class: "Merchant", type: "Utility", rarity: "Legendary", name: "The Black Market Signal", description: "Utility. [span_66](start_span)Reduces the cost of 'Black Market' Gift Power to 2,500c.[span_66](end_span)" },
-  [span_67](start_span){ id: "m12", class: "Merchant", type: "Artifact", rarity: "Rare", name: "Nylah's Gondola Key", description: "Grants 50% off all Legendary items in the Daily Ledger.[span_67](end_span)" },
+  { id: "m12", class: "Merchant", type: "Artifact", rarity: "Rare", name: "Nylah's Gondola Key", description: "Grants 50% off all Legendary items in the Daily Ledger.[span_67](end_span)" },
   { id: "m13", class: "Merchant", type: "Artifact", rarity: "Mythic", name: "World-Eater's Maps", description: "Travel to any previously discovered map zone for 0 cost once per session. [span_68](start_span)Cannot bypass active lockdowns and may trigger an instability event.[span_68](end_span)" },
-  [span_69](start_span){ id: "m14", class: "Merchant", type: "Passive", rarity: "Mythic", name: "Tax-Collector's Soul", description: "Generates 250c base income per session (instead of 100c).[span_69](end_span)" },
+  { id: "m14", class: "Merchant", type: "Passive", rarity: "Mythic", name: "Tax-Collector's Soul", description: "Generates 250c base income per session (instead of 100c).[span_69](end_span)" },
 
   // --- BARD ---
   { id: "b1", class: "Bard", type: "Weapon", rarity: "Common", name: "Hollow-Bone Flute", description: "Instrument. [span_70](start_span)Forces enemies to attack nearest entity for 1 round.[span_70](end_span)" },
@@ -95,10 +93,10 @@ export const hollowRealmArsenal = [
   { id: "b8", class: "Bard", type: "Gear", rarity: "Rare", name: "Charmer's Chime", description: "Gear. [span_77](start_span)Charm any non-boss NPC for one scene.[span_77](end_span)" },
   { id: "b9", class: "Bard", type: "Utility", rarity: "Rare", name: "Vex's Resonating Moss", description: "Consumable. [span_78](start_span)Allies resting at a Feast get +2 to ALL stats.[span_78](end_span)" },
   { id: "b10", class: "Bard", type: "Utility", rarity: "Legendary", name: "Inspired Enemy Manifesto", description: "Quest Item. [span_79](start_span)GM cannot spawn bounty hunters during your session.[span_79](end_span)" },
-  [span_80](start_span){ id: "b11", class: "Bard", type: "Artifact", rarity: "Legendary", name: "The Director's Baton", description: "Reduces 'Encore' Gift Power cost to 2,500c.[span_80](end_span)" },
-  [span_81](start_span){ id: "b12", class: "Bard", type: "Artifact", rarity: "Mythic", name: "The Stolen Song", description: "Host a Feast that grants +2 to ALL stats (instead of +1).[span_81](end_span)" },
-  [span_82](start_span){ id: "b13", class: "Bard", type: "Passive", rarity: "Mythic", name: "Rift-Singer's Essence", description: "Gain Advantage on all rolls during a Rift Tear.[span_82](end_span)" },
-  [span_83](start_span){ id: "b14", class: "Bard", type: "Passive", rarity: "Mythic", name: "Glitch-Step Tempo", description: "10% chance to 'glitch' out of existence when hit.[span_83](end_span)" }
+  { id: "b11", class: "Bard", type: "Artifact", rarity: "Legendary", name: "The Director's Baton", description: "Reduces 'Encore' Gift Power cost to 2,500c.[span_80](end_span)" },
+  { id: "b12", class: "Bard", type: "Artifact", rarity: "Mythic", name: "The Stolen Song", description: "Host a Feast that grants +2 to ALL stats (instead of +1).[span_81](end_span)" },
+  { id: "b13", class: "Bard", type: "Passive", rarity: "Mythic", name: "Rift-Singer's Essence", description: "Gain Advantage on all rolls during a Rift Tear.[span_82](end_span)" },
+  { id: "b14", class: "Bard", type: "Passive", rarity: "Mythic", name: "Glitch-Step Tempo", description: "10% chance to 'glitch' out of existence when hit.[span_83](end_span)" }
 ];
 
 // 2. THE MAIN COMPONENT
