@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHollowRealm } from './HollowRealmContext';
-import { Target, Sword, Crosshair, HelpCircle, ShieldAlert } from 'lucide-react';
+import { Target, ShieldAlert } from 'lucide-react';
 
 export default function LiveCombatHUD() {
   const [intelligentBoss, setIntelligentBoss] = useState(true);
