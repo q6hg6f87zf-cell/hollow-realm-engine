@@ -1,17 +1,16 @@
-FieldKitsTab.jsx
 import React from 'react';
 
 export default function FieldKitsTab() {
   const kits = [
     { cat: "Medical & Recovery", items: [
-      [span_20](start_span){ name: "Aether Bandages", cost: "250c", desc: "Cures Bleeding, Restores 3 HP. [cite: 630-633]" },
+      { name: "Aether Bandages", cost: "250c", desc: "Cures Bleeding, Restores 3 HP. [cite: 630-633]" },
       { name: "Miracle Draught", cost: "2,500c", desc: "Full HP Restore. [cite_start]Manual Defibrillator for 0 HP players. [cite: 634-637]" },
       { name: "Adrenaline Salts", cost: "400c", desc: "Grants +2 SPD/Initiative for 3 rounds. [cite_start]Causes Exhaustion after. [cite: 638-641]" }
     ]},
     { cat: "Environmental & Utility", items: [
-      [cite_start]{ name: "Holy Salt", cost: "500c", desc: "Creates 10ft Sanctified Circle blocking Void entities. [cite: 643-646]" },
+      { name: "Holy Salt", cost: "500c", desc: "Creates 10ft Sanctified Circle blocking Void entities. [cite: 643-646]" },
       { name: "Deep-Blast Charge", cost: "800c", desc: "Deals 3d10 damage in 20ft radius. [cite_start]Cave-in risk. [cite: 648-652]" },
-      [cite_start]{ name: "Void-Glass Lantern", cost: "1,200c", desc: "Reveals hidden geometry, removes dark penalties. [cite: 653-655]" }
+      { name: "Void-Glass Lantern", cost: "1,200c", desc: "Reveals hidden geometry, removes dark penalties. [cite: 653-655]" }
     ]},
     { cat: "The Volatile & Cursed", items: [
       { name: "Pure Void-Essence", cost: "2,000c", desc: "Restores Full HP/Powers. [cite_start]40% chance of Tier 2 Curse. [cite: 657-663]" },
@@ -22,8 +21,8 @@ export default function FieldKitsTab() {
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="bg-red-900/20 border border-red-900 p-4 rounded text-red-400 mb-6">
-        [cite_start]<h4 className="font-bold">The Pack-Mule Rules[span_20](end_span)</h4>
-        <p className="text-sm">Standard pouches hold 5 small consumables. [span_21](start_span)Overloading Class Inventory applies permanent -2 SPD. [cite: 671-673]</p>
+        <h4 className="font-bold">The Pack-Mule Rules</h4>
+        <p className="text-sm">Standard pouches hold 5 small consumables. Overloading Class Inventory applies permanent -2 SPD. [cite: 671-673]</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
