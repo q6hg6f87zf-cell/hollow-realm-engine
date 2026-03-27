@@ -3,10 +3,10 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sparkles, Stars, Sphere, Trail } from '@react-three/drei';
 
 // --- IMPORTS FOR LATER (Commented out until we build the files) ---
-// import CalamityAndBossTab from './CalamityAndBossTab';
-// import LiveCombatHUD from './LiveCombatHUD';
-// import ForgeSocketingUI from './ForgeSocketingUI';
-// import BankTab from './BankTab';
+ import CalamityAndBossTab from './CalamityAndBossTab';
+ import LiveCombatHUD from './LiveCombatHUD';
+ import ForgeSocketingUI from './ForgeSocketingUI';
+ import BankTab from './BankTab';
 
 // --- 1. MOON SQUAD HAPTIC ENGINE ---
 export const triggerHaptic = (type = 'click') => {
