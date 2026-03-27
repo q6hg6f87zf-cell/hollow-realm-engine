@@ -100,6 +100,61 @@ function MapZone({ position, name, id, activeZone, onClick }) {
     </mesh>
   );
 }
+// --- 7. THE GM DICE ROLLER ---
+function ThreeDiceRoller() {
+  const [roll, setRoll] = useState('--');
+  const [dieType, setDieType] = useState('Awaiting Roll');
+
+  const rollDice = (max) => {
+    // Standard tactile click
+    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
+    
+    const result = Math.floor(Math.random() * max) + 1;
+    setDieType(`d${max}`);
+    setRoll(result);
+    
+    // Heavy rumble for a Nat 20 or Nat 100
+    if ((max === 20 && result === 20) || (max === 100 && result === 100)) {
+       if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    }
+  };
+
+  const dice = [4, 6, 8, 12, 20, 100];
+
+  return (
+    <div className="bg-zinc-950 border-2 border-amber-900 p-4 rounded-xl flex flex-col items-center shadow-2xl w-full">
+      <h3 className="text-amber-500 font-black uppercase tracking-widest text-xs mb-3 flex items-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+        Fate Engine
+      </h3>
+      
+      {/* The Digital Readout */}
+      <div className="bg-black border border-zinc-800 rounded w-full py-6 flex flex-col items-center justify-center mb-4 shadow-inner">
+        <span className="text-zinc-500 text-[10px] uppercase font-bold tracking-widest mb-1">{dieType}</span>
+        <span className={`text-5xl font-black ${
+          roll === 20 && dieType === 'd20' ? 'text-green-500 animate-pulse' : 
+          roll === 1 && dieType === 'd20' ? 'text-red-600' : 
+          'text-white'
+        }`}>
+          {roll}
+        </span>
+      </div>
+
+      {/* The Dice Pad */}
+      <div className="grid grid-cols-3 gap-2 w-full">
+        {dice.map(d => (
+          <button 
+            key={d} 
+            onClick={() => rollDice(d)}
+            className="bg-zinc-900 hover:bg-amber-600 hover:text-black text-amber-500 border border-zinc-800 text-sm font-black py-3 rounded transition-colors uppercase tracking-widest"
+          >
+            d{d}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // --- 6. THE MASTER COMPONENT ---
 export default function App() {
