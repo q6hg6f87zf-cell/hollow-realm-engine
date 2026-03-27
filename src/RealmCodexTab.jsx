@@ -315,3 +315,376 @@ export default function RealmCodexTab() {
     </div>
   );
 }
+    {
+      id: 'bloodlines',
+      title: 'CHAPTER 1: THE BLOODLINES',
+      sections: [
+        {
+          heading: "1. The Dust-Walker",
+          content: [
+            "Lore: Frontier scouts who adapted to the ash when the Edge began to devour the land. Insular nomads capable of navigating the shifting topography of the Hollow's Edge.",
+            "Stat Modifications: WIS +2 | SPD +1 | CHA -2",
+            "Ancestral Ability [Void-Scarred]: Once per session, completely ignore one incoming magical attack or curse.",
+            "Biological Quirk [Photosensitive]: +2 Perception in total darkness. However, direct unshielded sunlight imposes a permanent -1 penalty to all hit rolls until in shade.",
+            "Fatal Vulnerability [Fragile Mind]: -2 penalty to all Saving Throws against Psychic trauma, illusions, or mind-control.",
+            "The Beast's Instinct: Natural animals will growl, panic, or flee when within 10 feet. You cannot use animal mounts.",
+            "Sub-Lineage [Ash-Stalkers]: SPD +2 | CHA -3. Gain Advantage on all Stealth checks in the Forest and do not trigger perimeter bells.",
+            "Sub-Lineage [Rift-Gazers]: INT +2 | WIS -2. Can 'smell' Gravity Wells/Glitches before they trigger. +3 to Stability Rolls."
+          ]
+        },
+        {
+          heading: "2. The Garrison-Born",
+          content: [
+            "Lore: Descendants of the grand military apparatus who entrenched themselves in fortresses. They treat the broken world as a temporary occupation zone.",
+            "Stat Modifications: STR +1 | DEF +2 | SPD -1",
+            "Ancestral Ability [Iron Discipline]: Biologically immune to 'Fear'. +1 to combat rolls when fighting directly adjacent to an ally (Phalanx combat).",
+            "Biological Quirk [Dense Structure]: Take 50% less damage from blunt force trauma or long falls. However, zero buoyancy—you will sink and drown in 3 rounds unassisted.",
+            "Fatal Vulnerability [Heavy-Footed]: -4 penalty to all Stealth checks involving water, gravel, or metal flooring.",
+            "Sub-Lineage [Iron-Wardens]: DEF +3 | SPD -3. Cannot be Knocked Back/Stunned by non-bosses. Provide +1 DEF to ally directly behind you.",
+            "Sub-Lineage [Sapper-Corps]: STR +1 | INT +1. Deal double damage to environmental objects. 50% chance to disarm proximity mines without rolling."
+          ]
+        },
+        {
+          heading: "3. The Sunken",
+          content: [
+            "Lore: Archivists and financiers trapped in the flooded metropolis who evolved to survive. They run a shadow economy based on debts, favors, and hoarded history.",
+            "Stat Modifications: INT +2 | CHA +2 | LCK +1 | STR -1",
+            "Ancestral Ability [Silver Tongue]: Start with a 'Black Ledger'. Automatic 10% discount on Black Market trades, and +2 to Bribery checks.",
+            "Biological Quirk [Amphibious]: Hold breath for 10 minutes in combat. See perfectly in murky water, zero penalties when submerged.",
+            "Fatal Vulnerability [Desiccation]: Suffer 'Exhaustion' twice as fast without double water intake. A week away from fog/flooded ruins causes -1 to all physical rolls.",
+            "Sub-Lineage [Abyssal-Brokers]: LCK +2 | CHA -1. Communicate telepathically with Sunken NPCs. 'Search' flooded rooms without using an action.",
+            "Sub-Lineage [Salt-Traders]: CHA +3 | STR -2. Can sell 'Cursed' items to non-Sunken merchants for 75% of original value."
+          ]
+        },
+        {
+          heading: "4. The Deep-Claimed",
+          content: [
+            "Lore: Subterranean survivalists who survived by farming fungi and integrating Hollow Ore into their diet. They worship the veins of the earth.",
+            "Stat Modifications: STR +2 | DEF +1 | INT -1 | CHA -1",
+            "Ancestral Ability [Stonebreaker]: Mine Hollow Ore bare-handed. Naturally detect structural traps in darkness without rolling Perception.",
+            "Biological Quirk [Ore-Skin Calcification]: Natural +1 DEF unarmored. However, wearing metal armor causes claustrophobia, imposing a -1 SPD penalty.",
+            "Fatal Vulnerability [Light-Blinded & Agoraphobia]: -3 penalty to all rolls for 1 hour after flashbang/bright magic. Standing under open sky causes panic.",
+            "Sub-Lineage [Ore-Eaters]: CON +2 | INT -3. Consume 1 unit of Raw Hollow Ore to instantly restore 5 HP.",
+            "Sub-Lineage [Tunnel-Wights]: SPD +2 | STR -1. Detect entity movement within 30ft if touching ground. Ignore Difficult Terrain in Forest/Caverns."
+          ]
+        },
+        {
+          heading: "5. The Aether-Kith",
+          content: [
+            "Lore: Descendants of grand mages whose ascension ritual was interrupted. They drift through the Realm struggling to maintain physical coherence.",
+            "Stat Modifications: INT +1 | WIS +1 | CHA +1 | LCK +3 | STR -2 | DEF -1",
+            "Ancestral Ability [Phase Shift]: Once per combat, move through a solid object, locked door, or enemy line without provoking attack.",
+            "Biological Quirk [Semi-Ethereal Mass]: Never Encumbered, leave no footprints. However, kinetic/wind blasts deal double damage and launch you.",
+            "Fatal Vulnerability [Disrupted Form]: Take 1d4 direct vitality damage every turn ended inside a strong magnetic or anti-magic field.",
+            "Sub-Lineage [Static-Born]: LCK +4 | DEF -3. 10% chance to 'glitch' out of existence when taking damage, taking 0 damage.",
+            "Sub-Lineage [Prism-Shards]: CHA +2 | WIS +1. Once per combat, emit blinding light. Enemies roll WIS 14+ or are Blinded for 1 round."
+          ]
+        }
+      ]
+    },
+    {
+      id: 'classes',
+      title: 'CHAPTER 2: THE CALLINGS (Classes)',
+      sections: [
+        {
+          heading: "1. The Warrior",
+          content: [
+            "Role: The ablative armor for the squad. You take the hit, hold the line, and buy time.",
+            "Base HP: 12 | Inventory Cap: 8 Slots",
+            "Core Stats: STR 8 | DEF 7 | SPD 4 | WIS 4 | INT 3 | CHA 3 | LCK 3",
+            "Divine Intervention [Shield Block - 5,000c]: Once per session, completely absorb an incoming attack meant for an ally. No d20 roll required.",
+            "Shadow Trait [The Berserker Flaw]: Falling below 3 HP requires a DC 10 WIS check, or you must blindly attack the nearest entity."
+          ]
+        },
+        {
+          heading: "2. The Wizard",
+          content: [
+            "Role: Reality-bending capability. You end encounters before damage can be dealt, trading physical safety for power.",
+            "Base HP: 7 | Inventory Cap: 6 Slots",
+            "Core Stats: INT 9 | WIS 7 | SPD 5 | CHA 4 | LCK 4 | STR 3 | DEF 2",
+            "Divine Intervention [Arcane Surge - 5,000c]: Once per session, double the mathematical and narrative effect of your next roll.",
+            "Shadow Trait [The Dependency]: Magic relies on an addictive arcane substance; without it, suffer -1 to all rolls."
+          ]
+        },
+        {
+          heading: "3. The Rogue",
+          content: [
+            "Role: Supreme scouts and assassins. Strike first, strike from the dark, and leave before retaliation lands.",
+            "Base HP: 8 | Inventory Cap: 10 Slots",
+            "Core Stats: SPD 9 | LCK 7 | CHA 6 | STR 5 | INT 5 | WIS 4 | DEF 3",
+            "Divine Intervention [Shadow Step - 5,000c]: Once per session, avoid one consequence entirely. Step into the void and reappear unharmed.",
+            "Shadow Trait [The Wanted]: A major faction holds a contract on your head; GM can spawn bounty hunters into your encounters."
+          ]
+        },
+        {
+          heading: "4. The Healer",
+          content: [
+            "Role: The absolute lifeline. Manage the action economy. Targeted first by intelligent Bosses.",
+            "Base HP: 9 | Inventory Cap: 8 Slots",
+            "Core Stats: WIS 9 | CHA 7 | INT 6 | LCK 5 | DEF 4 | SPD 4 | STR 3",
+            "Divine Intervention [Miracle Touch - 5,000c]: Once per session, instantly restore a Downed character from 0 HP back to 1 HP. Stops Permanent Death.",
+            "Shadow Trait [The Hollow Debt]: You used void-magic to save a life, and the GM treats your soul as collateral."
+          ]
+        },
+        {
+          heading: "5. The Merchant",
+          content: [
+            "Role: Manipulate the macro-economy. Negotiate, bribe, and secure wealth for the squad's survival.",
+            "Base HP: 8 | Inventory Cap: 12 Slots",
+            "Core Stats: CHA 8 | LCK 8 | INT 6 | WIS 5 | SPD 5 | STR 3 | DEF 3",
+            "Divine Intervention [Black Market - 5,000c]: Once per session, force the GM to open an immediate, localized Black Market anywhere.",
+            "Shadow Trait [The Forged Ledger]: A past transaction was fraudulent, and the GM knows who holds the proof."
+          ]
+        },
+        {
+          heading: "6. The Bard",
+          content: [
+            "Role: Play the game at a meta-narrative layer. Alter emotions and grant massive mathematical buffs to allies.",
+            "Base HP: 8 | Inventory Cap: 7 Slots",
+            "Core Stats: CHA 10 | SPD 6 | WIS 6 | INT 5 | LCK 5 | STR 3 | DEF 2",
+            "Divine Intervention [Encore - 5,000c]: Once per session, legally demand a re-roll on ANY failed d20 roll made by yourself or an ally.",
+            "Shadow Trait [The Inspired Enemy]: A past performance moved the wrong person, who took the lyrics as a manifesto to hunt you down."
+          ]
+        }
+      ]
+    },
+    {
+      id: 'zones',
+      title: 'ZONES 1-5 OVERVIEWS',
+      sections: [
+        {
+          heading: "Zone 1: The Dark Enchanted Forest (Ashen Timberlands)",
+          content: [
+            [cite_start]"Lore: Once the King's Hunting Grounds, the forest went feral after the Great Shift. Trees absorbed the ambient magic, growing hard as iron. Garrison soldiers mutated into the Ashen Pack [cite: 255-259].",
+            "UE5 Visuals: Lumen global illumination struggling to pierce the canopy. A perpetual drift of grey ash. Volumetric fog hides traps. [cite_start]Smells of pine sap, wet earth, cold campfire ash, and ozone [cite: 246-254].",
+            "Landmarks: Sister Vex's Chapel (Safe Zone, overgrown with glowing blue moss). The Poacher's Camp. [cite_start]The Ashen Den (Gravenor's Lair beneath the oldest tree) [cite: 259-264].",
+            "Hazards: Rusted Bear Traps (Perception 14+ or Rooted). Hollow-Spore Pods (WIS 12+ save or Blind/Exhausted). [cite_start]The Pack's Perimeter (tripwires that spawn 1d4 Ashen Wolves) [cite: 265-270].",
+            "Loot: Buried Bone-Caches. Hollow-Iron Axe (Rare, requires STR 16+ to pull free). [cite_start]Pioneer's Duster (+1 DEF and Stealth bonus) [cite: 271-276]."
+          ]
+        },
+        {
+          heading: "Zone 2: The Crumbling Kingdom (The Last Frontier)",
+          content: [
+            "Lore: The capital of the known world, split open by the Great Shift. Chancellor Valdris bound his soul to the Throne Room. [cite_start]Garrison soldiers enforce brutal tolls [cite: 287-290].",
+            "UE5 Visuals: High-contrast lighting. Bruised purple sky, industrial oil lanterns. Gothic ruins patched with corrugated iron and sandbags. [cite_start]Dry, biting winds [cite: 279-284].",
+            "Landmarks: Quartermaster Rudge's Toll Booth (Main gate, wanted posters). The Shattered Armory (Pitch-black labyrinth). [cite_start]The Suspended Throne Room (Cracked marble over an abyss) [cite: 292-296].",
+            "Hazards: Structural Collapse (SPD 13+ to cross, or fall for 2d6 Blunt damage). Garrison Trip-Mines (SPD/INT 15+ to disarm, 2d8 AoE). [cite_start]Phantom Patrols (Un-winnable combat if not bypassed via Stealth) [cite: 297-302].",
+            "Loot: Garrison Paymaster's Strongbox. Blood-Oath Claymore (Legendary, behind a false wall). [cite_start]Valdris's Debt Ledgers (Drops store prices by 20%) [cite: 303-308]."
+          ]
+        },
+        {
+          heading: "Zone 3: The Underground Caverns (Bedrock Syndicate)",
+          content: [
+            "Lore: Sealed off during the collapse, the miners consumed Hollow Ore to survive. [cite_start]Unionized into a ruthless syndicate led by Krell the Foreman [cite: 321-324].",
+            "UE5 Visuals: Absolute darkness with harsh industrial lighting. Glowing Hollow Ore veins. Sputtering arc-lamps and steam vents. [cite_start]Smells of sulfur, pulverized stone, hot oil, and deep-earth gas [cite: 312-320].",
+            "Landmarks: Krell's Steam-Forge (Fractured geothermal vent, upgrades weapons). The Bleeding Veins (Active excavation drop). [cite_start]Thessaly's Blind Drop (Entrance to the Cartographer's domain) [cite: 326-330].",
+            "Hazards: Firedamp Pockets (Toxic gas, detonates for 3d8 Fire if lit). Structural Stress (Explosives or Fumbles cause Cave-Ins, 2d10 Blunt damage). [cite_start]Proximity Detonators [cite: 331-337].",
+            "Loot: Smuggler's False-Bottom Crate (INT 14+ to spot). Raw Hollow Ore (Required for Krell's reforging). [cite_start]Deep-Blast Charge (Massive AoE but risks ceiling collapse) [cite: 338-342]."
+          ]
+        },
+        {
+          heading: "Zone 4: The Sunken Library (The Drowned Cartel)",
+          content: [
+            "Lore: Half-submerged pinnacle of academia and banking. The Sunken run a shadow economy based on secrets and blackmail. [cite_start]The entity 'The Sink' slumbers in the lowest flooded levels [cite: 343-344, 355-358].",
+            "UE5 Visuals: Deep aquatic blues and sickly greens. Caustics ripple across standing water. Flooded reading rooms. [cite_start]Smells of stagnant water, rotting parchment, and algae [cite: 345-354].",
+            "Landmarks: The Grand Rotunda (The Shallows, waist-deep water, Nylah's market). The Restricted Archive (The Deep, pitch-black 3D diving). [cite_start]The Sink's Basin [cite: 359-365].",
+            "Hazards: The Drowning Clock (5 rounds of oxygen, takes 1d6 damage after). Electrified Water (Blue crystals spark, dealing 2d8 Lightning damage). [cite_start]The Sink's Pull (WIS 12+ save or dragged deeper) [cite: 366-372].",
+            "Loot: Sealed Waterproof Lockboxes (INT 16+ to open). Blackmail Ledgers (Traded to Nylah for extreme payouts). [cite_start]Siren's Call Amulet (Legendary, charms non-boss NPCs) [cite: 373-377]."
+          ]
+        },
+        {
+          heading: "Zone 5: The Hollow's Edge (The Null Point)",
+          content: [
+            "Lore: The boundary where the Great Shift is still happening. [cite_start]A trash heap of deleted reality, ruled by The Null Warden [cite: 393-395].",
+            "UE5 Visuals: Monochromatic white light from 'The Rift'. Floating islands, frozen explosions, crystalline bridges. 'The Static' haze. [cite_start]Zero scent [cite: 381-392].",
+            "Landmarks: The Cathedral of Fragments (Split down the middle). The Memory Graveyard (Holographic loops). [cite_start]The Event Horizon (Reflective black disk boss arena) [cite: 397-403].",
+            "Hazards: Gravity Wells (LCK 15+/SPD 16+ to spot, 3d6 Blunt damage and Pinned). Reality Glitches (d20 Stability Roll; Natural 1 deletes character). [cite_start]The Warden's Gaze (Orbital strike, 4d10 damage) [cite: 404-412].",
+            "Loot: Void-Touched Relics (Change stats every equip). Stable Matter (Creates 20ft zone of normal gravity). [cite_start]The Null Warden's Mask (Legendary, sees invisible hazards) [cite: 413-418]."
+          ]
+        }
+      ]
+    },
+    {
+      id: 'kits',
+      title: 'CHAPTER 6: THE FIELD KITS',
+      sections: [
+        {
+          heading: "1. Medical & Recovery",
+          content: [
+            "Aether Bandages (250c): Cures 'Bleeding' instantly. Restores 3 HP. [cite_start]Leaves a procedural mossy texture on skin [cite: 421-424].",
+            "Miracle Draught (2,500c): Full HP Restore. [cite_start]Acts as a manual defibrillator to bring Downed characters from 0 HP to 1 HP [cite: 425-428].",
+            "Adrenaline Salts (400c): +2 to SPD and Initiative for 3 combat rounds. [cite_start]Causes 'Exhausted Level 1' (-1 to all rolls) when it wears off [cite: 429-432]."
+          ]
+        },
+        {
+          heading: "2. Environmental & Utility",
+          content: [
+            "Holy Salt (500c): Creates a 10ft Sanctified Circle. No Void-based entities can cross for 1 hour. [cite_start]Stuns entities inside upon casting [cite: 434-438].",
+            "Deep-Blast Charge (800c): Deals 3d10 damage in a 20ft radius. [cite_start]If used in Caverns, roll d20: 1-5 triggers a Cave-In [cite: 439-443].",
+            "Void-Glass Lantern (1,200c): Reveals 'Hidden Geometry' (invisible paths/doors). [cite_start]Removes Disadvantage on Perception in total darkness [cite: 444-446]."
+          ]
+        },
+        {
+          heading: "3. The Volatile & Cursed",
+          content: [
+            "Pure Void-Essence (2,000c): Instantly restores Full HP and all used Gift Powers. [cite_start]40% chance the player is hit with a Tier 2 Curse immediately [cite: 448-454].",
+            "Dried Void-Moss (150c): Restores 1 HP and grants +1 to all WIS rolls for 10 minutes. [cite_start]GM may whisper fake hallucinations to the player [cite: 455-457]."
+          ]
+        },
+        {
+          heading: "4. Companion Supports & Pack-Mule Rules",
+          content: [
+            [cite_start]"Void-Hound Treat (100c): Restores 2 HP to a Void-Hound[span_0](end_span).",
+            [span_1](start_span)"Scavenger Crow Shiny (100c): Prevents the Crow from spite-dropping an item for 2 sessions[span_1](end_span).",
+            [span_2](start_span)"Clockwork Oil (300c): Repairs a Clockwork Mule, restoring 4 HP and removing stealth penalty[span_2](end_span).",
+            "The Pack-Mule Rules: Standard Pouch holds 5 small consumables. Heavy Items take 1 full Slot. [span_3](start_span)Overloading your Class Cap applies a permanent -2 SPD penalty [cite: 461-464]."
+          ]
+        }
+      ]
+    },
+    {
+      id: 'npcs',
+      title: 'NPC MANIFEST & INSURER FILE',
+      sections: [
+        {
+          heading: "1. Gravenor (The Ashen Father)",
+          content: [
+            "Location: Dark Enchanted Forest. [cite_start]Leader of the Ashen Pack [cite: 465-466].",
+            "Conflict: Former officer who held the line when the Kingdom fell. [cite_start]Believes in embracing the feral side to survive [cite: 468-469].",
+            "Secret: Keeps a rusted locket with a Kingdom seal. [cite_start]Mentioning his family forces him to lose one turn in combat [cite: 470-472].",
+            "Favor: If the squad culls a rival pack, he grants the Pack Mark. [cite_start]Forest wolves no longer attack, +2 to Tracking [cite: 473-474]."
+          ]
+        },
+        {
+          heading: "2. Chancellor Valdris (The Unmourned)",
+          content: [
+            "Location: Crumbling Kingdom. [cite_start]Last Bureaucrat of the Dead Empire[span_3](end_span).",
+            "Conflict: A ghost bound to his throne, collecting unpaid debts. [span_4](start_span)Wants players to 'offload' his debts, cursing them with a Debt Bond [cite: 477-478].",
+            "Secret: Helped orchestrate the Great Shift to avoid a corruption trial. [cite_start]The 'Black Box' proof is in the Sunken Library [cite: 479-480].",
+            "Favor: Pay him 10,000c in one session, and he becomes a Political Patron. [cite_start]Garrison guards will ally during Base Sieges [cite: 481-482]."
+          ]
+        },
+        {
+          heading: "3. Krell the Foreman (The Bedrock Golem)",
+          content: [
+            "Location: Underground Caverns. [cite_start]Master Smith and Labor Union Leader[span_4](end_span).",
+            "Conflict: Hates surface-dwellers. [span_5](start_span)Fighting a silent war against Thessaly's 'vandalizing' maps [cite: 485-486].",
+            "Secret: His skin is turning to solid ore. [cite_start]He needs Void Salts from the Edge to stay mobile [cite: 487-488].",
+            "Favor: Bring him 10x Raw Hollow Ore, and he grants Masterwork Status. [cite_start]One squad weapon becomes indestructible with +1 ATK [cite: 489-490]."
+          ]
+        },
+        {
+          heading: "4. Nylah the Dredge (The Gilded Gill)",
+          content: [
+            "Location: Sunken Library. [cite_start]High Broker of the Drowned Cartel[span_5](end_span).",
+            "Conflict: Runs the shadow economy. Taxes Box Battle winners based on secret intel. [span_6](start_span)Obsessed with retrieving 'Founding Documents' from the Sink [cite: 492-494].",
+            "Secret: An Aether-Kith who failed ascension and anchored herself using Sunken biology. [cite_start]Terrified of drying out [cite: 495-496].",
+            "Favor: Deliver a Rival Merchant's Ledger, and she unlocks the Secret Stock. [cite_start]Squad gets 50% off Legendary items [cite: 496-497]."
+          ]
+        },
+        {
+          heading: "5. Thessaly Vane (The Burned Cartographer)",
+          content: [
+            "Location: Mobile/Underground Caverns. [cite_start]Rogue Visionary[span_6](end_span).",
+            "Conflict: Realized the Hollow Realm is a leaking simulation. [span_7](start_span)Her maps are 'patches' that rewrite the world, often deleting villages [cite: 500-502].",
+            [cite_start]"Secret: She drew the original maps centuries ago and hasn't aged a day since [cite: 503-504].",
+            "Favor: Protect her during a Mapping Ritual to reveal a Ghost Path. [cite_start]Squad can fast travel anywhere bypassing costs [cite: 504-505]."
+          ]
+        },
+        {
+          heading: "6. The Insurer's File (NPC Rules)",
+          content: [
+            [cite_start]"Reputation Checks: GM tracks a hidden favor score (-10 to +10) for Architect NPCs [cite: 507-508].",
+            "The Bribe Cap: You cannot bribe an Architect NPC with less than 2,000c. [cite_start]Less is an insult (-1 Rep)[span_7](end_span).",
+            [span_8](start_span)"The Betrayal Domino: Favor with one Architect almost always costs favor with another (e.g., helping Gravenor angers Valdris) [cite: 509-510]."
+          ]
+        }
+      ]
+    },
+    {
+      id: 'bosses',
+      title: 'CHAPTER 7: APEX ENCOUNTERS',
+      sections: [
+        {
+          heading: "1. Global Boss Rules",
+          content: [
+            "The Immunity Gate: Upon hitting a Phase Threshold, Bosses become Invulnerable to damage until the next round. [cite_start]You cannot skip phases[span_8](end_span).",
+            [span_9](start_span)"The Desperation Move: Every Phase Shift triggers an immediate, free Reaction Attack hitting everyone in the room[span_9](end_span).",
+            [span_10](start_span)"State Persistence: Fleeing leaves the Boss in their current Phase, regenerating to the top of that Phase's HP for the next encounter[span_10](end_span)."
+          ]
+        },
+        {
+          heading: "2. Gravenor: The Ashen Hunt (80 HP)",
+          content: [
+            "Phase 1 (The Watcher, 80-61 HP): High SPD kite. [span_11](start_span)'Stalk' targets the lowest DEF player, applies Bleed on 15+ [cite: 518-520].",
+            "Phase 2 (The Hunter, 60-31 HP): 'Call of the Pack' spawns 2d4 Wolves. [cite_start]Gravenor gains Advantage on players engaged by wolves [cite: 521-523].",
+            "Phase 3 (The Feral, 30-1 HP): Discards armor (SPD doubles, DEF drops 2). [cite_start]Attacks twice per round, 25% chance to Stun [cite: 524-527]."
+          ]
+        },
+        {
+          heading: "3. Valdris: The Unmourned Chancellor (60 HP)",
+          content: [
+            "Phase 1 (The Diplomat, 60-41 HP): Uses Phantom summons. [cite_start]'Debt Collection' forces a CHA vs WIS roll; failure loses 100c from the player's bank [cite: 529-532].",
+            "Phase 2 (The Negotiator, 40-16 HP): Floor collapses. [cite_start]Applies 'Weight of the Crown', every inventory item reduces SPD by -1 [cite: 532-535].",
+            "Phase 3 (The Unmourned, 15-1 HP): Melee powerhouse. [cite_start]'Void Bankruptcy' strikes ignore DEF and heal him for 50% of damage dealt [cite: 535-537]."
+          ]
+        },
+        {
+          heading: "4. Thessaly Vane: The Burned Cartographer (70 HP)",
+          content: [
+            [cite_start]"Phase 1 (The Guide, 70-46 HP): Draws glowing trap lines on the floor (Perception 15+ to see, 2d6 Fire damage) [cite: 538-541].",
+            "Phase 2 (The Architect, 45-21 HP): Remaps the room. Moving more than 10ft requires a d20; [cite_start]1-5 teleports back to start [cite: 541-545].",
+            "Phase 3 (The Burned, 20-1 HP): Erases the room. [cite_start]If not defeated in 3 rounds, she self-destructs for 50 damage and locks the map [cite: 546-548]."
+          ]
+        },
+        {
+          heading: "5. The Null Warden (150 HP)",
+          content: [
+            "Phase 1 (The Boundary, 150-101 HP): Zero Gravity. [cite_start]SPD ignored; movement dictated by STR pushing off objects [cite: 549-551].",
+            "Phase 2 (The Warden, 100-51 HP): Sweeping light beams. [cite_start]Caught players roll their Shadow Trait immediately [cite: 552-554].",
+            "Phase 3 (The Keeper, 50-1 HP): Event Horizon absorbs all magic. No spells allowed. [cite_start]Warden victories result in permanent Character Deletion [cite: 555-558]."
+          ]
+        },
+        {
+          heading: "6. The Boss Reward Math",
+          content: [
+            [cite_start]"The MVP Bonus: Player dealing the final blow receives a Unique Boss Artifact (e.g., Gravenor's Pelt)[span_11](end_span).",
+            [span_12](start_span)"The Split Pot: The 30,000c Raid Pot is divided among all surviving players and deposited into their Bank wallets[span_12](end_span)."
+          ]
+        }
+      ]
+    },
+    {
+      id: 'calamities',
+      title: 'CHAPTER 9: THE CALAMITY SYSTEM',
+      sections: [
+        {
+          heading: "1. The Blood Moon (The Primal Surge)",
+          content: [
+            [span_13](start_span)"Trigger: Ashen Pack gains 10% Territory or a Player kills a non-hostile animal[span_13](end_span).",
+            "Effects: All Beasts gain +2 ATK and +5 SPD. Players cannot heal by resting; must deal damage for 10% Life-Steal. [span_14](start_span)Chests 20% more likely to drop Bestial rare items [cite: 570-573]."
+          ]
+        },
+        {
+          heading: "2. The Rift Tear (The Static Leak)",
+          content: [
+            [cite_start]"Trigger: Wizard rolls a Natural 1 on a Tier 3 spell, or a violent Boss Phase Shift[span_14](end_span).",
+            "Effects: Spells cost 0c but have 50% chance to target a random player. Every 3 rounds, d20 roll: 1-5 teleports the party 50ft randomly. [span_15](start_span)Random glitched items drop [cite: 578-581]."
+          ]
+        },
+        {
+          heading: "3. The Void-Frost (The Absolute Zero)",
+          content: [
+            [cite_start]"Trigger: The Null Warden is not challenged for 3 consecutive Arcs[span_15](end_span).",
+            "Effects: Thermal Drain removes 1 HP every 10 minutes unless near a heat source. Armor DEF reduced by -2. [span_16](start_span)Weapons have 10% chance to shatter on Fumbles [cite: 587-589]."
+          ]
+        },
+        {
+          heading: "4. The Debtor's Eclipse (The Golden Dark)",
+          content: [
+            [cite_start]"Trigger: Sunken Library or Kingdom Garrison reaches 80% Wealth control[span_16](end_span).",
+            "Effects: Every movement costs 1 coin. Combat can be bypassed by paying enemy Life Value (Standard 100c, Elite 1,000c). [cite_start]Chests hold 500% more coins, but all items carry Permanent Debt Curses [cite: 594-596]."
+          ]
+        }
+      ]
+    }
