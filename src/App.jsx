@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sparkles, Stars, Sphere, Trail } from '@react-three/drei';
 import { HollowRealmProvider } from './HollowRealmContext';
-import { ChevronDown, MapPin, Sword, Scale, User, Scroll, Shield, Gem, Users, ShoppingCart, Crosshair, HelpCircle, Target } from 'lucide-react';
+import { ChevronDown, MapPin, Sword, Scale, User, Scroll, Shield, Gem, Users, ShoppingBag, Crosshair, HelpCircle, Target } from 'lucide-react';
 
 // --- ACTIVE MODULES (Names must match your GitHub files exactly) ---
 import LiveCombatHUD from './LiveCombatHUD';
