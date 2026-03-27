@@ -3,8 +3,9 @@ import { useHollowRealm } from './HollowRealmContext';
 import { Sparkles, Box, AlertTriangle, Skull } from 'lucide-react';
 
 export default function LootModeUI() {
-  const { gmCoins, setGmCoins, squad } = useHollowRealm();
-  const [isLooting, setIsLooting] = useState(false);
+    const { gmCoins, setGmCoins } = useHollowRealm();
+
+ const [isLooting, setIsLooting] = useState(false);
   const [lastLoot, setLastLoot] = useState(null);
 
   // --- THE FULL LOOT DATABASE (Scrubbed of PDF tags) ---
