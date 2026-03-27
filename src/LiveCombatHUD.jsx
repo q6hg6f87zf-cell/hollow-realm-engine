@@ -105,8 +105,10 @@ export default function LiveCombatHUD() {
                 <button onClick={() => handleActionCharge(act, "Player")} className="bg-green-900/30 hover:bg-green-600 text-green-400 text-[10px] font-bold py-1.5 rounded uppercase tracking-widest transition-colors w-full">Charge Action</button>
               </div>
             ))}
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
