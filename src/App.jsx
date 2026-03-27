@@ -163,8 +163,8 @@ export default function App() {
   const [activeZone, setActiveZone] = useState('hq');
   const [uiVisible, setUiVisible] = useState(true);
 
-  return (
-    <>
+    return (
+    <HollowRealmProvider>
       <BossStyles />
       <div className="min-h-screen bg-black text-zinc-300 font-sans flex flex-col relative overflow-hidden">
         
@@ -191,10 +191,11 @@ export default function App() {
           </Canvas>
         </div>
 
-        {/* THE HUD LAYER */}
+        {/* THE HUD LAYER - Directly calling your modular files */}
         {uiVisible && (
-          <div className="relative z-10 pointer-events-none h-screen flex flex-col p-4">
-            <div className="bg-black/80 p-3 rounded border border-zinc-700 backdrop-blur-sm max-w-[200px] pointer-events-auto">
+          <div className="relative z-10 h-screen flex flex-col p-4 overflow-y-auto">
+            {/* Live Feed Header */}
+            <div className="bg-black/80 p-3 rounded border border-zinc-700 backdrop-blur-sm max-w-[200px] mb-4">
               <h3 className="text-amber-500 font-bold uppercase tracking-widest flex items-center gap-2 text-sm">
                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                 Live Feed
@@ -202,13 +203,18 @@ export default function App() {
               <p className="text-xs text-white mt-1">Zone: <span className="text-amber-400 font-black">{activeZone.toUpperCase()}</span></p>
             </div>
             
-            <div className="mt-auto pointer-events-auto bg-black/80 border border-zinc-700 p-4 rounded text-center backdrop-blur-sm">
-              <p className="text-xs text-zinc-400">Combat HUD, Forge, and Bank modules offline. Awaiting connection...</p>
+            {/* This pulls in the Combat HUD you just created in GitHub */}
+            <div className="max-w-4xl pointer-events-auto">
+               <LiveCombatHUD />
+            </div>
+
+            {/* Fate Engine Dice Roller */}
+            <div className="mt-auto w-64 pointer-events-auto">
+              <ThreeDiceRoller />
             </div>
           </div>
         )}
 
-        {/* CINEMATIC TOGGLE */}
         <button 
           onClick={() => { triggerHaptic('click'); setUiVisible(!uiVisible); }} 
           className="absolute bottom-4 right-4 z-20 bg-zinc-950/80 border border-amber-900 text-amber-500 text-[10px] uppercase font-bold px-3 py-1 rounded hover:bg-amber-900 hover:text-white backdrop-blur-sm">
@@ -216,6 +222,7 @@ export default function App() {
         </button>
 
       </div>
-    </>
+    </HollowRealmProvider>
   );
 }
+
